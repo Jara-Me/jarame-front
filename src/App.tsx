@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import LoadingScreen from "./components/loading-screen";
 import { auth } from "./firebase";
 import ProtectedRoute from "./components/protected-route";
+import Group from "./routes/group";
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
     path: "/create-account",
     element:<CreateAccount/>
   },
+  {
+    path: "/group",
+    element: <Group/>
+  }
 ]);
 
 const GlobalStyles = createGlobalStyle`
