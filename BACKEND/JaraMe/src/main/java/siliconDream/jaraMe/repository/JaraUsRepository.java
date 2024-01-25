@@ -1,0 +1,28 @@
+package siliconDream.jaraMe.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import siliconDream.jaraMe.domain.JaraUs;
+import siliconDream.jaraMe.dto.JaraUsDTO;
+import siliconDream.jaraMe.dto.sampleDTO;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Repository
+public interface JaraUsRepository extends JpaRepository<JaraUs, Long> {
+/*
+    boolean existsByPath(String path);
+*/
+    List<JaraUs> findJaraUsByAdministrator_UserId(Long adminUserId);
+
+    @Query("SELECT j FROM JaraUs j WHERE j.endDate < :today")
+    List<JaraUs> findExpiredJaraUs(LocalDate today);
+    @Query("SELECT j FROM JaraUs j WHERE j.endDate = :yesterDay")
+    List<JaraUs> findEndDateYesterDay(@Param("yesterDay")LocalDate yesterDay);
+
+    JaraUs findByJaraUsId(Long jaraUsId);
+
+}
