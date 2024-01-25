@@ -2,6 +2,17 @@ import { PropsWithChildren, useState } from "react";
 import Button from "./button";
 import Modal, { ModalTitle } from "./modal";
 import styled from "styled-components";
+import {CKEditor, CKEditorContext} from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-editor-classic/src/classiceditor';
+import "../assets/styles/ckeditorStyles.css";
+import { Bold, Italic } from '@ckeditor/ckeditor5-basic-styles';
+import { Essentials } from '@ckeditor/ckeditor5-essentials';
+import { Paragraph } from '@ckeditor/ckeditor5-paragraph';
+import { Autoformat } from "@ckeditor/ckeditor5-autoformat";
+import { Heading } from "@ckeditor/ckeditor5-heading";
+import { Context } from "@ckeditor/ckeditor5-core";
+import { Image } from '@ckeditor/ckeditor5-image';
+
 
 interface PostModalDefaultType {
     onClickToggleModal: () => void;
@@ -86,6 +97,7 @@ function PostModal(
         }
     };
 
+
     return (
         <Modal dialogClassName="post" onClickToggleModal={onClickToggleModal}>
         <Button onClick={onSubmitPost} className="postBtn" $buttonColor="jarameBlue">작성</Button>
@@ -95,7 +107,33 @@ function PostModal(
           <Button type="button" onClick={handlePublish} className={publishClass} $buttonColor="jarameGrey" $fontSize="15spx" $width="10%" $borderRadius="50px 0px 0px 50px">{publishState}</Button>
           <Input onChange = {onChangeTitle} name="title" className="title" value={title} placeholder="제목" type="text" required></Input>
         </TitleBox>
-        <Textarea onChange = {onChangeContent} name="content" value={content} placeholder="오늘의 미션 과정과 결과를 자유롭게 작성해 주세요." required></Textarea>
+
+        <CKEditorContext context={Context}>
+        <CKEditor
+            editor={ClassicEditor}
+            data={content}
+            config={{
+                plugins:[ Bold, Italic, Essentials, Image],
+                toolbar:['bold', 'italic','insertImage']
+            }}
+            onReady = { (editor) => {
+                console.log("Editor is ready to use", editor);
+            }}
+            onChange = { (event, editor) => {
+                const data = editor.getData();
+                setContent(data);
+                console.log({event, editor, data});
+            }}
+            onBlur = {(event, editor) => {
+                console.log("Blur", editor);
+            }}
+            onFocus = { (event, editor) => {
+                console.log("Focus", editor);
+            }}
+            />
+            </CKEditorContext>
+
+        {/* <Textarea onChange = {onChangeContent} name="content" value={content} placeholder="오늘의 미션 과정과 결과를 자유롭게 작성해 주세요." required></Textarea> */}
 
         </Form>
     </Modal>

@@ -21,15 +21,38 @@ export const Form = styled.form`
     width: 100%;
 `;
 
-export const Input = styled.input`
+export const InputWrapper = styled.div`
     margin: 5px 0;
     padding: 10px 20px;
     border-radius : 50px;
-    width: 100%;
-    font-size: 16px;
     border: 1px solid #F0F0F0;
+    display: flex;
+    justify-content: space-between;
+
+    &.login {
+        width: 100%;
+    }
+
+    &.createaccount {
+        width: 100%;
+    }
+
+    &.myaccount {
+        width: auto;
+    }
+
+`;
+
+export const Input = styled.input`
+    font-size: 16px;
+    width: 70%;
+    border: none;
 
     &[type="submit"] {
+        margin: 5px 0;
+        padding: 10px 20px;
+        border-radius : 50px;
+        width: 100%;
         margin-top: 30px;
         background-color: #3081D0;
         color: white;

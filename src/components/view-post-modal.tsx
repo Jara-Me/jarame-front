@@ -1,6 +1,6 @@
 import { PropsWithChildren, useState } from "react";
 import Button from "./button";
-import Modal, { ModalTitle } from "./modal";
+import Modal from "./modal";
 import styled from "styled-components";
 import { palette } from "../assets/styles/palette";
 import puppyProfile from "../assets/images/puppyProfile.jpg";
@@ -138,6 +138,7 @@ const EmotionBox = styled.div`
         cursor: pointer;
         strokeWidth: 1;
         transition: stroke 0.3s;
+        stroke: ${palette.jarameGrey};
     }
 
     svg.clicked {
@@ -192,12 +193,30 @@ function ViewPostModal(
         switch (icon) {
             case "heart":
               setClickHeart(!clickHeart);
+              if(clickThumbUp) {
+                setClickThumbUp(false);
+              }
+              if(clickSmile) {
+                setClickSmile(false);
+              }
               break;
             case "thumbUp":
               setClickThumbUp(!clickThumbUp);
+              if(clickHeart) {
+                setClickHeart(false);
+              }
+              if(clickSmile) {
+                setClickSmile(false);
+              }
               break;
             case "smile":
               setClickSmile(!clickSmile);
+              if(clickHeart) {
+                setClickHeart(false);
+              }
+              if(clickThumbUp) {
+                setClickThumbUp(false);
+              }
               break;
             default:
               break;

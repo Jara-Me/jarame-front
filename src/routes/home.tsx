@@ -17,7 +17,6 @@ export default function Home() {
     };
 
     return (<Wrapper>
-
     <Title>자라미</Title>
     <Subtitle>성장몽과 자라는 챌린지</Subtitle>
     <Btn onClick={navigateToLogin}>시작하기</Btn>

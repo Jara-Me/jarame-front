@@ -27,13 +27,6 @@ export default function Group() {
     };
 
 
-    const ShowProvePage = (e : React.MouseEvent<HTMLButtonElement>) => {
-
-        if (e.currentTarget.className === "all") {
-
-        }
-    };
-
     return (<Wrapper>
         <PostBtn onClick={onClickToggleModal}></PostBtn>
 
@@ -71,7 +64,7 @@ export default function Group() {
     </GroupInfoWrapper>
     
     <ProveWrapper>
-        <ProveSelectBtn type="button" onClick={ShowProvePage} className="all">전체 인증</ProveSelectBtn>
+        <ProveSelectBtn type="button" className="all">전체 인증</ProveSelectBtn>
         <ProveSelectBtn type="button" className="my">내 인증</ProveSelectBtn>
             <ProvePage>
                 <ProveBox>

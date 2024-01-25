@@ -59,6 +59,13 @@ const ButtonStyled = styled.button<ButtonStyle>`
     top: 20px;
   }
 
+  &.unregister:active {
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  &.save:active {
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+  }
 `;
 
 export default Button;

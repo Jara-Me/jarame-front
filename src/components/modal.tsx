@@ -54,6 +54,7 @@ const DialogBox = styled.dialog`
   box-sizing: border-box;
   background-color: white;
   z-index: 10000;
+  overflow: hidden;
 
   &.post{
   display: block;
