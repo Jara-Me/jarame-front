@@ -2,16 +2,7 @@ import { PropsWithChildren, useState } from "react";
 import Button from "./button";
 import Modal, { ModalTitle } from "./modal";
 import styled from "styled-components";
-import {CKEditor, CKEditorContext} from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-editor-classic/src/classiceditor';
-import "../assets/styles/ckeditorStyles.css";
-import { Bold, Italic } from '@ckeditor/ckeditor5-basic-styles';
-import { Essentials } from '@ckeditor/ckeditor5-essentials';
-import { Paragraph } from '@ckeditor/ckeditor5-paragraph';
-import { Autoformat } from "@ckeditor/ckeditor5-autoformat";
-import { Heading } from "@ckeditor/ckeditor5-heading";
-import { Context } from "@ckeditor/ckeditor5-core";
-import { Image } from '@ckeditor/ckeditor5-image';
+
 
 
 interface PostModalDefaultType {
@@ -22,7 +13,6 @@ interface PostModalDefaultType {
 const Form = styled.form`
     margin-top : 50px;
     margin-bottom : 10px;
-    gap: 10px;
     width: 100%;
     padding: 30px;
     display: flex;
@@ -39,15 +29,30 @@ const Input = styled.input`
     &.title {
         border-radius : 0px 50px 50px 0px;
         width: 90%;
+        margin-bottom: 20px;
+    }
+`;
+
+const Toolbar = styled.div`
+    padding: 0 10px;
+    width: 50px;
+    height: 8%;
+    display: flex;
+    justify-content: center;
+
+    border: 1px solid #F0F0F0;
+    border-radius: 30px;
+
+    .imgBtn {
+        cursor: pointer;
     }
 `;
 
 const Textarea = styled.textarea`
-    border-radius: 20px;
     border: 1px solid #F0F0F0;
     resize: none;
     width: 100%;
-    height: 100%;
+    height: 92%;
 
     &::placeholder{
         font-size: 15px;
@@ -59,11 +64,75 @@ const TitleBox = styled.div`
     width: 100%;
 `;
 
+export const ImagePreview = styled.div`
+    display: flex;
+    margin-top: 10px;
+    width: 100%;
+    height: 100%;
+    overflow-x: auto;
+`;
+
+
+const RemoveImageButton = styled.button`
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    font-size: 12px;
+`;
+
+export const ImagePreviewItem = styled.div`
+    position: relative;
+    display: inline-block;
+    max-width: 200px;
+    max-height: 200px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+`;
+
+
 function PostModal(
    { onClickToggleModal,
     onSubmitPost,
    }: PropsWithChildren<PostModalDefaultType>
 ) {
+    
+    const [images, setImages] = useState<string[]>([]);
+    const maxImageCount = 3;
+
+    const handleImageUpload = (e:React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFiles = e.target.files;
+
+        if (selectedFiles && selectedFiles.length > 0) {
+            const newImages: string[] = [];
+
+            for (let i=0; i< selectedFiles.length;i++) {
+
+                const imageURL = URL.createObjectURL(selectedFiles[i]);
+                newImages.push(imageURL);
+            }
+
+            const combinedImages = [...images, ...newImages];
+
+            if(combinedImages.length > maxImageCount) {
+                alert("이미지는 최대 3개까지 업로드할 수 있습니다");
+            }
+
+            const slicedImages = combinedImages.slice(0, maxImageCount);
+
+            setImages(slicedImages);
+        }
+    }
+
+    const removeImage = (indexToRemove:number) => {
+        const newImages = images.filter((_, index) => index !== indexToRemove);
+        setImages(newImages);
+      };
+
 
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
@@ -108,33 +177,22 @@ function PostModal(
           <Input onChange = {onChangeTitle} name="title" className="title" value={title} placeholder="제목" type="text" required></Input>
         </TitleBox>
 
-        <CKEditorContext context={Context}>
-        <CKEditor
-            editor={ClassicEditor}
-            data={content}
-            config={{
-                plugins:[ Bold, Italic, Essentials, Image],
-                toolbar:['bold', 'italic','insertImage']
-            }}
-            onReady = { (editor) => {
-                console.log("Editor is ready to use", editor);
-            }}
-            onChange = { (event, editor) => {
-                const data = editor.getData();
-                setContent(data);
-                console.log({event, editor, data});
-            }}
-            onBlur = {(event, editor) => {
-                console.log("Blur", editor);
-            }}
-            onFocus = { (event, editor) => {
-                console.log("Focus", editor);
-            }}
-            />
-            </CKEditorContext>
+        <Toolbar>
+            <label className="imgBtn" title="이미지 업로드">
+                <input type="file" accept="image/*" onChange={handleImageUpload} multiple style={{display: "none"}}/>
+                <svg fill="none" width="30px" strokeWidth={1.5} stroke="grey" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>
+            </label>
+        </Toolbar>
 
-        {/* <Textarea onChange = {onChangeContent} name="content" value={content} placeholder="오늘의 미션 과정과 결과를 자유롭게 작성해 주세요." required></Textarea> */}
-
+        {images.length > 0 ? (<ImagePreview>
+            {images.map((imageURL, index) => (
+                <ImagePreviewItem key={index}>
+                <RemoveImageButton title="이미지 삭제" onClick={() => removeImage(index)}>&times;</RemoveImageButton>
+                <img src={imageURL} alt={`Image ${index + 1}`} />
+                </ImagePreviewItem>            ))} 
+        </ImagePreview>) : null}
+        <Textarea onChange = {onChangeContent} name="content" value={content} placeholder="오늘의 미션 과정과 결과를 자유롭게 작성해 주세요." required></Textarea>
         </Form>
     </Modal>
     );

@@ -28,18 +28,7 @@ export const InputWrapper = styled.div`
     border: 1px solid #F0F0F0;
     display: flex;
     justify-content: space-between;
-
-    &.login {
-        width: 100%;
-    }
-
-    &.createaccount {
-        width: 100%;
-    }
-
-    &.myaccount {
-        width: auto;
-    }
+    width: 100%;
 
 `;
 

@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { palette } from "../assets/styles/palette";
 import puppyProfile from "../assets/images/puppyProfile.jpg";
 import catProfile from "../assets/images/catProfile.jpg";
+import { ImagePreview, ImagePreviewItem } from "./post-modal";
 
 interface ViewPostModalDefaultType {
     onClickToggleModal: () => void;
@@ -35,6 +36,10 @@ const LeftContainer = styled.div`
     padding: 30px 15px;
     padding-right: 30px;
     overflow: auto;
+
+    .infoEdit{
+        display: flex;
+    }
 `;
 
 const RightContainer = styled.div`
@@ -152,8 +157,62 @@ const CommentBox = styled.div`
     border-top: 1px solid ${palette.jarameGrey};
     border-bottom: 1px solid ${palette.jarameGrey};
     padding: 10px 5px;
+    
+    .infoSvg {
+        display: flex;
+    }
+
+    svg {
+        width: 20px;
+        cursor: pointer;
+    }
 `;
 
+function Comment() {
+    
+    const dummyComment = {
+        userName: "지우",
+        dateTime: "1월 13일 오후 9:21",
+        profile: catProfile,
+        content: "Good Work!"
+    };
+
+    const onClickDeleteComment = () => {
+      const ok = confirm("댓글을 삭제하시겠습니까?");
+
+      if (ok) {
+        console.log("댓글 삭제");
+      };
+
+    };
+
+
+    return (
+        <CommentBox>
+            <div className="infoSvg">
+                <InfoWrapper>
+                <ProfileImg profile={dummyComment.profile} className="comment"></ProfileImg>
+                <WriterInfoWrapper>
+                    <WriterName className="comment">{dummyComment.userName}</WriterName>
+                    <WrittenDateTime>{dummyComment.dateTime}</WrittenDateTime>
+                </WriterInfoWrapper>
+                </InfoWrapper>
+                
+                <span onClick={onClickDeleteComment}>
+                    <svg viewBox="0 0 20 20">
+                            <path fill="grey" d="M7.083,8.25H5.917v7h1.167V8.25z M18.75,3h-5.834V1.25c0-0.323-0.262-0.583-0.582-0.583H7.667
+                                c-0.322,0-0.583,0.261-0.583,0.583V3H1.25C0.928,3,0.667,3.261,0.667,3.583c0,0.323,0.261,0.583,0.583,0.583h1.167v14
+                                c0,0.644,0.522,1.166,1.167,1.166h12.833c0.645,0,1.168-0.522,1.168-1.166v-14h1.166c0.322,0,0.584-0.261,0.584-0.583
+                                C19.334,3.261,19.072,3,18.75,3z M8.25,1.833h3.5V3h-3.5V1.833z M16.416,17.584c0,0.322-0.262,0.583-0.582,0.583H4.167
+                                c-0.322,0-0.583-0.261-0.583-0.583V4.167h12.833V17.584z M14.084,8.25h-1.168v7h1.168V8.25z M10.583,7.083H9.417v8.167h1.167V7.083
+                                z"></path>
+                        </svg>
+                </span>
+            </div>
+            <Content className="comment">{dummyComment.content}</Content>
+        </CommentBox>
+    );
+};
 
 
 function ViewPostModal(
@@ -165,15 +224,10 @@ function ViewPostModal(
         title: "Sample Title",
         content: "In the heart of the bustling city, where the neon lights paint the sky with vibrant hues, there exists a certain charm that captivates the soul. The rhythm of life echoes through the crowded streets, a symphony of diverse cultures and aspirations. As the sun sets behind the towering skyscrapers, the cityscape transforms into a canvas of twinkling lights, each one telling a story of dreams and ambitions. Amidst the urban chaos, hidden gems emerge – cozy cafes with the aroma of freshly brewed coffee, quaint bookshops inviting literary exploration, and serene parks offering an escape from the urban hustle. Every corner of the city has a tale to tell, from the historic landmarks standing as witnesses to bygone eras to the modern art installations pushing the boundaries of creativity. The people, a mosaic of backgrounds and experiences, create the tapestry of this metropolis. From the laughter of friends sharing a meal in a local diner to the solitary artist finding inspiration in a quiet studio, the city embraces diversity as its heartbeat. It's a place where innovation meets tradition, and where the relentless pursuit of excellence intertwines with the appreciation of simple pleasures.",
         profile: puppyProfile,
-        dateTime: "1월 13일 오후 8:01"
+        dateTime: "1월 13일 오후 8:01",
+        images: [puppyProfile, catProfile]
     }
 
-    const dummyComment = {
-        userName: "지우",
-        dateTime: "1월 13일 오후 9:21",
-        profile: catProfile,
-        content: "Good Work!"
-    }
 
     const [comment, setComment] = useState("");
 
@@ -226,17 +280,32 @@ function ViewPostModal(
     return (
         <Modal dialogClassName="viewPost" onClickToggleModal={onClickToggleModal}>
             <LeftContainer>
-                <InfoWrapper>
-                  <ProfileImg profile={dummyData.profile} className="writer"></ProfileImg>
-                    <WriterInfoWrapper>
-                        <WriterName className="post">{dummyData.userName}</WriterName>
-                        <WrittenDateTime>{dummyData.dateTime}</WrittenDateTime>
-                  </WriterInfoWrapper>
-                </InfoWrapper>
+                <div className="infoEdit">
+                    <InfoWrapper>
+                    <ProfileImg profile={dummyData.profile} className="writer"></ProfileImg>
+                        <WriterInfoWrapper>
+                            <WriterName className="post">{dummyData.userName}</WriterName>
+                            <WrittenDateTime>{dummyData.dateTime}</WrittenDateTime>
+                    </WriterInfoWrapper>
+                    </InfoWrapper>
 
+                    <Button type="button" className="edit" $buttonColor="jarameGrey" $fontColor="white" $fontSize="6">수정</Button>
+                </div>
                 <PostWrapper>
                     <Title className="post">{dummyData.title}</Title>
-                    <Content className="post">{dummyData.content}</Content>
+                   <Content className="post">
+                    {dummyData.images.length > 0 ? (<ImagePreview>
+            {dummyData.images.map((imageURL, index) => (
+                <ImagePreviewItem key={index}>
+                <img src={imageURL} alt={`Image ${index + 1}`} />
+                </ImagePreviewItem>            ))} 
+        </ImagePreview>) : null}
+
+        <div dangerouslySetInnerHTML={{__html:dummyData.content}}/>
+        
+        </Content>
+
+
                 </PostWrapper>
             </LeftContainer>
 
@@ -255,16 +324,8 @@ function ViewPostModal(
 </svg>
                 </EmotionBox>
 
-                <CommentBox>
-                    <InfoWrapper>
-                    <ProfileImg profile={dummyComment.profile} className="comment"></ProfileImg>
-                    <WriterInfoWrapper>
-                        <WriterName className="comment">{dummyComment.userName}</WriterName>
-                        <WrittenDateTime>{dummyComment.dateTime}</WrittenDateTime>
-                    </WriterInfoWrapper>
-                    </InfoWrapper>
-                    <Content className="comment">{dummyComment.content}</Content>
-                </CommentBox>
+                <Comment></Comment>
+
                 <Form>
                    <Input className="comment" onChange={onChangeComment} name="comment" value={comment} placeholder="댓글을 남겨 보세요" type="text"/>
                    <Button type="submit" $buttonColor="jarameBlue" $fontSize="15spx" $width="10%" $borderRadius="0 30px 30px 0"><svg width="20px" fill="none" strokeWidth={1.5} stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
