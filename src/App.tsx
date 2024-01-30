@@ -1,7 +1,6 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Layout from "./components/layout";
 import Home from "./routes/home";
-import Profile from "./routes/profile";
 import CreateAccount from "./routes/create-account";
 import Login from "./routes/login";
 import styled, { createGlobalStyle } from "styled-components";
@@ -10,25 +9,48 @@ import { useState } from "react";
 import { useEffect } from "react";
 import LoadingScreen from "./components/loading-screen";
 import { auth } from "./firebase";
+import Group from "./routes/group";
+import MyPage from "./routes/my-page";
+import MyActivites from "./routes/my-activites";
+import MyAccount from "./routes/my-account";
+import MyPageLayout from "./components/mypage-layout";
 import ProtectedRoute from "./components/protected-route";
 
 const router = createBrowserRouter([
+  // router 설정 부분
   {
-    path:"/",
+    path: "/",
     element: (
       <ProtectedRoute>
-        <Layout/>
+        <Layout />
       </ProtectedRoute>
     ),
     children: [
-      // home과 profile은 layout 페이지 내부에서 render
       {
         path: "",
-        element: <Home/>,
+        element: <Home/>
       },
       {
-        path: "profile",
-        element: <Profile/>,
+        path: "/group",
+        element: <Group />
+      },
+      {
+        path: "/mypage",
+        element: <MyPageLayout />,
+        children: [
+          {
+            path: "",
+            element: <MyPage/>,
+          },
+          {
+            path: "my-activites",
+            element: <MyActivites/>
+          },
+          {
+            path: "my-account",
+            element: <MyAccount/>,
+          },
+        ],
       },
     ],
   },
@@ -78,4 +100,4 @@ function App() {
   );
 }
 
-export default App
+export default App;

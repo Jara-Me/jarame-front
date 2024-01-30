@@ -7,6 +7,7 @@ import {
     Error,
     Form,
     Input,
+    InputWrapper,
     Switcher,
     Title,
     Wrapper,
@@ -14,10 +15,6 @@ import {
 import GithubButton from "../components/github-btn";
 
 
-// 에러에 따라 에러 멘트 출력
-const errors = {
-    "auth/email-already-in-use":"이미 존재하는 이메일입니다."
-}
 
 export default function CreateAccount() {
 
@@ -48,7 +45,8 @@ export default function CreateAccount() {
         setIsLoading(true);
         await signInWithEmailAndPassword(auth, email, password);
 
-        navigate("/");
+        navigate("/group");
+        console.log("로그인 성공");
 
         } catch(e) {
             // setError
@@ -65,8 +63,8 @@ export default function CreateAccount() {
     return <Wrapper>
         <Title> 로그인 </Title>
         <Form onSubmit={onSubmit}>
-            <Input onChange = {onChange} name="email" value={email} placeholder="이메일" type="email" required/>
-            <Input onChange = {onChange} name="password" value={password} placeholder="비밀번호" type="password" required/>
+        <InputWrapper className="login"><Input onChange = {onChange} name="email" value={email} placeholder="이메일" type="email" required/></InputWrapper>
+        <InputWrapper className="login"><Input onChange = {onChange} name="password" value={password} placeholder="비밀번호" type="password" required/></InputWrapper>
             <Input onChange = {onChange} type="submit" value={isLoading ? "Loading..." : "로그인"}/>
         </Form>
         {error !== "" ? <Error>{error}</Error> : null}
@@ -78,5 +76,5 @@ export default function CreateAccount() {
 
         <GithubButton/>
 
-    </Wrapper>
-} 
+    </Wrapper>;
+} ;
