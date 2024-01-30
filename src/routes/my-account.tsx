@@ -7,7 +7,8 @@ import SaveButton from "../components/saveButton";
 import { useRef, useState } from "react";
 import puppyProfile from "../assets/images/puppyProfile.jpg";
 import axios from "axios";
-import ImgUploader from "../components/image-uploader";
+import ProfileUploader from "../components/profile-upload";
+
 
 const Form = styled.form`
     display: block;
@@ -84,7 +85,7 @@ export default function MyAccount() {
             <Title>회원 정보 수정</Title>
             <Container className="editInfo">
                 {/* <ProfileImg profile={dummyData.profile} className="profile"></ProfileImg> */}
-                <ImgUploader userProfile={dummyData.profile}></ImgUploader>
+                <ProfileUploader userProfile={dummyData.profile}></ProfileUploader>
                 <Form>
                 <Label>닉네임
                 <InputWrapper><Input onChange = {onChangeNickname} id="nickname" value={nickname} type="text" required/>

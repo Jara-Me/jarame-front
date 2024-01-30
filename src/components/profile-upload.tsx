@@ -52,7 +52,7 @@ const ProfileInput = styled.input`
     display: none;
 `;
 
-const ImgUploader:React.FC<ImgUploaderProps> = ({userProfile}) => {
+const ProfileUploader:React.FC<ImgUploaderProps> = ({userProfile}) => {
     const [fileURL, setFileURL] = useState<string>("");
     const [file, setFile] = useState<FileList | null>();
     const imgUploadInput = useRef<HTMLInputElement | null>(null);
@@ -141,4 +141,4 @@ const ImgUploader:React.FC<ImgUploaderProps> = ({userProfile}) => {
         );
 };
 
-export default ImgUploader;
+export default ProfileUploader;

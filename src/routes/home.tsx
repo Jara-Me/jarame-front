@@ -4,12 +4,6 @@ import { Wrapper, Title, Subtitle, Btn } from "../components/home-components";
 
 export default function Home() {
 
-    /*
-    const logOut = () => {
-        auth.signOut();
-    }
-    */
-
     const navigate = useNavigate();
 
     const navigateToLogin = () => {

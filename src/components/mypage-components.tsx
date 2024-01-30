@@ -19,12 +19,6 @@ export const Container = styled.div`
         display: flex;
         flex-direction: row;
     }
-
-    &.history {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px; 
-      }
 `;
 
 export const Title = styled.h1`
