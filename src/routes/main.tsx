@@ -1,8 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { Routes, Route, BrowserRouter, Link, Router, useNavigate } from "react-router-dom";
 import axios from 'axios';
-
 import Mong from '../components/mong';
 import SearchContent from '../components/Search';
 import ProfileContent from '../components/Profile';
@@ -76,19 +75,25 @@ function Main() {
   };
 
   const [isGroupModalOpen, setGroupModalOpen] = useState(false);
+
   const openModal = (id: string) => {
     if (id === 'jaraus') {
       setGroupModalOpen((prevOpen) => !prevOpen);
     }
   };
 
+  const onClickToggleGroupModal = useCallback(() => {
+    setGroupModalOpen(!isGroupModalOpen);
+  }, [isGroupModalOpen]);
+
+
   let navigate = useNavigate();
+  
   const openDetail = (id: string) => {
     if (id==='jaraus'){
-      navigate('./my');
-    }
-    else if (id === 'searching'){
-      navigate('./sd');
+      navigate("/my");
+    } else if (id === 'searching'){
+      navigate("/sd");
     }
   }
   
@@ -111,10 +116,13 @@ function Main() {
   };
 
   return (
+    <>
+    { isGroupModalOpen && <GroupModal onClickToggleGroupModal={onClickToggleGroupModal} onClose={() => {setGroupModalOpen(false)}} />}
+
     <Mains isOpen={isGroupModalOpen}>
+
       <div className="App">
         {/* <div className='mong-button' ref={elementRef} onClick={MongOpen}></div> */}
-        
         
         {boxStyles.map(({ id, left, top, width, height, isOpen, content }) => (
           <div
@@ -131,17 +139,16 @@ function Main() {
               borderBottomLeftRadius: isOpen ? 0 : '15px',
               borderBottomRightRadius: isOpen ? 0 : '15px',
             }}
-            
           >
-            <div style={{position:'absolute', left:'50px'}} onClick={() => openDetail(id)}>{content}</div>
+            <div style={{position:'absolute', left:'50px', fontWeight: 'bold', fontSize: '15pt'}} onClick={() => openDetail(id)}>{content}</div>
             
-
             {isOpen && yellowContents[id]({ className: id + '-yellow' })}
-    
-            {isPlus(id) && <div className= {id + 'plus-button'} onClick={() => openModal(id)}>+</div>}
-            {(id === 'jaraus') && isGroupModalOpen && <GroupModal onClose={() => openModal(id)}/>}
 
-            <div className='open-button' onClick={() => toggleYellowBox(id)}>{isOpen? '▲':'▼'}</div>
+            <div className="plus-toggle-btn">
+              {isPlus(id) && <div className= {id + 'plus-button'} onClick={() => openModal(id)}>+</div>}
+              <div className='open-button' onClick={() => toggleYellowBox(id)}>{isOpen? '▲':'▼'}</div>
+            </div>
+
           </div>
         ))}
         <div style={{ position: 'absolute', top: '1380px', width: '30px', height: '30px' }}></div>
@@ -156,12 +163,15 @@ function Main() {
       <Mong />
 
     </Mains>
+    </>
   );
 }
 interface MainProps {
   isOpen: boolean;
 }
 const Mains = styled.div<MainProps>`
+
+
 .searchingplus-button{
   font-size: 28px;
   position: absolute;
@@ -218,6 +228,12 @@ const Mains = styled.div<MainProps>`
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
     transition: top 0.3s ease-in-out;
+  }
+
+  .plus-toggle-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
 `;

@@ -11,7 +11,7 @@ const MyJaraus: React.FC = () => {
         
         
         <div className='container'>
-          <div className='backbutton' onClick={()=>navigate('/')}>{'<'}</div>
+          <div className='backbutton' onClick={()=>navigate('/main')}>{'<'}</div>
           <div className='title-container'>
             <div className='title' onClick={()=>navigate('.')}>내가 가입한 Jara-Us</div>
           </div>

@@ -67,6 +67,10 @@ const DialogBox = styled.dialog`
   &.viewPost{
     display: flex;
   }
+
+  &.group {
+    display: block;
+  }
 `;
 
 const Backdrop = styled.div`

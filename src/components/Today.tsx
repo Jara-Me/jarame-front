@@ -1,31 +1,60 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
+import PostModal from './post-modal';
+
 interface TodayContentProps {
   className?: string;
 }
+
 const TodayContent: React.FC<TodayContentProps> = ({ className }) => {
 
+  const [isOpenPostModal, setOpenPostModal] = useState<boolean>(false);
+
+  const onClickToggleModal = useCallback(() => {
+    setOpenPostModal(!isOpenPostModal);
+  }, [isOpenPostModal]);
+
+  const onSubmitPost = () => {
+    setOpenPostModal(false);
+  };
+
+
   return (
-    <Todays>
-      <div className='today-mission'>
-        <div className='today-mission-1'>
-          <div className='today-mission-photo'></div>
-          <div className='today-mission-explain'>C를 씹어먹자</div>
-          <div className='today-mission-submit'>인증 바로가기</div>
-          <div className='today-mission-name'>1일 1백준</div>
+    <>
+      {/* {isOpenPostModal && (
+          <PostModal onClickToggleModal={onClickToggleModal} onSubmitPost={onSubmitPost}></PostModal>
+      )} */}
+
+      <Todays>
+        <div className='today-mission'>
+          <div className='today-mission-1'>
+            <div className='today-mission-photo'></div>
+            <div className='today-mission-explain'>C를 씹어먹자</div>
+            <div className='today-mission-submit' onClick={onClickToggleModal}>인증 바로가기</div>
+            <div className='today-mission-name'>1일 1백준</div>
+          </div>
+          <div className='today-mission-2'>
+            <div className='today-mission-photo'></div>
+            <div className='today-mission-explain'>거북목 탈퇴 클럽</div>
+            <div className='today-mission-submit' onClick={onClickToggleModal}>인증 바로가기</div>
+            <div className='today-mission-name'>10분 스트레칭</div>
+          </div>
         </div>
-        <div className='today-mission-2'>
-          <div className='today-mission-photo'></div>
-          <div className='today-mission-explain'>거북목 탈퇴 클럽</div>
-          <div className='today-mission-submit'>인증 바로가기</div>
-          <div className='today-mission-name'>10분 스트레칭</div>
-        </div>
-      </div>
-      <div className='todo-list'>
-        <div className='todo-list-1'>⦁   자료조사 보내기  <input className='todo-list-1-submit' type='checkbox'></input></div>
-        <input className='todo-list-add' type='text' placeholder='⦁   추가하려면 클릭하세요' />
-      </div>
-    </Todays>
+
+        <ul className='todo-list'>
+        <li>
+          <div className='todo-list-1'>
+            <label htmlFor="todo">자료조사 보내기</label>
+            <input className='todo-list-1-submit' type='checkbox' id="todo"></input>
+          </div>
+        </li>
+        <li>
+          <input className='todo-list-add' type='text' placeholder='추가하려면 클릭하세요' />
+        </li>
+        </ul>
+
+      </Todays>
+    </>
   );
 }
 
@@ -37,6 +66,7 @@ position: absolute;
 top:60px;
 border-bottom-left-radius: 15px;
 border-bottom-right-radius: 15px;
+
 .today-mission{
     width: 500px;
     margin: 0 auto;
@@ -75,6 +105,7 @@ border-bottom-right-radius: 15px;
   }
   .today-mission-name {
     font-size: 20px;
+    white-space: nowrap;
   }
   .today-mission-submit {
     display: flex;
@@ -88,25 +119,29 @@ border-bottom-right-radius: 15px;
     background-color: lightgrey;
   }
 
-
   .todo-list{
     width: 400px;
-    margin: 0 auto;
     margin-top: 30px;
+    margin-left: 50px;
+    display: flex;
+    flex-direction: column;
+    list-style: disc;
   }
   .todo-list-1 {
     margin-bottom: 7px;
+    display: flex;
+    justify-content: space-between;
   }
+  
   .todo-list-1-submit{
-    position: absolute;
-    top: 230px;
-    right: 60px;
+
   }
 
   .todo-list-add {
+    width: 100%;
     border-style: none;
-    position: absolute;
-    left: 52px;
+    // position: absolute;
+    // left: 52px;
   }
 `;
 

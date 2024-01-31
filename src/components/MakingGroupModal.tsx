@@ -1,15 +1,19 @@
 import { useState } from "react";
 import styled from "styled-components";
+import Modal, { ModalTitle } from "./modal";
+import { Input, InputWrapper, RadioContainer } from "./auth-components";
+import Button from "./button";
 
 interface GroupModalProps {
+  onClickToggleGroupModal: () => void;
   onClose: () => void;
 }
 
-function GroupModal({ onClose }: GroupModalProps) {
+function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
   const [groupName, setGroupName] = useState("");
   const [firsttime, setFirsttime] = useState(true);
   const [groupAvailable, setGroupAvailable] = useState(false);
-  const [maxParticipants, setMaxParticipants] = useState(5);
+  const [maxParticipants, setMaxParticipants] = useState(5);``
 
   const handleCheckAvailability = () => {
     // 여기에서 중복 확인 로직을 추가하고 결과에 따라 setGroupAvailable 함수 호출
@@ -18,6 +22,7 @@ function GroupModal({ onClose }: GroupModalProps) {
     const isAvailable = groupName !== '솔룩스';
     setGroupAvailable(isAvailable);
     if (firsttime) setFirsttime(false);
+
   };
 
   const handleCreateGroup = () => {
@@ -37,68 +42,108 @@ function GroupModal({ onClose }: GroupModalProps) {
     };
 
   return (
-    <ModalOverlay>
-      <ModalContainer>
-        <CloseButton onClick={onClose}>&times;</CloseButton>
-        <div className="title">Jara-Us 생성</div>
-        <div className="input">
-          <label>Jara-Us 명</label>
-          <input
-            type="text"
-            value={groupName}
-            placeholder="생설할 Jara-Us 이름을 입력해주세요 ..."
-            onChange={(e) => setGroupName(e.target.value)}
-          />
-          <button className="check-button" onClick={handleCheckAvailability}>중복확인</button>
-          {groupAvailable && (
-            <small>사용 가능한 그룹명입니다</small>
-          )}
-          {!firsttime && !groupAvailable && (
-            <small className="cannotuse">사용 불가능한 그룹명입니다</small>
-          )}
 
+    // <ModalOverlay>
+    //   <ModalContainer>
+
+    <Modal onClickToggleModal={onClickToggleGroupModal} dialogClassName="group">
+      <ModalTitle>Jara-Us 생성</ModalTitle>
+
+      <div style={{"display":"flex", "justifyContent":"center", "alignItems":"center"}}>
+      <ModalContainer>
+        {/* <CloseButton onClick={onClose}>&times;</CloseButton> */}
+
+        <Form>
+        
+        <Column>
+          <label style={{"marginRight":"20px"}}>그룹명</label>
+          <InputWrapper>
+            <Input type="text" value={groupName} placeholder="생성할 Jara-Us 이름을 입력해 주세요" onChange={(e) => setGroupName(e.target.value)}/>
+            <Button type="button" className="check-button" onClick={handleCheckAvailability} 
+                    $width="auto" $fontColor="jarameGrey" $fontSize="10" $height="auto">중복 확인</Button>
+          </InputWrapper>
+        </Column>
+        <div style={{"textAlign":"end", "fontWeight":"bold"}}>
+          {groupAvailable && (
+              <small>사용 가능한 그룹명입니다</small>
+            )}
+            {!firsttime && !groupAvailable && (
+              <small className="cannotuse">사용 불가능한 그룹명입니다</small>
+            )}
         </div>
-        <div className="input">
-          <label>미션</label>
-          <input type="text" className="mission" placeholder="미션 이름을 입력해주세요 ..."/>
-        </div>
-        <div className="input">
-          <label>설명</label>
-          <input type="text" className="explain" placeholder="미션에 대한 설명을 입력해주세요 ..."/>
-        </div>
-        <div className="input">
+
+        <Column>
+          <label style={{"marginRight":"20px"}}>미션</label>
+          <InputWrapper>
+            <Input type="text" placeholder="미션 이름을 입력해 주세요"/>
+          </InputWrapper>
+        </Column>
+
+        <Column>
+          <label style={{"marginRight":"20px"}}>설명</label>
+          <InputWrapper>
+            <Input type="text" placeholder="미션에 대한 설명을 입력해 주세요"/>
+          </InputWrapper>
+        </Column>
+
+        <Column>
+          <label style={{"marginRight":"20px"}}>규칙</label>
+          <InputWrapper>
+            <Input type="text" placeholder="미션 규칙을 입력해 주세요"/>
+          </InputWrapper>
+        </Column>
+
+        {/* <div className="input">
           <label>규칙</label>
           <input type="text" className="rule" placeholder="미션 규칙을 입력해주세요 ..."/>
-        </div>
-        <div className="input" id="maximum">
-          <label>최대인원</label>
-          <select
+        </div> */}
+
+        <Column>
+        <label style={{"marginRight":"10px"}}>최대 인원</label>
+        
+        <InputWrapper style={{"marginRight":"10px", "justifyContent":"flex-end"}}>
+          <Select
             value={maxParticipants}
-            onChange={(e) => setMaxParticipants(Number(e.target.value))}
-          >
+            onChange={(e) => setMaxParticipants(Number(e.target.value))}>
             <option value={5}>5명</option>
             <option value={10}>10명</option>
             <option value={15}>15명</option>
-          </select>
+          </Select>
+        </InputWrapper>
+        <label style={{"marginRight":"10px"}}>분류</label>
+
+        <InputWrapper>
+</InputWrapper>
+        </Column>
+
+        <Column>
+        <label style={{"marginRight":"20px"}}>공개</label>
+        <div style={{"width":"100%","display":"flex", "justifyContent":"space-evenly"}}>
+        <RadioContainer style={{ flex: 1 }}><Input type="radio" name="display" value="public" checked={true} id="publicBtn"/><label htmlFor="publicBtn">전체 공개</label></RadioContainer>
+        <RadioContainer style={{ flex: 1 }}><Input type="radio" name="display" value="limited" checked={false} id="limitedBtn" /><label htmlFor="limitedBtn">초대된 사용자에게 공개</label></RadioContainer>
+        <RadioContainer style={{ flex: 1 }}><Input type="radio" name="display" value="private" checked={false} id="privateBtn"/><label htmlFor="privateBtn">비공개</label></RadioContainer>
         </div>
-        <div className="input">
+        </Column>
+
+
+        {/* <div className="input">
           <label>분류</label>
           <input type="text" placeholder="분류를 입력하세요 ..." />
           <div className='search-button' onClick={handleSearch}>🔍︎</div>
+        </div> */}
+        </Form>
+
+        <Column className="makeCancle">        
+          <Button onClick={handleCreateGroup} $buttonColor="jarameBlue">생성</Button>
+          <Button onClick={onClose} $buttonColor="jarameGrey">취소</Button>
+        </Column>
+
+        </ModalContainer>
         </div>
-        <div className="input" id="disclose">
-          <label>공개</label>
-          <button>전체 공개</button>
-          <button>초대된 사용자에게 공개</button>
-          <button>비공개</button>
-        </div>
-        <div className="makecancel">
-          <button id="make" onClick={handleCreateGroup}>생성</button>
-          <button id="cancel">취소</button>
-        </div>
-        
-      </ModalContainer>
-    </ModalOverlay>
+    </Modal>
+
+    //    </ModalContainer>
+    //  </ModalOverlay>
   );
 }
 
@@ -115,30 +160,66 @@ const ModalOverlay = styled.div`
   z-index: 999;
 `;
 
+const Form = styled.form`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const Column = styled.div`
+
+  width: 100%;
+  white-space: nowrap;
+  font-weight: bold;
+
+  display: flex;
+  align-items: center;
+
+  &.makeCancle {
+    justify-content: center;
+    gap: 10px;
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 15px;
+    
+  }
+
+`;
+
+const Select = styled.select`
+  font-size: 16px;
+  width: 70%;
+  border: none;
+`;
+
 const ModalContainer = styled.div`
-  
+
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items:center;
+  margin-top: 30px;
+
+/*
   overflow-y: auto;
-  width: 1000px;
-  height: 700px;
-  background-color: #fff;
-  border-radius: 20px;
   padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+*/
 
   small{
     color: #4caf50;
-    position: absolute;
-    top: 140px;
-    left: 260px;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
   }
+
   .cannotuse{
     color: red;
   }
+
+/*
   .title{
     font-size: 30px;
     margin-bottom: 32px;
@@ -259,6 +340,7 @@ const ModalContainer = styled.div`
     top: 449px;
     left: 515px;
   }
+  */
 `;
 
 const CloseButton = styled.span`

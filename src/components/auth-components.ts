@@ -67,9 +67,9 @@ export const RadioContainer = styled.span`
         cursor: pointer;
         border-radius : 50px;
         height: 50px;
-        width: 31%;
         color: #757575;
         font-size: 16px;
+        width: 100%;
     }
 
     input[type=radio]: checked + label {
@@ -84,7 +84,11 @@ export const Error = styled.span`
 `;
 
 export const Switcher = styled.span`
-    margin-top: 20px;
+
+    .to-create-account{
+        margin-top: 20px;
+    }
+    
     a {
         color: #3081D0;
         font-weight: 600;

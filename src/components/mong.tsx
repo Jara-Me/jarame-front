@@ -69,7 +69,7 @@ function Mong() {
             {showInfoTooltip && (
               <Tooltip>
                 <div>
-                  성장몽을 클릭해서 호감도를 쌓아보세요!
+                  성장몽을 클릭해서 호감도를 쌓아보세요!<br/>
                   미션 완료 후 받은 포인트로 미션 패스권을 구매할 수 있습니다.
                 </div>
               </Tooltip>

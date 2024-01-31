@@ -95,9 +95,11 @@ export default function CreateAccount() {
             <Button type="button" $width="auto" $fontColor="jarameGrey" $fontSize="10" $height="auto">중복 확인</Button></InputWrapper>
             <InputWrapper className="createaccount"><Input onChange = {onChange} name="password" value={password} placeholder="비밀번호" type="password" required/></InputWrapper>
            <InputWrapper className="createaccount"> <Input onChange = {onChange} name="passwordCheck" value={passwordCheck} placeholder="비밀번호 확인" type="password" required/></InputWrapper>
-            <RadioContainer><Input onChange = {onChange} type="radio" name="interest" value="health" checked={interest === "health"} id="healthBtn"/><label htmlFor="healthBtn">건강(운동)</label></RadioContainer>
-            <RadioContainer><Input onChange = {onChange} type="radio" name="interest" value="study" checked={interest === "study"} id="studyBtn" /><label htmlFor="studyBtn">공부</label></RadioContainer>
-            <RadioContainer><Input onChange = {onChange} type="radio" name="interest" value="hobby" checked={interest === "hobby"} id="hobbyBtn"/><label htmlFor="hobbyBtn">취미</label></RadioContainer>
+           <div style={{"display":"flex", "justifyContent":"space-evenly"}}>
+            <RadioContainer style={{ flex: 1 }}><Input onChange = {onChange} type="radio" name="interest" value="health" checked={interest === "health"} id="healthBtn"/><label htmlFor="healthBtn">건강(운동)</label></RadioContainer>
+            <RadioContainer style={{ flex: 1 }}><Input onChange = {onChange} type="radio" name="interest" value="study" checked={interest === "study"} id="studyBtn" /><label htmlFor="studyBtn">공부</label></RadioContainer>
+            <RadioContainer style={{ flex: 1 }}><Input onChange = {onChange} type="radio" name="interest" value="hobby" checked={interest === "hobby"} id="hobbyBtn"/><label htmlFor="hobbyBtn">취미</label></RadioContainer>
+            </div>
             <Input type="submit" value={isLoading ? "Loading..." : "계정 생성"}/>
 
         </Form>

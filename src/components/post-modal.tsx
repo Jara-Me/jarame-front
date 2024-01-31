@@ -3,8 +3,6 @@ import Button from "./button";
 import Modal, { ModalTitle } from "./modal";
 import styled from "styled-components";
 
-
-
 interface PostModalDefaultType {
     onClickToggleModal: () => void;
     onSubmitPost: () => void;

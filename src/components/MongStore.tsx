@@ -37,6 +37,7 @@ const MongStore: React.FC<MongStoreProps> = ({ isOpen, onStoreClick, characterRe
       <div className='store-button' onClick={handleButtonClick}>
         스토어
       </div>
+
       <div className='point-button'>{point} POINT</div>
       <Mongs isOpen={isMenuOpen}>
       <div className='mong-store'>
