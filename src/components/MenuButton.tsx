@@ -1,22 +1,40 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { Switcher } from './auth-components';
+import { palette } from '../assets/styles/palette';
 
 const MenuButton: React.FC = () => {
+  const navigate = useNavigate();
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleButtonClick = () => {
     setIsMenuOpen((prev) => !prev);
   };
 
+  const onClickLogout = () => {
+    console.log("로그아웃");
+    // 로그아웃 로직 구현
+    navigate("/");
+  };
+
   return (
     <Wrapper>
       <Button onClick={handleButtonClick} isOpen={isMenuOpen}>
-        메뉴
+        <svg viewBox="0 0 20 20">
+							<path fill="white" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314
+								c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743
+								s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314
+								c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path>
+						</svg>
       </Button>
       <Menu isOpen={isMenuOpen}>
-        <MenuItem>메뉴 항목 1</MenuItem>
-        <MenuItem>메뉴 항목 2</MenuItem>
-        <MenuItem>메뉴 항목 3</MenuItem>
+        <Switcher>
+          <Link to="/main"><MenuItem>자라미</MenuItem></Link>
+          <Link to="/my"><MenuItem>자라어스</MenuItem></Link>
+          <MenuItem className="logout" onClick={onClickLogout}>로그아웃</MenuItem>
+        </Switcher>
       </Menu>
     </Wrapper>
   );
@@ -36,18 +54,21 @@ const Button = styled.button<ButtonProps>`
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.05), -5px 5px 10px rgba(0, 0, 0, 0.2);
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
-  background-color: #3498db;
+  background-color: ${palette.jarameBlue};
   position: fixed;
   top: 30px;
   left: ${({ isOpen }) => (isOpen ? '250px' : '0px')};
   color: #fff;
-  padding: 10px 15px;
   border: none;
   cursor: pointer;
   transition: left 0.3s ease-in-out;
 
   &:hover {
     transform: scale(1.1);
+  }
+
+  svg{
+    width: 20px;
   }
 `;
 
@@ -65,7 +86,6 @@ const Menu = styled.div<MenuProps>`
   transition: left 0.3s ease-in-out;
   overflow: hidden;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-
 `;
 
 const MenuItem = styled.div`

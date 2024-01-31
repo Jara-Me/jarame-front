@@ -45,8 +45,7 @@ export default function CreateAccount() {
         setIsLoading(true);
         await signInWithEmailAndPassword(auth, email, password);
 
-        navigate("/group");
-        console.log("로그인 성공");
+        navigate("/main");
 
         } catch(e) {
             // setError
@@ -56,8 +55,6 @@ export default function CreateAccount() {
         } finally {
             setIsLoading(false);
         }
-
-        console.log(name, email, password);
     };
 
     return <Wrapper>
@@ -69,7 +66,7 @@ export default function CreateAccount() {
         </Form>
         {error !== "" ? <Error>{error}</Error> : null}
 
-        <Switcher>
+        <Switcher className="to-create-account">
             자라미가 처음이신가요? {" "}
             <Link to="/create-account">회원가입하기</Link>
         </Switcher>
