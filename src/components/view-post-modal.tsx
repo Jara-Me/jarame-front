@@ -1,4 +1,4 @@
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren, useEffect, useState } from "react";
 import Button from "./button";
 import Modal from "./modal";
 import styled from "styled-components";
@@ -6,6 +6,7 @@ import { palette } from "../assets/styles/palette";
 import puppyProfile from "../assets/images/puppyProfile.jpg";
 import catProfile from "../assets/images/catProfile.jpg";
 import { ImagePreview, ImagePreviewItem } from "./post-modal";
+import axios from "axios";
 
 interface ViewPostModalDefaultType {
     onClickToggleModal: () => void;
@@ -168,6 +169,10 @@ const CommentBox = styled.div`
     }
 `;
 
+interface CommentProps {
+    deleteComment: () => void;
+}
+
 function Comment() {
     
     const dummyComment = {
@@ -228,17 +233,6 @@ function ViewPostModal(
         images: [catProfile]
     }
 
-
-    const [comment, setComment] = useState("");
-
-    const onChangeComment = (e : React.ChangeEvent<HTMLInputElement>) => {
-        const {target : {name, value}} = e;
-        
-        if (name === "comment") {
-            setComment(value);
-        }
-    };
-
     const [clickHeart, setClickHeart] = useState<boolean>(false);
     const [clickThumbUp, setClickThumbUp] = useState<boolean>(false);
     const [clickSmile, setClickSmile] = useState<boolean>(false);
@@ -276,6 +270,70 @@ function ViewPostModal(
               break;
           }
     };
+
+    const [comment, setComment] = useState("");
+
+    const onChangeComment = (e : React.ChangeEvent<HTMLInputElement>) => {
+        setComment(e.target.value);
+    };
+
+    const onSubmitComment = (e: React.FormEvent) => {
+        e.preventDefault();
+        postComment();
+    };
+
+    const postComment = async() => {
+        try {
+            
+            const commentData = {
+                missionPostId: '1',
+                commentContent: comment,
+                commentDateTime: new Date().toISOString(),
+            };
+
+            const response = await axios.post("http://localhost:8080/comment/add", commentData);
+
+            // 서버 응답 확인
+            if (response.data.success) {
+                alert("댓글이 등록되었습니다.");
+            }
+        } catch (error) {
+            console.error("Error post comment: ", error);
+        }
+    };
+
+    /* 댓글 조회?
+    const [comments, setComments] = useState([]);
+
+    const getComments = async(missionPostId: string) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/comment/${missionPostId}`);
+            setComments(response.data.comments);
+        } catch (error) {
+            console.error("Error get comments", error);
+        }
+    };
+
+    useEffect(() => {
+        getComments("1");
+    }, []);
+    */
+
+    // 댓글 삭제
+    const deleteComment = async(commentId: number) => {
+        try {
+            // delete 요청을 보내어 댓글 삭제
+            const response = await axios.delete(`http://localhost:8080/comment/delete?commentId=${commentId}`);
+
+            console.log(response.data);
+
+            // 삭제한 댓글 화면에서 제거하는 로직 수행
+            
+        } catch (error) {
+            console.error("Error delete comment: ", error);
+        }
+    };
+
 
     return (
         <Modal dialogClassName="viewPost" onClickToggleModal={onClickToggleModal}>
@@ -326,7 +384,7 @@ function ViewPostModal(
 
                 <Comment></Comment>
 
-                <Form>
+                <Form onSubmit={onSubmitComment}>
                    <Input className="comment" onChange={onChangeComment} name="comment" value={comment} placeholder="댓글을 남겨 보세요" type="text"/>
                    <Button type="submit" $buttonColor="jarameBlue" $fontSize="15spx" $width="10%" $borderRadius="0 30px 30px 0"><svg width="20px" fill="none" strokeWidth={1.5} stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
