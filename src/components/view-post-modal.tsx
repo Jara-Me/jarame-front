@@ -225,7 +225,7 @@ function ViewPostModal(
         content: "In the heart of the bustling city, where the neon lights paint the sky with vibrant hues, there exists a certain charm that captivates the soul. The rhythm of life echoes through the crowded streets, a symphony of diverse cultures and aspirations. As the sun sets behind the towering skyscrapers, the cityscape transforms into a canvas of twinkling lights, each one telling a story of dreams and ambitions. Amidst the urban chaos, hidden gems emerge – cozy cafes with the aroma of freshly brewed coffee, quaint bookshops inviting literary exploration, and serene parks offering an escape from the urban hustle. Every corner of the city has a tale to tell, from the historic landmarks standing as witnesses to bygone eras to the modern art installations pushing the boundaries of creativity. The people, a mosaic of backgrounds and experiences, create the tapestry of this metropolis. From the laughter of friends sharing a meal in a local diner to the solitary artist finding inspiration in a quiet studio, the city embraces diversity as its heartbeat. It's a place where innovation meets tradition, and where the relentless pursuit of excellence intertwines with the appreciation of simple pleasures.",
         profile: puppyProfile,
         dateTime: "1월 13일 오후 8:01",
-        images: [puppyProfile, catProfile]
+        images: [catProfile]
     }
 
 

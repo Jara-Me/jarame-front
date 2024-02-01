@@ -12,6 +12,7 @@ import MyJaraus from './MyJaraus';
 import NotificationAlert from '../components/NotificationAlert';
 import GroupModal from '../components/MakingGroupModal';
 import Calendar from '../components/Calendar';
+import PostModal from '../components/post-modal';
 
 interface BoxStyle {
   id: string;
@@ -56,7 +57,7 @@ function Main() {
     searching: ({ className }) => <SearchContent className={`yellow-box ${className}`} />,
     profile: ({ className }) => <ProfileContent className={`yellow-box ${className}`} />,
     callender: ({ className }) => <Calendar className={`yellow-box ${className}`} />,
-    today: ({ className }) => <TodayContent className={`yellow-box ${className}`} />,
+    today: ({ className }) => <TodayContent onClickTogglePostModal={onClickTogglePostModal} className={`yellow-box ${className}`} />,
     jaraus: ({ className }) => <JarausContent className={`yellow-box ${className}`} />,
   });
 
@@ -75,6 +76,7 @@ function Main() {
   };
 
   const [isGroupModalOpen, setGroupModalOpen] = useState(false);
+  const [isPostModalOpen, setPostModalOpen] = useState(false);
 
   const openModal = (id: string) => {
     if (id === 'jaraus') {
@@ -85,6 +87,15 @@ function Main() {
   const onClickToggleGroupModal = useCallback(() => {
     setGroupModalOpen(!isGroupModalOpen);
   }, [isGroupModalOpen]);
+
+  const onClickTogglePostModal = useCallback(()=> {
+    setPostModalOpen(!isPostModalOpen);
+  }, [isPostModalOpen]);
+
+  const onSubmitPost = () => {
+    setPostModalOpen(false);
+    // 작성한 인증글을 db로 넘기는 로직
+  };
 
 
   let navigate = useNavigate();
@@ -118,6 +129,7 @@ function Main() {
   return (
     <>
     { isGroupModalOpen && <GroupModal onClickToggleGroupModal={onClickToggleGroupModal} onClose={() => {setGroupModalOpen(false)}} />}
+    { isPostModalOpen && <PostModal onClickToggleModal={onClickTogglePostModal} onSubmitPost={onSubmitPost}/> }
 
     <Mains isOpen={isGroupModalOpen}>
 
@@ -142,6 +154,10 @@ function Main() {
           >
             <div style={{position:'absolute', left:'50px', fontWeight: 'bold', fontSize: '15pt'}} onClick={() => openDetail(id)}>{content}</div>
             
+            { id === 'today' && isOpen && (
+              <TodayContent onClickTogglePostModal = {onClickTogglePostModal}/>
+            )}
+
             {isOpen && yellowContents[id]({ className: id + '-yellow' })}
 
             <div className="plus-toggle-btn">

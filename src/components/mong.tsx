@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 import MongStore from './MongStore';
+import { palette } from '../assets/styles/palette';
 
 function Mong() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -65,7 +66,10 @@ function Mong() {
             onMouseEnter={handleInfoHover}
             onMouseLeave={handleInfoLeave}
           >
-            ℹ️
+            <svg fill={palette.jarameBlue} strokeWidth={1.3} stroke="white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+</svg>
+            
             {showInfoTooltip && (
               <Tooltip>
                 <div>
@@ -75,6 +79,7 @@ function Mong() {
               </Tooltip>
             )}
           </div>
+
           <div className='character' onClick={handleCharacterClick} ref={characterRef}
           style={{ left: isStoreOpen ? '345px' : '635px' }}></div>
           {heartList.map(({ id, position }) => (
@@ -175,11 +180,12 @@ const Mongs = styled.div<MongProps>`
     left: 55px;
     width: 50px;
     height: 50px;
-    border-radius: 50px;
     font-size: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
+    // background-color: ${palette.jarameBlue};
+    // border-radius: 50%;
   }
   .character {
     background-image: url('/mong.png'); 

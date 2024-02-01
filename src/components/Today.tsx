@@ -4,20 +4,10 @@ import PostModal from './post-modal';
 
 interface TodayContentProps {
   className?: string;
+  onClickTogglePostModal: () => void;
 }
 
-const TodayContent: React.FC<TodayContentProps> = ({ className }) => {
-
-  const [isOpenPostModal, setOpenPostModal] = useState<boolean>(false);
-
-  const onClickToggleModal = useCallback(() => {
-    setOpenPostModal(!isOpenPostModal);
-  }, [isOpenPostModal]);
-
-  const onSubmitPost = () => {
-    setOpenPostModal(false);
-  };
-
+const TodayContent: React.FC<TodayContentProps> = ({ className, onClickTogglePostModal }) => {
 
   return (
     <>
@@ -30,13 +20,13 @@ const TodayContent: React.FC<TodayContentProps> = ({ className }) => {
           <div className='today-mission-1'>
             <div className='today-mission-photo'></div>
             <div className='today-mission-explain'>C를 씹어먹자</div>
-            <div className='today-mission-submit' onClick={onClickToggleModal}>인증 바로가기</div>
+            <div className='today-mission-submit' onClick={onClickTogglePostModal}>인증 바로가기</div>
             <div className='today-mission-name'>1일 1백준</div>
           </div>
           <div className='today-mission-2'>
             <div className='today-mission-photo'></div>
             <div className='today-mission-explain'>거북목 탈퇴 클럽</div>
-            <div className='today-mission-submit' onClick={onClickToggleModal}>인증 바로가기</div>
+            <div className='today-mission-submit' onClick={onClickTogglePostModal}>인증 바로가기</div>
             <div className='today-mission-name'>10분 스트레칭</div>
           </div>
         </div>

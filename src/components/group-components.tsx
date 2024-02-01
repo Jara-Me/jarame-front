@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { palette } from "../assets/styles/palette";
 import { PropsWithChildren, useState } from "react";
+import defaultGroupImg from "../assets/images/defaultGroupImg.jpg";
 
 export const Wrapper = styled.div`
     width: 100%;
@@ -23,9 +24,17 @@ export const GroupName = styled.div`
 `;
 
 export const GroupInfoWrapper = styled.div`
-    height: 55%;
+    height: 50%;
     border: 1px solid black;
     background-color: ${palette.jarameYellow};
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .bar {
+        position: absolute;
+        top: 0;
+    }
 `;
 
 export const GroupBackgroundImg = styled.div`
@@ -33,12 +42,29 @@ export const GroupBackgroundImg = styled.div`
     background-color: grey;
 `;
 
+
+interface GroupImgProps {
+    src: string;
+}
+
+const GroupImg = styled.img`
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+
+`;
+
+export function GroupImgContainer({src}:PropsWithChildren<GroupImgProps>) {
+    return (
+    <GroupImg src={src ? src : defaultGroupImg}></GroupImg>
+    );
+};
+
 export const GroupInfoBox = styled.div`
     width: 60%;
     padding: 20px;
-    margin: 0 auto;
     position: relative;
-    top: 50px;
     border-radius: 30px;
     background-color: white;
 `;
