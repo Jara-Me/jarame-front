@@ -1,5 +1,5 @@
 
-import { Challenge, ChallengeRuleLI, ChallengeRuleUL, GroupInfoWrapper, GroupInfoBox, GroupName, Hashtag, ProveSelectBtn, ProveWrapper, Wrapper, ProveBox, ProvePage, GroupBackgroundImg} from "../components/group-components"
+import { Challenge, ChallengeRuleLI, ChallengeRuleUL, GroupInfoWrapper, GroupInfoBox, GroupName, Hashtag, ProveSelectBtn, ProveWrapper, Wrapper, ProveBox, ProvePage, GroupBackgroundImg, GroupImgContainer} from "../components/group-components"
 import { Link } from "react-router-dom";
 import PostBtn from "../components/post-btn";
 import { MouseEvent, useCallback, useEffect, useRef, useState } from "react";
@@ -17,7 +17,7 @@ export default function Group() {
         title: `Sample Title ${index + 1}`,
         content: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`,
         profile: puppyProfile,
-        images: [puppyProfile, catProfile]
+        images: [catProfile]
       }));
     
     const [isOpenPostModal, setOpenPostModal] = useState<boolean>(false);
@@ -30,7 +30,6 @@ export default function Group() {
     const onClickToggleViewPostModal = useCallback(() => {
         setOpenViewPostModal(!isOpenViewPostModal);
     }, [isOpenViewPostModal]);
-
 
     const onSubmitPost = () => {
         setOpenPostModal(false);
@@ -49,15 +48,16 @@ export default function Group() {
         )}
 
         <GroupInfoWrapper>
-        <GroupBackgroundImg></GroupBackgroundImg>
-        <GroupName>
-
+        {/* <GroupBackgroundImg></GroupBackgroundImg> */}
+        <GroupName style={{"position":"absolute", "top":"0","left":"0"}}>
         <Link to="/main"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
 </svg></Link>
-
     그룹 이름
     </GroupName>
+    <div style={{"display":"flex", "justifyContent":"center", "alignItems":"center", "gap":"40px"}}>
+        <GroupImgContainer src=""></GroupImgContainer>
+
         <GroupInfoBox>
             <Challenge className="title">챌린지 이름</Challenge>
             <Challenge className="description">챌린지 설명</Challenge>
@@ -71,7 +71,9 @@ export default function Group() {
             <Hashtag>해시태그2</Hashtag>
             <Hashtag>해시태그3</Hashtag>
         </GroupInfoBox>
+    </div>
     </GroupInfoWrapper>
+    
     
     <ProveWrapper>
         <ProveSelectBtn type="button" className="all">전체 인증</ProveSelectBtn>

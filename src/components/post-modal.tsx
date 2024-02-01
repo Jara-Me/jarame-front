@@ -100,7 +100,7 @@ function PostModal(
 ) {
     
     const [images, setImages] = useState<string[]>([]);
-    const maxImageCount = 3;
+    const maxImageCount = 1;
 
     const handleImageUpload = (e:React.ChangeEvent<HTMLInputElement>) => {
         const selectedFiles = e.target.files;
@@ -117,7 +117,7 @@ function PostModal(
             const combinedImages = [...images, ...newImages];
 
             if(combinedImages.length > maxImageCount) {
-                alert("이미지는 최대 3개까지 업로드할 수 있습니다");
+                alert("이미지는 최대 1개까지 업로드할 수 있습니다");
             }
 
             const slicedImages = combinedImages.slice(0, maxImageCount);

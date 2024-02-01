@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Modal, { ModalTitle } from "./modal";
 import { Input, InputWrapper, RadioContainer } from "./auth-components";
 import Button from "./button";
+import GroupImgUploader from "./group-img-uploader";
 
 interface GroupModalProps {
   onClickToggleGroupModal: () => void;
@@ -13,7 +14,9 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
   const [groupName, setGroupName] = useState("");
   const [firsttime, setFirsttime] = useState(true);
   const [groupAvailable, setGroupAvailable] = useState(false);
-  const [maxParticipants, setMaxParticipants] = useState(5);``
+  const [maxParticipants, setMaxParticipants] = useState(5);
+
+
 
   const handleCheckAvailability = () => {
     // 여기에서 중복 확인 로직을 추가하고 결과에 따라 setGroupAvailable 함수 호출
@@ -51,10 +54,12 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
 
       <div style={{"display":"flex", "justifyContent":"center", "alignItems":"center"}}>
       <ModalContainer>
-        {/* <CloseButton onClick={onClose}>&times;</CloseButton> */}
+        <CloseButton onClick={onClose}>&times;</CloseButton>
 
         <Form>
-        
+        <Column>
+          <GroupImgUploader groupImg=""></GroupImgUploader>
+        </Column>
         <Column>
           <label style={{"marginRight":"20px"}}>그룹명</label>
           <InputWrapper>
@@ -179,9 +184,7 @@ const Column = styled.div`
   &.makeCancle {
     justify-content: center;
     gap: 10px;
-    position: absolute;
-    bottom: 0;
-    margin-bottom: 15px;
+    margin-top: 40px;
     
   }
 
@@ -201,6 +204,7 @@ const ModalContainer = styled.div`
   justify-content: center;
   align-items:center;
   margin-top: 30px;
+  
 
 /*
   overflow-y: auto;
