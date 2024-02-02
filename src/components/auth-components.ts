@@ -78,9 +78,11 @@ export const RadioContainer = styled.span`
     }
 `;
 
-export const Error = styled.span`
+export const Error = styled.div`
     font-weight: 600;
-    color: tomato;
+    color: red;
+    margin-bottom: 30px;
+    
 `;
 
 export const Switcher = styled.span`
