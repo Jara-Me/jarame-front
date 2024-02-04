@@ -8,13 +8,23 @@ interface MongStoreProps {
 }
 const MongStore: React.FC<MongStoreProps> = ({ isOpen, onStoreClick, characterRef }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  console.log(isOpen);
+  console.log(characterRef);
   const handleButtonClick = () => {
     onStoreClick();
     setIsMenuOpen((prev) => !prev);
   };
 
   const storeItems = [
+    { id: 1, image: 'image1.jpg', text: 'price 1' },
+    { id: 2, image: 'image2.jpg', text: 'price 2' },
+    { id: 3, image: 'image2.jpg', text: 'price 2' },
+    { id: 4, image: 'image2.jpg', text: 'price 2' },
+    { id: 5, image: 'image2.jpg', text: 'price 2' },
+    { id: 6, image: 'image2.jpg', text: 'price 2' },
+    { id: 7, image: 'image2.jpg', text: 'price 2' },
+    { id: 8, image: 'image2.jpg', text: 'price 2' },
+    { id: 9, image: 'image2.jpg', text: 'price 2' },
     { id: 1, image: 'image1.jpg', text: 'price 1' },
     { id: 2, image: 'image2.jpg', text: 'price 2' },
     { id: 3, image: 'image2.jpg', text: 'price 2' },
@@ -40,13 +50,18 @@ const MongStore: React.FC<MongStoreProps> = ({ isOpen, onStoreClick, characterRe
 
       <div className='point-button'>{point} POINT</div>
       <Mongs isOpen={isMenuOpen}>
-      <div className='mong-store'>
+      <div className='ticket-info'>
+      <div className='my-ticket'>내 패스권</div>
+      </div> 
+      <div className='mong-store'>   
+      <div className='item-container'>
           {storeItems.map((item) => (
             <StoreItem key={item.id}>
               <img src={item.image} alt={`Item ${item.id}`} />
               <p>{item.text}</p>
             </StoreItem>
           ))}
+      </div>    
       </div>
       </Mongs>
     </Wrapper>
@@ -104,7 +119,7 @@ const Button = styled.button<ButtonProps>`
   border-top-left-radius: 10px;
   position: fixed;
   margin-top: 300px;
-  right: ${({ isOpen }) => (isOpen ? '515px' : '0px')};
+  right: ${({ isOpen }) => (isOpen ? '500px' : '0px')};
   color: #fff;
   padding: 10px 15px;
   border: none;
@@ -122,22 +137,55 @@ const Mongs = styled.div<MongProps>`
     width: 500px;
     height: 800px;
     background-color: rgb(0, 0, 0, 0.3);
+  
+  .ticket-info{
+    width: 600px;
+    height: 70px;
+  }
+  .my-ticket{
+    width: 180px;
+    height: 50px;
+    background-color: white;
+    border-radius: 80px;
+    margin-left: 15px;
+    margin-top: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
-
+    font-size: 20px;
+    font-weight: bold;
+  }
   .mong-store {
-    width: 490px;
-    height: 790px;
-    position: absolute;
+    width: 470px;
+    height: 700px;
     text-align: center;
     background-color: white;
     cursor: pointer;
+    margin: 0 auto;
     display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-gap: 10px;
-      padding: 20px;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 10px;
+    border-radius: 15px;
   }
+  .item-container{
+    width: 470px;
+    max-height: 700px;
+    overflow: auto;
+    border-radius: 15px;
+    &::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: black;
+      border-radius: 4px;
+    }
+  }
+  
   
 `;
 

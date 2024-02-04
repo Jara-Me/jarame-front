@@ -4,6 +4,7 @@ interface SearchContentProps {
   className?: string;
 }
 const SearchContent: React.FC<SearchContentProps> = ({ className }) => {
+  console.log(className);
     const [searchQuery, setSearchQuery] = useState('');
   
     const handleSearch = () => {

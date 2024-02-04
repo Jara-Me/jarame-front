@@ -19,9 +19,9 @@ import Button from "../components/button";
 
 
 // 에러에 따라 에러 멘트 출력
-const errors = {
-    "auth/email-already-in-use":"이미 존재하는 이메일입니다."
-}
+// const errors = {
+//     "auth/email-already-in-use":"이미 존재하는 이메일입니다."
+// }
 
 export default function CreateAccount() {
 

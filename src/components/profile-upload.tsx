@@ -87,6 +87,7 @@ const ProfileUploader:React.FC<ImgUploaderProps> = ({userProfile}) => {
               const response = await axios.post("/api/upload", formData, {
                 headers: { "content-type": "multipart/form-data" },
               });
+              console.log(response);
             } catch (error: any) {
               console.log("이미지업로드 에러 발생");
               throw new Error(error);
@@ -120,12 +121,7 @@ const ProfileUploader:React.FC<ImgUploaderProps> = ({userProfile}) => {
                 $width="auto"
                 $hasBorder={true}
                 $borderColor="jarameGrey"
-                onClick={ (event) => {
-                    event.preventDefault();
-                    if(imgUploadInput.current) {
-                        imgUploadInput.current.click();
-                    }
-            }}>프로필 변경</Button>
+                onClick={submitHandler}>프로필 변경</Button>
             <Button
                 type="button"
                 className="profileButton"

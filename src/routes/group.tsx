@@ -1,8 +1,8 @@
 
-import { Challenge, ChallengeRuleLI, ChallengeRuleUL, GroupInfoWrapper, GroupInfoBox, GroupName, Hashtag, ProveSelectBtn, ProveWrapper, Wrapper, ProveBox, ProvePage, GroupBackgroundImg, GroupImgContainer} from "../components/group-components"
+import { Challenge, ChallengeRuleLI, ChallengeRuleUL, GroupInfoWrapper, GroupInfoBox, GroupName, Hashtag, ProveSelectBtn, ProveWrapper, Wrapper, ProveBox, ProvePage, GroupImgContainer} from "../components/group-components"
 import { Link } from "react-router-dom";
 import PostBtn from "../components/post-btn";
-import { MouseEvent, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import PostModal from "../components/post-modal";
 import ViewPostModal from "../components/view-post-modal";
 import puppyProfile from "../assets/images/puppyProfile.jpg";

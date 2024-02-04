@@ -1,12 +1,10 @@
-import styled, {css} from "styled-components";
-import { palette } from "../assets/styles/palette";
+import styled from "styled-components";
 import { Container, Title, Wrapper } from "../components/mypage-components";
 import Button from "../components/button";
 import { useNavigate } from "react-router-dom";
 import SaveButton from "../components/saveButton";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import puppyProfile from "../assets/images/puppyProfile.jpg";
-import axios from "axios";
 import ProfileUploader from "../components/profile-upload";
 
 
@@ -59,7 +57,7 @@ export default function MyAccount() {
     const [nickname, setNickname] = useState(dummyData.nickname);
     const [showPasswordInput, setShowPasswordInput] = useState(false);
     const [password, setPassword] = useState("");
-
+    console.log(password);
 
     const onClickUnregister = () => {
         const ok = confirm("정말로 자라미를 떠나시나요?");
@@ -71,7 +69,7 @@ export default function MyAccount() {
 
     const onChangeNickname = (e : React.ChangeEvent<HTMLInputElement>) => {
         const {target : {name, value}} = e;
-        
+        console.log(name);
         setNickname(value);
         setShowPasswordInput(true);
     };

@@ -1,8 +1,6 @@
 import styled from "styled-components";
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { auth } from "../firebase";
+import { Link, Outlet, useLocation} from "react-router-dom";
 import { palette } from "../assets/styles/palette";
-import Button from "./button";
 
 const Wrapper = styled.div`
     display: grid;

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { palette } from "../assets/styles/palette";
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren } from "react";
 import defaultGroupImg from "../assets/images/defaultGroupImg.jpg";
 
 export const Wrapper = styled.div`
@@ -302,7 +302,7 @@ interface ProveBoxProps {
 export function ProveBox({user, onClickToggleViewPostModal}: PropsWithChildren<ProveBoxProps>) {
 
     const {nickname, date, title, content, profile, images} = user;
-
+    console.log(nickname);
 
     return (
         <StyledProveBox>
