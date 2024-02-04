@@ -2,6 +2,9 @@ package siliconDream.jaraMe.domain;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+import java.util.Objects;
+
 @Entity
 
 @Table
@@ -19,7 +22,36 @@ public class JoinUsers {
     @JoinColumn(name="jaraUs")
     private JaraUs jaraUs;
 
+
+    @Column(name = "signUpDate")
+    private LocalDate signUpDate;
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        JoinUsers that = (JoinUsers) o;
+
+        return Objects.equals(user, that.user) &&
+                Objects.equals(jaraUs, that.jaraUs) &&
+                Objects.equals(signUpDate, that.signUpDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(user, jaraUs, signUpDate);
+    }
     //TODO: getter and setter
+
+    public LocalDate getSignUpDate() {
+        return signUpDate;
+    }
+
+    public void setSignUpDate(LocalDate signUpDate) {
+        this.signUpDate = signUpDate;
+    }
 
     public Long getJoinUsersId() {
         return joinUsersId;
