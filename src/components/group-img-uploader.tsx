@@ -105,7 +105,6 @@ const GroupImgUploader:React.FC<GroupImgUploaderProps> = ({groupImg}) => {
                 type="file"
                 id="img"
                 accept="image/*"
-                required
                 ref={imgUploadInput}
                 onChange={onImageChange}
             ></GroupImgInput>

@@ -8,7 +8,6 @@ import reset from "styled-reset";
 import { useState } from "react";
 import { useEffect } from "react";
 import LoadingScreen from "./components/loading-screen";
-import { auth } from "./firebase";
 import Group from "./routes/group";
 import MyPage from "./routes/my-page";
 import MyActivites from "./routes/my-activites";
@@ -18,19 +17,20 @@ import ProtectedRoute from "./components/protected-route";
 import Main from "./routes/main";
 import MyJaraus from "./routes/MyJaraus";
 import SearchDetail from "./routes/SearchDetail";
+import { useCookies } from "react-cookie";
 
 const router = createBrowserRouter([
   // router 설정 부분
   {
-    path: "/",
+    path: "",
     element: (
-      <ProtectedRoute>
+      //<ProtectedRoute>
         <Layout />
-      </ProtectedRoute>
+      //</ProtectedRoute>
     ),
     children: [
       {
-        path: "",
+        path: "/",
         element: <Home/>
       },
       {
@@ -96,21 +96,22 @@ const Wrapper = styled.div `
 `;
 
 function App() {
-  // 파이어베이스가 유저 체크하는 동안 사용자에게 로딩 화면 보여 줌
   const [isLoading, setIsLoading] = useState(true);
+
   const init = async() => {
-    // wait for firebase
-    await auth.authStateReady();
+    // 유저 로그인했는지 체크하는 로직
     setIsLoading(false);
   };
+
   useEffect( () => {
     init();
   }, []);
 
   return (
     <Wrapper>
-    <GlobalStyles/>
-    {isLoading ? <LoadingScreen/> : <RouterProvider router={router}/>}
+      <GlobalStyles/>
+      {isLoading ? <LoadingScreen/> : <RouterProvider router={router}/>}
+      {/* <RouterProvider router={router}/> */}
     </Wrapper>
   );
 }

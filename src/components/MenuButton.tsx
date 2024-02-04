@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Switcher } from './auth-components';
 import { palette } from '../assets/styles/palette';
+import axios from 'axios';
 
 const MenuButton: React.FC = () => {
   const navigate = useNavigate();
@@ -13,11 +14,31 @@ const MenuButton: React.FC = () => {
     setIsMenuOpen((prev) => !prev);
   };
 
-  const onClickLogout = () => {
-    console.log("로그아웃");
-    // 로그아웃 로직 구현
-    navigate("/");
-  };
+  const handleLogout = async() => {
+    try {
+        const response = await axios.post("/api/user/logout");
+
+        if(response.data.success) {
+            console.log(response.data.message);
+            alert("로그아웃되었습니다");
+            navigate("/");
+        } else {
+            console.log(response.data.message);
+        }
+
+    } catch(error) {
+        console.error("Error post logout: ", error);
+    }
+
+}
+
+const onClickLogout = async() => {
+    const ok = confirm("로그아웃하시겠습니까?");
+
+    if(ok) {
+        await handleLogout();
+    }
+}
 
   return (
     <Wrapper>

@@ -30,11 +30,6 @@ export const GroupInfoWrapper = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: center;
-
-    .bar {
-        position: absolute;
-        top: 0;
-    }
 `;
 
 export const GroupBackgroundImg = styled.div`

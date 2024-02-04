@@ -34,12 +34,12 @@ export default function Group() {
     const onSubmitPost = () => {
         setOpenPostModal(false);
     };
-
+    
     return (<Wrapper>
         <PostBtn onClick={onClickToggleModal}></PostBtn>
 
         {isOpenPostModal && (
-            <PostModal onClickToggleModal={onClickToggleModal} onSubmitPost={onSubmitPost}></PostModal>
+            <PostModal onClickToggleModal={onClickToggleModal}></PostModal>
         )}
 
         {isOpenViewPostModal && (

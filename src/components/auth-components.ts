@@ -52,6 +52,12 @@ export const Input = styled.input`
     }
 `;
 
+export const Textarea = styled.textarea`
+    font-size: 16px;
+    width: 100%;
+    border: none;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;`;
+
 export const RadioContainer = styled.span`
     
     input[type=radio] {
@@ -78,9 +84,11 @@ export const RadioContainer = styled.span`
     }
 `;
 
-export const Error = styled.span`
+export const Error = styled.div`
     font-weight: 600;
-    color: tomato;
+    color: red;
+    margin-bottom: 30px;
+    
 `;
 
 export const Switcher = styled.span`

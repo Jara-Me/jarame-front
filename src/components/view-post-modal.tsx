@@ -1,4 +1,4 @@
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren, Suspense, useCallback, useEffect, useState } from "react";
 import Button from "./button";
 import Modal from "./modal";
 import styled from "styled-components";
@@ -6,6 +6,8 @@ import { palette } from "../assets/styles/palette";
 import puppyProfile from "../assets/images/puppyProfile.jpg";
 import catProfile from "../assets/images/catProfile.jpg";
 import { ImagePreview, ImagePreviewItem } from "./post-modal";
+import axios from "axios";
+import EditPostModal from "./edit-post-modal";
 
 interface ViewPostModalDefaultType {
     onClickToggleModal: () => void;
@@ -168,22 +170,86 @@ const CommentBox = styled.div`
     }
 `;
 
-function Comment() {
-    
-    const dummyComment = {
-        userName: "지우",
-        dateTime: "1월 13일 오후 9:21",
-        profile: catProfile,
-        content: "Good Work!"
-    };
+interface CommentDTO {
+    commentId: number;
+    commentContent: string;
+    commentDateTime: string;
+    nickname: string;
+    profileImage: string;
+}
 
-    const onClickDeleteComment = () => {
+
+interface CommentProps {
+    item: CommentDTO;
+    setComments: React.Dispatch<React.SetStateAction<CommentDTO[]>>;
+}
+
+// 댓글 작성
+const postComment = async(missionPostId:number, comment: string, comments:CommentDTO[], setComments:React.Dispatch<React.SetStateAction<CommentDTO[]>>) => {
+    try {
+        
+        const stringMissionPostId = missionPostId.toString();
+
+        const commentData = {
+            missionPostId: stringMissionPostId,
+            commentContent: comment,
+            commentDateTime: new Date().toISOString(),
+        };
+
+        const response = await axios.post("/api/comment/add", commentData);
+
+        // 서버 응답 확인
+        if (response.status === 200) {
+            alert(response.statusText);
+
+            // 댓글 목록에 추가
+            const updatedComments = [...comments, response.data.commentDTO];
+            setComments(updatedComments);
+        }
+    } catch (error) {
+        console.error("Error post comment: ", error);
+    }
+};
+
+
+// 댓글 삭제
+const deleteComment = async(commentId: number) => {
+    try {
+        // delete 요청을 보내어 댓글 삭제
+        
+        const response = await axios.delete(`/api/comment/delete?commentId=${commentId}`);
+
+        if (response.status === 200) {
+            alert(response.statusText);
+            console.log("댓글 삭제 성공");
+        } else if (response.status === 400) {
+            alert(response.statusText);
+            console.log("댓글 삭제 실패");
+        } 
+
+        return response.status;
+
+    } catch (error) {
+        console.error("Error delete comment: ", error);
+    }
+};
+
+function Comment({item, setComments}:PropsWithChildren<CommentProps>) {
+
+    const onClickDeleteComment = async () => {
+
       const ok = confirm("댓글을 삭제하시겠습니까?");
-
+      
       if (ok) {
         console.log("댓글 삭제");
-      };
+        const responseStatus = await deleteComment(item.commentId);
 
+        if (responseStatus === 200) {
+            setComments((prevComments) => {
+                return prevComments.filter(comment => comment.commentId != item.commentId)
+            });
+        }
+      };
     };
 
 
@@ -191,10 +257,10 @@ function Comment() {
         <CommentBox>
             <div className="infoSvg">
                 <InfoWrapper>
-                <ProfileImg profile={dummyComment.profile} className="comment"></ProfileImg>
+                <ProfileImg profile={item.profileImage} className="comment"></ProfileImg>
                 <WriterInfoWrapper>
-                    <WriterName className="comment">{dummyComment.userName}</WriterName>
-                    <WrittenDateTime>{dummyComment.dateTime}</WrittenDateTime>
+                    <WriterName className="comment">{item.nickname}</WriterName>
+                    <WrittenDateTime>{item.commentDateTime}</WrittenDateTime>
                 </WriterInfoWrapper>
                 </InfoWrapper>
                 
@@ -209,9 +275,121 @@ function Comment() {
                         </svg>
                 </span>
             </div>
-            <Content className="comment">{dummyComment.content}</Content>
+            <Content className="comment">{item.commentContent}</Content>
         </CommentBox>
     );
+};
+
+interface Reaction {
+    clicklike: boolean,
+    clickgood: boolean,
+    clickSmile: boolean    
+}
+// 리액션 추가
+const postReaction = async(missionPostId: number, reactionType:string) => {
+    try {
+        const stringMissionPostId = missionPostId.toString();
+
+        const reaction = {
+            missionPostId : stringMissionPostId,
+            reactionType : reactionType
+        };
+
+        const response = await axios.post("/api/reaction/add", reaction);
+
+        if (response.status === 200) {
+            // 성공
+            alert(response.statusText);
+            return true;
+        } else if (response.status === 400) {
+            // 실패 - 이미 다른 아이콘을 누른 상황
+            alert(response.statusText);
+            return false;
+        }
+
+    } catch (error) {
+        console.error("Error post reaction: ", error);
+        return false;
+    }
+};
+
+const deleteReaction = async (missionPostId:number, reactionType: string) => {
+    try {
+        const stringMissionPostId = missionPostId.toString();
+
+        const response = await axios.delete("/api/reaction/delete", {
+            data: {
+                missionPostId: stringMissionPostId,
+                reactionType: reactionType
+            },
+        });
+
+        if (response.status === 200) {
+            // 성공
+            alert(response.statusText);
+            return true;
+        } else {
+            // 실패
+            return false;
+        }
+
+    } catch (error) {
+        console.error("Error delete reaction: ", error);
+        return false;
+    }
+};
+
+const handleReaction = async(missionPostId:number, reactionType:string, reactions: Reaction, setReactions: React.Dispatch<React.SetStateAction<Reaction>>) => {
+    try {
+
+        switch (reactionType) {
+            case "like":
+                if(reactions.clicklike) {
+                    const success = await deleteReaction(missionPostId, reactionType);
+                    if(success) {
+                        setReactions((prevReactions) => ({ ...prevReactions, clicklike: false }));
+                    }
+                } else {
+                    const success = await postReaction(missionPostId, reactionType);
+                    if(success) {
+                        setReactions((prevReactions) => ({ ...prevReactions, clicklike: true }));
+                    }
+                }
+                break;
+
+            case "good":
+                if (reactions.clickgood) {
+                    const success = await deleteReaction(missionPostId, reactionType);
+                    if (success) {
+                        setReactions((prevReactions) => ({ ...prevReactions, clickgood: false }));
+                    }
+                } else {
+                    const success = await postReaction(missionPostId, reactionType);
+                    if (success) {
+                        setReactions((prevReactions) => ({ ...prevReactions, clickgood: true }));
+                    }
+                }
+                break;
+        case "smile":
+            if (reactions.clickSmile) {
+                const success = await deleteReaction(missionPostId, reactionType);
+                if (success) {
+                    setReactions((prevReactions) => ({ ...prevReactions, clickSmile: false }));
+                }
+            } else {
+                const success = await postReaction(missionPostId, reactionType);
+                if (success) {
+                    setReactions((prevReactions) => ({ ...prevReactions, clickSmile: true }));
+                }
+            }
+            break;
+        default:
+            break;
+     }
+        
+    } catch (error) {
+        console.error("Error handling reaction: ", error);
+    }
 };
 
 
@@ -222,118 +400,172 @@ function ViewPostModal(
     const dummyData = {
         userName: "익명",
         title: "Sample Title",
-        content: "In the heart of the bustling city, where the neon lights paint the sky with vibrant hues, there exists a certain charm that captivates the soul. The rhythm of life echoes through the crowded streets, a symphony of diverse cultures and aspirations. As the sun sets behind the towering skyscrapers, the cityscape transforms into a canvas of twinkling lights, each one telling a story of dreams and ambitions. Amidst the urban chaos, hidden gems emerge – cozy cafes with the aroma of freshly brewed coffee, quaint bookshops inviting literary exploration, and serene parks offering an escape from the urban hustle. Every corner of the city has a tale to tell, from the historic landmarks standing as witnesses to bygone eras to the modern art installations pushing the boundaries of creativity. The people, a mosaic of backgrounds and experiences, create the tapestry of this metropolis. From the laughter of friends sharing a meal in a local diner to the solitary artist finding inspiration in a quiet studio, the city embraces diversity as its heartbeat. It's a place where innovation meets tradition, and where the relentless pursuit of excellence intertwines with the appreciation of simple pleasures.",
+        content: "In the like of the bustling city, where the neon lights paint the sky with vibrant hues, there exists a certain charm that captivates the soul. The rhythm of life echoes through the crowded streets, a symphony of diverse cultures and aspirations. As the sun sets behind the towering skyscrapers, the cityscape transforms into a canvas of twinkling lights, each one telling a story of dreams and ambitions. Amidst the urban chaos, hidden gems emerge – cozy cafes with the aroma of freshly brewed coffee, quaint bookshops inviting literary exploration, and serene parks offering an escape from the urban hustle. Every corner of the city has a tale to tell, from the historic landmarks standing as witnesses to bygone eras to the modern art installations pushing the boundaries of creativity. The people, a mosaic of backgrounds and experiences, create the tapestry of this metropolis. From the laughter of friends sharing a meal in a local diner to the solitary artist finding inspiration in a quiet studio, the city embraces diversity as its likebeat. It's a place where innovation meets tradition, and where the relentless pursuit of excellence intertwines with the appreciation of simple pleasures.",
         profile: puppyProfile,
         dateTime: "1월 13일 오후 8:01",
         images: [catProfile]
     }
 
+    //  리액션 추가
+    const [reactions, setReactions] = useState({
+        clicklike: false,
+        clickgood: false,
+        clickSmile: false
+    });
 
-    const [comment, setComment] = useState("");
+    // const [clicklike, setClicklike] = useState<boolean>(false);
+    // const [clickgood, setClickgood] = useState<boolean>(false);
+    // const [clickSmile, setClickSmile] = useState<boolean>(false);
 
-    const onChangeComment = (e : React.ChangeEvent<HTMLInputElement>) => {
-        const {target : {name, value}} = e;
+
+    // const [missionPostId, setMissionPostId] = useState<number|null>(null);
+    const [missionPostId, setMissionPostId] = useState<number>(1);
+    const [missionPostInfo, setMissionPostInfo] = useState<any>(null);
+
+    const [comments, setComments] = useState<CommentDTO[]>([]);
+
+
+    const getMissionPostInfo = async(missionPostId : number) => {
+        setMissionPostId(missionPostId);
         
-        if (name === "comment") {
-            setComment(value);
+        try {
+            const response = await axios.get(`/api/missionPost/get?missionPostId=${missionPostId}`);
+            setMissionPostInfo(response.data);
+            
+                // response.data.commentDTO가 배열인지 확인 후 setComments 수행
+                if (Array.isArray(response.data.commentDTO)) {
+                    setComments(response.data.commentDTO);
+                } else {
+                    setComments([]);
+                }
+
+        } catch (error) {
+            console.error("Error get mission post info: ", error);
         }
     };
 
-    const [clickHeart, setClickHeart] = useState<boolean>(false);
-    const [clickThumbUp, setClickThumbUp] = useState<boolean>(false);
-    const [clickSmile, setClickSmile] = useState<boolean>(false);
+    useEffect(()=> {
+        const fetchMissionPostInfo = async(missionPostId: number) => {
+            try {
+                const response = await axios.get(`/api/missionPost/get?missionPostId=${missionPostId}`);
+                
+                setMissionPostInfo(response.data);
+                
+                // response.data.commentDTO가 배열인지 확인 후 setComments 수행
+                if (Array.isArray(response.data.commentDTO)) {
+                    setComments(response.data.commentDTO);
+                } else {
+                    setComments([]);
+                }
 
-    const onClickIcon = (icon: string) => {
-        switch (icon) {
-            case "heart":
-              setClickHeart(!clickHeart);
-              if(clickThumbUp) {
-                setClickThumbUp(false);
-              }
-              if(clickSmile) {
-                setClickSmile(false);
-              }
-              break;
-            case "thumbUp":
-              setClickThumbUp(!clickThumbUp);
-              if(clickHeart) {
-                setClickHeart(false);
-              }
-              if(clickSmile) {
-                setClickSmile(false);
-              }
-              break;
-            case "smile":
-              setClickSmile(!clickSmile);
-              if(clickHeart) {
-                setClickHeart(false);
-              }
-              if(clickThumbUp) {
-                setClickThumbUp(false);
-              }
-              break;
-            default:
-              break;
-          }
+                
+            } catch (error) {
+                console.error('Error fetch mission post info:', error);
+            }
+        };
+
+            if (missionPostId !== null) {
+                fetchMissionPostInfo(missionPostId);
+            }        
+        }, [missionPostId]);
+
+
+
+    // 댓글 작성
+    const [comment, setComment] = useState("");
+
+    const onChangeComment = (e : React.ChangeEvent<HTMLInputElement>) => {
+        setComment(e.target.value);
     };
 
+    const onSubmitComment = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if(comment === "") {
+            alert("댓글을 작성해 주세요");
+            return;
+        }
+
+        postComment(missionPostId, comment, comments, setComments);
+    };
+
+    const [isOpenEditPostModal, setOpenEditPostModal] = useState<boolean>(false);
+
+    const onClickToggleEditModal = useCallback(() => {
+        setOpenEditPostModal(!isOpenEditPostModal);
+    }, [isOpenEditPostModal]);
+    
     return (
-        <Modal dialogClassName="viewPost" onClickToggleModal={onClickToggleModal}>
-            <LeftContainer>
-                <div className="infoEdit">
-                    <InfoWrapper>
-                    <ProfileImg profile={dummyData.profile} className="writer"></ProfileImg>
-                        <WriterInfoWrapper>
-                            <WriterName className="post">{dummyData.userName}</WriterName>
-                            <WrittenDateTime>{dummyData.dateTime}</WrittenDateTime>
-                    </WriterInfoWrapper>
-                    </InfoWrapper>
+        <>
+            {isOpenEditPostModal ? (
+                <EditPostModal onClickToggleModal={onClickToggleEditModal} missionPostId={missionPostId}></EditPostModal>
+            ) :
 
-                    <Button type="button" className="edit" $buttonColor="jarameGrey" $fontColor="white" $fontSize="6">수정</Button>
-                </div>
-                <PostWrapper>
-                    <Title className="post">{dummyData.title}</Title>
-                   <Content className="post">
-                    {dummyData.images.length > 0 ? (<ImagePreview>
-            {dummyData.images.map((imageURL, index) => (
-                <ImagePreviewItem key={index}>
-                <img src={imageURL} alt={`Image ${index + 1}`} />
-                </ImagePreviewItem>            ))} 
-        </ImagePreview>) : null}
+            <Modal dialogClassName="viewPost" onClickToggleModal={onClickToggleModal}>
+                {missionPostInfo && 
+                (
+                    <LeftContainer>
+                    <div className="infoEdit">
+                        <InfoWrapper>
+                        <ProfileImg profile={missionPostInfo.profileImage} className="writer"></ProfileImg>
+                            <WriterInfoWrapper>
+                                <WriterName className="post">{missionPostInfo.nickname}</WriterName>
+                                <WrittenDateTime>{missionPostInfo.postDateTime}</WrittenDateTime>
+                        </WriterInfoWrapper>
+                        </InfoWrapper>
 
-        <div dangerouslySetInnerHTML={{__html:dummyData.content}}/>
-        
-        </Content>
+                        <Button onClick={()=>{setOpenEditPostModal(!isOpenEditPostModal)}} type="button" className="edit" $buttonColor="jarameGrey" $fontColor="white" $fontSize="6">수정</Button>
+                    </div>
+                    <PostWrapper>
+                        <Title className="post">{missionPostInfo.textTitle}</Title>
+                    <Content className="post">
+                        {missionPostInfo.imageContent === "" ? null : (<ImagePreview>
+                    <ImagePreviewItem>
+                    <img src={missionPostInfo.imageContent} alt="mission image" />
+                    </ImagePreviewItem>       
+            </ImagePreview>)}
+
+            <div dangerouslySetInnerHTML={{__html:missionPostInfo.textContent}}/>
+            
+            </Content>
 
 
-                </PostWrapper>
-            </LeftContainer>
+                    </PostWrapper>
+                </LeftContainer>
+                )}
 
-            <RightContainer>
-                <EmotionBox>
-                <svg className={`heartIcon ${clickHeart ? "clicked" : ""}`} 
-                onClick={() => onClickIcon("heart")} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" /> </svg>
-                <svg className={`thumbUpIcon ${clickThumbUp ? "clicked" : ""}`}
-                onClick={() => onClickIcon("thumbUp")} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282m0 0h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 0 1-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 9.953 4.167 9.5 5 9.5h1.053c.472 0 .745.556.5.96a8.958 8.958 0 0 0-1.302 4.665c0 1.194.232 2.333.654 3.375Z" />
-                </svg>
-                <svg className={`smileIcon ${clickSmile ? "clicked" : ""}`}
-                onClick={() => onClickIcon("smile")} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <path strokeLinecap="round" strokeLinejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" />
-</svg>
-                </EmotionBox>
+                <RightContainer>
+                    <EmotionBox>
+                    <svg onClick={() => handleReaction(missionPostId, "like", reactions, setReactions)} className={`likeIcon ${reactions.clicklike ? "clicked" : ""}`} 
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" /> </svg>
+                    <svg onClick={() => handleReaction(missionPostId, "good", reactions, setReactions)} className={`goodIcon ${reactions.clickgood ? "clicked" : ""}`}
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282m0 0h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 0 1-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 9.953 4.167 9.5 5 9.5h1.053c.472 0 .745.556.5.96a8.958 8.958 0 0 0-1.302 4.665c0 1.194.232 2.333.654 3.375Z" />
+                    </svg>
+                    <svg onClick={() => handleReaction(missionPostId, "smile", reactions, setReactions)} className={`smileIcon ${reactions.clickSmile ? "clicked" : ""}`}
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" />
+    </svg>
+                    </EmotionBox>
 
-                <Comment></Comment>
+                    {/* 댓글 로딩 */}
+                    {comments && comments.map((item) => (
+                        <Comment key={item.commentId} item={item} setComments={setComments}></Comment>
+                    ))}
 
-                <Form>
-                   <Input className="comment" onChange={onChangeComment} name="comment" value={comment} placeholder="댓글을 남겨 보세요" type="text"/>
-                   <Button type="submit" $buttonColor="jarameBlue" $fontSize="15spx" $width="10%" $borderRadius="0 30px 30px 0"><svg width="20px" fill="none" strokeWidth={1.5} stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
-</svg></Button>
-                </Form>
-            </RightContainer>
-    </Modal>
+                    {/* <Comment item={dummyComment} setComments={setComments}></Comment> */}
+
+                    <Form onSubmit={onSubmitComment}>
+                    <Input className="comment" onChange={onChangeComment} name="comment" value={comment} placeholder="댓글을 남겨 보세요" type="text"/>
+                    <Button type="submit" $buttonColor="jarameBlue" $fontSize="15spx" $width="10%" $borderRadius="0 30px 30px 0"><svg width="20px" fill="none" strokeWidth={1.5} stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+    </svg></Button>
+                    </Form>
+                </RightContainer>
+        </Modal>
+}
+    </>
     );
 
 }

@@ -121,7 +121,12 @@ const ProfileUploader:React.FC<ImgUploaderProps> = ({userProfile}) => {
                 $width="auto"
                 $hasBorder={true}
                 $borderColor="jarameGrey"
-                onClick={submitHandler}>프로필 변경</Button>
+                onClick={ (event) => {
+                    event.preventDefault();
+                    if(imgUploadInput.current) {
+                        imgUploadInput.current.click();
+                    }
+            }}>프로필 변경</Button>
             <Button
                 type="button"
                 className="profileButton"
@@ -129,8 +134,6 @@ const ProfileUploader:React.FC<ImgUploaderProps> = ({userProfile}) => {
                 $fontColor="jarameGrey"
                 $fontSize="10"
                 $width="auto"
-                $hasBorder={true}
-                $borderColor="jarameGrey"
                 onClick={onImageRemove}>프로필 제거</Button>
             </ButtonWrapper>
         </Wrapper>

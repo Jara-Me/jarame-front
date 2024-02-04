@@ -47,7 +47,6 @@ export default function MyAccount() {
     const navigate = useNavigate();
 
     const dummyData = {
-        name: "지우",
         nickname: "짱구",
         profile: puppyProfile,
         email: "example@jarame.co",
@@ -91,7 +90,6 @@ export default function MyAccount() {
             {showPasswordInput && (
                 <Label>비밀번호 확인<InputWrapper><Input onChange={onPasswordChange} id="password" type="password" required/></InputWrapper></Label>
             )}
-            <Label>이름<InputWrapper><Input id="name" value={dummyData.name} type="text" disabled/></InputWrapper></Label>
             <Label>이메일<InputWrapper><Input id="email" value={dummyData.email} type="email" disabled/></InputWrapper></Label>
             
             </Form>
