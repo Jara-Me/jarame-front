@@ -1,9 +1,10 @@
 import { useState } from "react";
 import styled from "styled-components";
 import Modal, { ModalTitle } from "./modal";
-import { Input, InputWrapper, RadioContainer } from "./auth-components";
+import { Input, InputWrapper, RadioContainer, Textarea } from "./auth-components";
 import Button from "./button";
 import GroupImgUploader from "./group-img-uploader";
+import { palette } from "../assets/styles/palette";
 
 interface GroupModalProps {
   onClickToggleGroupModal: () => void;
@@ -14,9 +15,41 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
   const [groupName, setGroupName] = useState("");
   const [firsttime, setFirsttime] = useState(true);
   const [groupAvailable, setGroupAvailable] = useState(false);
+
+  const [activeDays, setActiveDays] = useState([false, false, false, false, false, false, false]);
+
+  const [missionName, setMissionName] = useState("");
+  const [description, setDescription] = useState("");
+  const [rule, setRule] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [maxParticipants, setMaxParticipants] = useState(5);
+  const [recurrence, setRecurrence] = useState<string[]>();
+  const [hashtags, setHashtags] = useState<string[]>();
+  const [display, setDisplay] = useState<boolean>(true);
 
+  const onChangeValue = (e : React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement>) => {
+    const {target : {name, value}} = e;
+    if (name === "missionName") {
+      setMissionName(value);
+    } else if (name === "description") {
+      setDescription(value);
+    } else if (name === "rule") {
+      setRule(value);
+    } else if (name === "startDate") {
+      setStartDate(value);
+    } else if (name === "endDate") {
+      setEndDate(value);
+    } 
+};
 
+  const handleDayClick = (index: number) => {
+    setActiveDays((prevActiveDays) => {
+      const newActiveDays = [...prevActiveDays];
+      newActiveDays[index] = !newActiveDays[index];
+      return newActiveDays;
+    });
+  };
 
   const handleCheckAvailability = () => {
     // 여기에서 중복 확인 로직을 추가하고 결과에 따라 setGroupAvailable 함수 호출
@@ -63,7 +96,7 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
         <Column>
           <label style={{"marginRight":"20px"}}>그룹명</label>
           <InputWrapper>
-            <Input type="text" value={groupName} placeholder="생성할 Jara-Us 이름을 입력해 주세요" onChange={(e) => setGroupName(e.target.value)}/>
+            <Input type="text" value={groupName} placeholder="생성할 Jara-Us 이름을 입력해 주세요" onChange={onChangeValue}/>
             <Button type="button" className="check-button" onClick={handleCheckAvailability} 
                     $width="auto" $fontColor="jarameGrey" $fontSize="10" $height="auto">중복 확인</Button>
           </InputWrapper>
@@ -80,46 +113,75 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
         <Column>
           <label style={{"marginRight":"20px"}}>미션</label>
           <InputWrapper>
-            <Input type="text" placeholder="미션 이름을 입력해 주세요"/>
+            <Input type="text" value={missionName} onChange={onChangeValue} placeholder="미션 이름을 입력해 주세요"/>
           </InputWrapper>
         </Column>
 
         <Column>
           <label style={{"marginRight":"20px"}}>설명</label>
           <InputWrapper>
-            <Input type="text" placeholder="미션에 대한 설명을 입력해 주세요"/>
+            <Input type="text" value={description} onChange={onChangeValue} placeholder="미션에 대한 설명을 입력해 주세요"/>
           </InputWrapper>
         </Column>
 
         <Column>
           <label style={{"marginRight":"20px"}}>규칙</label>
           <InputWrapper>
-            <Input type="text" placeholder="미션 규칙을 입력해 주세요"/>
+            <Textarea value={rule} onChange={onChangeValue} placeholder="미션 규칙을 입력해 주세요"/>
           </InputWrapper>
         </Column>
 
-        {/* <div className="input">
-          <label>규칙</label>
-          <input type="text" className="rule" placeholder="미션 규칙을 입력해주세요 ..."/>
-        </div> */}
+        <Column>
+          <label style={{"marginRight":"10px"}}>시작일</label>
+          
+          <InputWrapper style={{"marginRight":"10px", "justifyContent":"flex-end"}}>
+            <Input type="date" value={startDate} onChange={onChangeValue}></Input>
+          </InputWrapper>
+          
+          <label style={{"marginRight":"10px"}}>종료일</label>
+          <InputWrapper style={{ "justifyContent":"flex-end"}}>
+            <Input type="date" value={endDate} onChange={onChangeValue}></Input>
+          </InputWrapper>
+        </Column>
 
         <Column>
-        <label style={{"marginRight":"10px"}}>최대 인원</label>
-        
-        <InputWrapper style={{"marginRight":"10px", "justifyContent":"flex-end"}}>
-          <Select
-            value={maxParticipants}
-            onChange={(e) => setMaxParticipants(Number(e.target.value))}>
-            <option value={5}>5명</option>
-            <option value={10}>10명</option>
-            <option value={15}>15명</option>
-          </Select>
-        </InputWrapper>
-        <label style={{"marginRight":"10px"}}>분류</label>
+          <label style={{"marginRight":"10px"}}>최대 인원</label>
+          
+          <InputWrapper style={{"marginRight":"10px", "justifyContent":"flex-end"}}>
+            <Select
+              value={maxParticipants}
+              onChange={(e) => setMaxParticipants(Number(e.target.value))}>
+              <option value={5}>5명</option>
+              <option value={10}>10명</option>
+              <option value={15}>15명</option>
+            </Select>
+          </InputWrapper>
 
-        <InputWrapper>
-</InputWrapper>
+          <label style={{"marginRight":"10px"}}>인증 주기</label>
+          <InputWrapper style={{"justifyContent":"space-even"}}>
+            {["월", "화", "수", "목", "금", "토", "일"].map((day, index) => (
+              <DayBtn
+                type="button"
+                key={day}
+                onClick={() => handleDayClick(index)}
+                $isActive={activeDays[index]}
+                // recurrence 배열에 넣고 빼는 로직 필요
+              >
+                {day}
+              </DayBtn>
+            ))}
+        </InputWrapper>
+          
         </Column>
+
+        <Column>
+          <label style={{"marginRight":"20px"}}>분류</label>
+          <InputWrapper>
+
+          </InputWrapper>
+        </Column>
+
+
 
         <Column>
         <label style={{"marginRight":"20px"}}>공개</label>
@@ -187,13 +249,23 @@ const Column = styled.div`
     margin-top: 40px;
     
   }
-
 `;
 
 const Select = styled.select`
   font-size: 16px;
   width: 70%;
   border: none;
+`;
+
+const DayBtn = styled.button<{$isActive:boolean|undefined}>`
+  border: none;
+  font-size: 16px;
+  background-color: transparent;
+  color: ${palette.jarameGrey};
+  cursor: pointer;
+  font-weight: ${(props) => (props.$isActive ? "bold" : "normal")};   
+
+
 `;
 
 const ModalContainer = styled.div`

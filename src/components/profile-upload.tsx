@@ -118,8 +118,6 @@ const ProfileUploader:React.FC<ImgUploaderProps> = ({userProfile}) => {
                 $fontColor="jarameGrey"
                 $fontSize="10"
                 $width="auto"
-                $hasBorder={true}
-                $borderColor="jarameGrey"
                 onClick={ (event) => {
                     event.preventDefault();
                     if(imgUploadInput.current) {
@@ -133,8 +131,6 @@ const ProfileUploader:React.FC<ImgUploaderProps> = ({userProfile}) => {
                 $fontColor="jarameGrey"
                 $fontSize="10"
                 $width="auto"
-                $hasBorder={true}
-                $borderColor="jarameGrey"
                 onClick={onImageRemove}>프로필 제거</Button>
             </ButtonWrapper>
         </Wrapper>

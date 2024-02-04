@@ -59,7 +59,7 @@ const DialogBox = styled.dialog`
   &::-webkit-scrollbar {
     display: none;
   }
-  
+
   &.post{
    display: block;
   }
@@ -68,9 +68,14 @@ const DialogBox = styled.dialog`
     display: flex;
   }
 
+  &.editPost {
+    display: block;
+  }
+
   &.group {
     display: block;
   }
+
 `;
 
 const Backdrop = styled.div`

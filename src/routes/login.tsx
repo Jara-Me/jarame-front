@@ -32,6 +32,9 @@ export default function CreateAccount() {
         }
     };
 
+    const setSessionCookie = (name:string, value:string|object) => {
+        document.cookie = `${name}=${value}; path=/;`;
+    };
     
     const handleLogin = async() => {
         const user = {
@@ -41,9 +44,12 @@ export default function CreateAccount() {
 
         try {
             const response = await axios.post("api/user/login", user);
-
+            
             // 서버 응답 확인
             if(response.data.success) {
+                const sessionId = response.data.sessionId;
+                setSessionCookie('JSESSIONID', sessionId);
+
                 navigate("/main");
             }
             else {
@@ -87,8 +93,5 @@ export default function CreateAccount() {
             자라미가 처음이신가요? {" "}
             <Link to="/create-account">회원가입하기</Link>
         </Switcher>
-
-        <GithubButton/>
-
     </Wrapper>;
 } ;
