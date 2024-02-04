@@ -1,103 +1,13 @@
 import { PropsWithChildren, useEffect, useState } from "react";
-import Button from "./button";
-import Modal, { ModalTitle } from "./modal";
-import styled from "styled-components";
+import { Form, ImagePreview, ImagePreviewItem, Input, PostModalDefaultType, RemoveImageButton, Textarea, TitleBox, Toolbar } from "./post-modal";
 import axios from "axios";
+import Modal, { ModalTitle } from "./modal";
+import Button from "./button";
 
-export interface PostModalDefaultType {
-    onClickToggleModal: () => void;
-}
-
-export const Form = styled.form`
-    margin-top : 50px;
-    margin-bottom : 10px;
-    width: 100%;
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    height: 85%;
-`;
-
-export const Input = styled.input`
-    margin: 5px 0;
-    padding: 10px 20px;
-    font-size: 16px;
-    border: 1px solid #F0F0F0;
-
-    &.title {
-        border-radius : 0px 50px 50px 0px;
-        width: 90%;
-        margin-bottom: 20px;
-    }
-`;
-
-export const Toolbar = styled.div`
-    padding: 0 10px;
-    width: 100%
-    height: 8%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    border: 1px solid #F0F0F0;
-    border-radius: 30px;
-
-    .imgBtn {
-        cursor: pointer;
-    }
-`;
-
-export const Textarea = styled.textarea`
-    border: 1px solid #F0F0F0;
-    resize: none;
-    width: 100%;
-    height: 92%;
-
-    &::placeholder{
-        font-size: 15px;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    }
-`;
-
-export const TitleBox = styled.div`
-    width: 100%;
-`;
-
-export const ImagePreview = styled.div`
-    display: flex;
-    margin-top: 10px;
-    width: 100%;
-    height: 100%;
-    overflow-x: auto;
-`;
-
-
-export const RemoveImageButton = styled.button`
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background-color: rgba(255, 255, 255, 0.8);
-    border: none;
-    padding: 4px;
-    cursor: pointer;
-    font-size: 12px;
-`;
-
-export const ImagePreviewItem = styled.div`
-    position: relative;
-    display: inline-block;
-    max-width: 200px;
-    max-height: 200px;
-    margin-right: 10px;
-    margin-bottom: 10px;
-    overflow: hidden;
-`;
-
-
-function PostModal(
-   { onClickToggleModal
-   }: PropsWithChildren<PostModalDefaultType>
+function EditPostModal(
+    { onClickToggleModal, missionPostId } : PropsWithChildren<PostModalDefaultType & {missionPostId:number}>
 ) {
+
     const [jarausId, setJarausId] = useState<number>(1);
 
     const [image, setImage] = useState<string|null>(null);
@@ -154,7 +64,48 @@ function PostModal(
     // 익명
     const [anonymous, setAnonymous] = useState<boolean>(false);
 
-    const postMissionPost = async() => {
+
+    const [originalData, setOriginalData] = useState<any | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
+    // 기존 데이터 불러오기
+    useEffect(()=> {
+
+        const fetchOriginalData = async() => {
+            try {
+                const response = await axios.get(`/api/missionPost/get?missionPostId=${missionPostId}`);
+
+                if(response.status === 200) {
+                    setOriginalData(response.data);
+                }
+                
+            } catch (error) {
+                console.error('Error fetch mission post info:', error);
+            }
+        };
+
+        fetchOriginalData();
+    }, [missionPostId]);
+
+    // 불러온 originalData로 수정
+    useEffect(() => {
+
+        if(originalData) {
+            setTitle(originalData.textTitle);
+            setContent(originalData.textContent);
+            setImage(originalData.imageContent);
+            setDisplay(originalData.display);
+            setAnonymous(originalData.anonymous);
+
+            setIsLoading(false);
+        }
+    }, [originalData]);
+
+    useEffect(() => {
+        console.log(isLoading);
+    },[isLoading]);
+    
+    const postEditedMissionPost = async() => {
         try {
             const postData = {
                 textTitle: title,
@@ -166,7 +117,7 @@ function PostModal(
                 jarausId : jarausId
             }
 
-            const response = await axios.post('api/missionPost/post', postData);
+            const response = await axios.post(`api/missionPost/update?missionPostId=${missionPostId}`, postData);
 
             if (response.status === 200) {
                 //성공 로직
@@ -179,18 +130,23 @@ function PostModal(
     }
 
     const onSubmit = () => {
-        postMissionPost();
+        postEditedMissionPost();
     };
 
     return (
-        <Modal dialogClassName="post" onClickToggleModal={onClickToggleModal}>
-        <ModalTitle>글 작성</ModalTitle>
+        
+        <Modal dialogClassName="editPost" onClickToggleModal={onClickToggleModal}>
+        <ModalTitle>글 수정</ModalTitle>
         <Form onSubmit={onSubmit}>
-        <Button type="submit" className="postBtn" $buttonColor="jarameBlue">작성</Button>
+        <Button type="submit" className="postBtn" $buttonColor="jarameBlue">수정</Button>
 
+        {
+            isLoading ? <p>인증글 정보를 가져오는 중입니다</p> : 
+            
+            <>
         <TitleBox>
           <Button type="button" onClick={()=>setDisplay(!display)} $buttonColor="jarameGrey" $fontSize="15spx" $width="10%" $borderRadius="50px 0px 0px 50px">{display ? "전체공개" : "나만보기"}</Button>
-          <Input onChange = {onChangeTitle} name="title" className="title" value={title} placeholder="제목" type="text" required></Input>
+          <Input onChange = {onChangeTitle} name="title" className="title" value={title || ""} placeholder="제목" type="text" required></Input>
         </TitleBox>
 
         <Toolbar>
@@ -201,7 +157,7 @@ function PostModal(
             </label>
 
             <label className="anonymous" title="익명 공개 여부">
-                <input type="checkbox" name="anonymous" checked={anonymous} onChange={()=>{setAnonymous(!anonymous)}}/>
+                <input type="checkbox" name="anonymous" checked={anonymous || false} onChange={()=>{setAnonymous(!anonymous)}}/>
                 익명
             </label>
         </Toolbar>
@@ -213,10 +169,13 @@ function PostModal(
                 </ImagePreviewItem>         
         </ImagePreview>) : null}
         <Textarea onChange = {onChangeContent} name="content" value={content} placeholder="오늘의 미션 과정과 결과를 자유롭게 작성해 주세요." required></Textarea>
+            </>
+        }
+
         </Form>
     </Modal>
-    );
+    )
 
 }
 
-export default PostModal;
+export default EditPostModal;
