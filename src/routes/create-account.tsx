@@ -61,7 +61,7 @@ export default function CreateAccount() {
                 return;
             }
 
-            const response = await axios.post(`/api/checkNicknameDuplicate?nickname=${nickname}`);
+            const response = await axios.post(`/api/user/checkNicknameDuplicate?nickname=${nickname}`);
 
             if (response.status === 200) {
                 setNicknameError({ available: true, msg: "사용 가능한 닉네임입니다" });
@@ -80,7 +80,7 @@ export default function CreateAccount() {
                 return;
             }
 
-            const response = await axios.post(`/api/checkEmailDuplicate?email=${email}`);
+            const response = await axios.post(`/api/user/checkEmailDuplicate?email=${email}`);
 
             if (response.status === 200) {
                 setEmailError({ available: true, msg: "사용 가능한 이메일입니다" });

@@ -241,7 +241,7 @@ export function ProvePostBox({onClickToggleViewPostModal, missionPost}: PropsWit
     const {missionPostId, postDateTime, display, anonymous, textTitle, textContent, imageContent, userProfileImage} = missionPost;
 
     return (
-        <StlyedProvePostBox onClick={() => onClickToggleViewPostModal}>
+        <StlyedProvePostBox onClick={() => onClickToggleViewPostModal(missionPostId)}>
 
             {/* <span className="elipsis" onClick={onClickElipsis}><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
@@ -264,7 +264,7 @@ export function ProvePostBox({onClickToggleViewPostModal, missionPost}: PropsWit
                 </svg> &nbsp;{1}
             </div> ) : null }
 
-                <div className="content">{textContent}</div>
+                <div className="content" dangerouslySetInnerHTML={{__html:textContent}}/>
             </div>
 
 
@@ -286,9 +286,6 @@ const StyledProveBox = styled.div`
     align-items: center;
     justify-content: space-between;
 `;
-
-
-
 
 
 interface ProveBoxProps {

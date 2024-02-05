@@ -12,6 +12,7 @@ interface ProfileProps {
 
 interface ImgUploaderProps {
     userProfile: string;
+    setUserProfile : React.Dispatch<React.SetStateAction<string>>;
 };
 
 const Wrapper = styled.div`
@@ -52,7 +53,7 @@ const ProfileInput = styled.input`
     display: none;
 `;
 
-const ProfileUploader:React.FC<ImgUploaderProps> = ({userProfile}) => {
+const ProfileUploader:React.FC<ImgUploaderProps> = ({userProfile, setUserProfile}) => {
     const [fileURL, setFileURL] = useState<string>("");
     const [file, setFile] = useState<FileList | null>();
     const imgUploadInput = useRef<HTMLInputElement | null>(null);
@@ -64,6 +65,7 @@ const ProfileUploader:React.FC<ImgUploaderProps> = ({userProfile}) => {
             const newFileURL = URL.createObjectURL(event.target.files[0]);
             setFileURL(newFileURL);
             setProfileSrc(newFileURL);
+            setUserProfile(newFileURL);
         };
     };
 
@@ -72,6 +74,7 @@ const ProfileUploader:React.FC<ImgUploaderProps> = ({userProfile}) => {
         setFileURL(""); // 렌더링 이미지 초기화
         setFile(null);
         setProfileSrc(defaultProfile);
+        setUserProfile(defaultProfile);
     };
 
     const submitHandler = async( event:React.MouseEvent<HTMLButtonElement>) => {
@@ -105,7 +108,7 @@ const ProfileUploader:React.FC<ImgUploaderProps> = ({userProfile}) => {
             <ProfileInput
                 type="file"
                 id="img"
-                accept="image/.jpg, .png"
+                accept="image/.jpg, image/.png"
                 required
                 ref={imgUploadInput}
                 onChange={onImageChange}

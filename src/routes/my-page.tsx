@@ -2,6 +2,8 @@ import styled from "styled-components";
 import puppyProfile from "../assets/images/puppyProfile.jpg";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/button";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const Wrapper = styled.div`
     display: flex;
@@ -51,6 +53,15 @@ const Content = styled.div`
     }
 `;
 
+interface User {
+    userId: number;
+    nickname: string;
+    profileImage: string;
+    points: number;
+    passTicket: number;
+    participatingJaraUsCount: number;
+  }
+
 export default function MyPage() {
 
     const navigate = useNavigate();
@@ -60,6 +71,26 @@ export default function MyPage() {
         console.log("로그아웃");
         navigate("/");
     };
+
+    const [userInfo, setUserInfo] = useState<User|null>(null);
+    
+    const getUserInfo = async() => {
+        try {
+            const response = await axios.get("/api/profile");
+
+            if(response.status === 200) {
+                setUserInfo(response.data);
+            } else {
+                console.error(response.statusText);
+            }
+        } catch (error) {
+            console.error("Error get user info", error);
+        }
+    }
+
+    useEffect(()=> {
+        getUserInfo();
+    },[])
 
     const dummyData = {
         userName: "지우",
@@ -73,18 +104,20 @@ export default function MyPage() {
 
     return (
         <Wrapper>
-            <ProfileImg profile={puppyProfile} className="mypage"></ProfileImg>
-            <Content className="h1">안녕하세요, {dummyData.userName}님!</Content>
+            { userInfo && <>
+            <ProfileImg profile={userInfo.profileImage} className="mypage"></ProfileImg>
+            <Content className="h1">안녕하세요, {userInfo.nickname}님!</Content>
             <Content className="h3">
             <svg fill="none" strokeWidth={1.5} stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3" />
-</svg>보유 포인트: {dummyData.point}</Content>
+</svg>보유 포인트: {userInfo.points}</Content>
             <Content className="h3">
             <svg fill="none" strokeWidth={1.5} stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z" />
-</svg>보유 패스권: {dummyData.passTicket}개</Content>
+</svg>보유 패스권: {userInfo.passTicket}개</Content>
             
             <Content className="logout"><Button type="button" onClick={onClickLogout} className="save" $buttonColor="jarameGrey" $fontColor="white" $fontSize="6">로그아웃</Button></Content>
+            </>}
         </Wrapper>
     );
 };
