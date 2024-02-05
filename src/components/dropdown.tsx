@@ -2,7 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import { palette } from "../assets/styles/palette";
 
-const UL = styled.ul`
+export const UL = styled.ul`
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -11,14 +11,14 @@ const UL = styled.ul`
     margin-bottom: 50px;
 `;
 
-const LI = styled.li<{$isActive:boolean|undefined}>`
+export const LI = styled.li<{$isActive:boolean|undefined}>`
     cursor: pointer;
     color: ${(props) => (props.$isActive ? "black" : "gray")};
     font-weight: ${(props) => (props.$isActive ? "bold" : "normal")};   
 
 `;
 
-const ULTitle = styled.div`
+export const ULTitle = styled.div`
     border: 1px solid ${palette.jarameGrey};
     border-radius: 40px;
     padding: 13px;
@@ -36,7 +36,6 @@ const DropdownMenu = () => {
 
     return (
     <>
-    <LI $isActive={activeGroup === ""} onClick={() => setActiveGroup("")}>전체</LI>
         {groups.map((item, index) => (
             <LI
                 key={index}

@@ -9,7 +9,6 @@ import {
     Title,
     Wrapper,
 } from "../components/auth-components";
-import GithubButton from "../components/github-btn";
 import axios from "axios";
 
 
@@ -87,7 +86,7 @@ export default function CreateAccount() {
         <InputWrapper className="login"><Input onChange = {onChange} name="password" value={password} placeholder="비밀번호" type="password" required/></InputWrapper>
             <Input onChange = {onChange} type="submit" value={isLoading ? "Loading..." : "로그인"}/>
         </Form>
-        {error !== "" ? <Error>{error}</Error> : null}
+        {error !== "" ? <Error className="bottom">{error}</Error> : null}
 
         <Switcher className="to-create-account">
             자라미가 처음이신가요? {" "}

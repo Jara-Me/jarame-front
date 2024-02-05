@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import Button from "./button";
 import defaultGroupImg from "../assets/images/defaultGroupImg.jpg";
@@ -12,6 +12,7 @@ interface GroupImgProps {
 
 interface GroupImgUploaderProps {
     groupImg : string;
+    setGroupImg : React.Dispatch<React.SetStateAction<string>>;
 };
 
 const Wrapper = styled.div`
@@ -48,20 +49,20 @@ const GroupImgInput = styled.input`
     display: none;
 `;
 
-const GroupImgUploader:React.FC<GroupImgUploaderProps> = ({groupImg}) => {
+const GroupImgUploader:React.FC<GroupImgUploaderProps> = ({groupImg, setGroupImg}) => {
 
     
     const [fileURL, setFileURL] = useState<string>("");
     const [file, setFile] = useState<FileList | null>();
     const imgUploadInput = useRef<HTMLInputElement | null>(null);
-    const [GroupImgSrc, setGroupImgSrc] = useState(groupImg ? groupImg : defaultGroupImg);
+    // const [GroupImgSrc, setGroupImg] = useState(groupImg);
 
     const onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if(event.target.files) {
             setFile(event.target.files);
             const newFileURL = URL.createObjectURL(event.target.files[0]);
             setFileURL(newFileURL);
-            setGroupImgSrc(newFileURL);
+            setGroupImg(newFileURL);
         };
     };
 
@@ -69,7 +70,7 @@ const GroupImgUploader:React.FC<GroupImgUploaderProps> = ({groupImg}) => {
         URL.revokeObjectURL(fileURL);
         setFileURL(""); // 렌더링 이미지 초기화
         setFile(null);
-        setGroupImgSrc(defaultGroupImg);
+        setGroupImg(defaultGroupImg);
     };
 
     const submitHandler = async( event:React.MouseEvent<HTMLButtonElement>) => {
@@ -98,7 +99,7 @@ const GroupImgUploader:React.FC<GroupImgUploaderProps> = ({groupImg}) => {
         return (
         <Wrapper>
             <GroupImg
-                groupImg={GroupImgSrc}
+                groupImg={groupImg}
                 className="GroupImg"
             ></GroupImg>
             <GroupImgInput
