@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { palette } from "../assets/styles/palette";
-import { PropsWithChildren, useState } from "react";
+import React, { Dispatch, PropsWithChildren, useState } from "react";
 import defaultGroupImg from "../assets/images/defaultGroupImg.jpg";
 
 export const Wrapper = styled.div`
@@ -219,29 +219,38 @@ export const EditButton = styled.button`
     }
 `;
 
-
+interface MissionPost {
+    missionPostId: number;
+    jaraUsId: number;
+    postDateTime: string;
+    display: boolean;
+    anonymous: boolean;
+    textTitle: string;
+    textContent: string;
+    imageContent: string;
+    userProfileImage: string;
+}
 
 interface ProvePostBoxProps {
     onClickToggleViewPostModal: () => void;
-    title: string;
-    content: string;
-    images: string[];
+    missionPost: MissionPost;
 }
 
-export function ProvePostBox({onClickToggleViewPostModal, title, content, images}: PropsWithChildren<ProvePostBoxProps>) {
+export function ProvePostBox({onClickToggleViewPostModal, missionPost}: PropsWithChildren<ProvePostBoxProps>) {
 
+    const {missionPostId, postDateTime, display, anonymous, textTitle, textContent, imageContent, userProfileImage} = missionPost;
 
     return (
-        <StlyedProvePostBox onClick={onClickToggleViewPostModal}>
+        <StlyedProvePostBox onClick={() => onClickToggleViewPostModal}>
 
             {/* <span className="elipsis" onClick={onClickElipsis}><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
             </svg></span> */}
 
             <div className="contentBox">
-                <div className="title">{title}</div>
+                <div className="title">{textTitle}</div>
 
-            { images.length > 0 ? (
+            { imageContent !== "" ? (
             <div className="image">
                 <svg viewBox="0 0 20 20">
                                 <path fill="grey" d="M6.523,7.683c0.96,0,1.738-0.778,1.738-1.738c0-0.96-0.778-1.738-1.738-1.738c-0.96,0-1.738,0.778-1.738,1.738
@@ -252,10 +261,10 @@ export function ProvePostBox({onClickToggleViewPostModal, title, content, images
                                     c-0.127-0.127-0.296-0.18-0.463-0.17c-0.167-0.009-0.336,0.043-0.463,0.17l-3.425,4.584c-0.237,0.236-0.237,0.619,0,0.856
                                     c0.236,0.236,0.62,0.236,0.856,0l3.152-4.22l3.491,2.481c0.123,0.123,0.284,0.179,0.446,0.174c0.16,0.005,0.32-0.051,0.443-0.174
                                     l5.162-5.743c0.238-0.236,0.238-0.619,0-0.856C16.529,7.614,16.146,7.614,15.91,7.85z"></path>
-                </svg> &nbsp;{images.length}
+                </svg> &nbsp;{1}
             </div> ) : null }
 
-                <div className="content">{content}</div>
+                <div className="content">{textContent}</div>
             </div>
 
 
@@ -278,34 +287,26 @@ const StyledProveBox = styled.div`
     justify-content: space-between;
 `;
 
-interface User {
-    nickname: string;
-    date: string;
-    title: string;
-    content: string;
-    profile: string;
-    images: string[];
-}
+
 
 
 
 interface ProveBoxProps {
     onClickToggleViewPostModal: () => void;
-    user: User;
+    missionPost: MissionPost;
 }
 
-export function ProveBox({user, onClickToggleViewPostModal}: PropsWithChildren<ProveBoxProps>) {
+export function ProveBox({missionPost, onClickToggleViewPostModal}: PropsWithChildren<ProveBoxProps>) {
 
-    const {nickname, date, title, content, profile, images} = user;
-
+    const {missionPostId, postDateTime, userProfileImage} = missionPost;
 
     return (
         <StyledProveBox>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <ProveProfileImg src={profile}></ProveProfileImg>
-            <ProvePostDate>{date}</ProvePostDate>
+            <ProveProfileImg src={userProfileImage}></ProveProfileImg>
+            <ProvePostDate>{postDateTime}</ProvePostDate>
             </div>
-            <ProvePostBox title={title} content={content} images={images} onClickToggleViewPostModal={onClickToggleViewPostModal}></ProvePostBox>
+            <ProvePostBox missionPost={missionPost} onClickToggleViewPostModal={onClickToggleViewPostModal}></ProvePostBox>
             
         </StyledProveBox>
     );

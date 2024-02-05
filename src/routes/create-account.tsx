@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import {
@@ -10,6 +10,7 @@ import {
     Wrapper,
     RadioContainer,
     InputWrapper,
+    OkMsg,
 } from "../components/auth-components";
 import Button from "../components/button";
 import axios from "axios";
@@ -25,7 +26,14 @@ export default function CreateAccount() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [interest, setInterest] = useState("health");
 
-    const [error, setError] = useState("");
+    interface Error {
+        available: boolean|undefined;
+        msg: string;
+    }
+    const [nicknameError, setNicknameError] = useState<Error>({ available: undefined, msg: "" });
+    const [emailError, setEmailError] = useState<Error>({ available: undefined, msg: "" });
+    
+    const [error, setError] = useState<string>("");
 
 
     const onChange = (e : React.ChangeEvent<HTMLInputElement>) => {
@@ -43,6 +51,47 @@ export default function CreateAccount() {
         } 
     };
 
+    useEffect(()=>{
+    }, [nicknameError, emailError, error]);
+
+    const handleNicknameAvailable = async() => {
+        try {
+            if(nickname==="") {
+                alert("닉네임을 입력해 주세요.");
+                return;
+            }
+
+            const response = await axios.post(`/api/checkNicknameDuplicate?nickname=${nickname}`);
+
+            if (response.status === 200) {
+                setNicknameError({ available: true, msg: "사용 가능한 닉네임입니다" });
+            } else {
+                setNicknameError({ available: false, msg: "중복된 닉네임입니다" });
+            }
+        } catch (error) {
+            console.error("Error check nickname duplicate", error);
+        }
+    };
+
+    const handleEmailAvailable = async() => {
+        try {
+            if(email==="") {
+                alert("이메일을 입력해 주세요.");
+                return;
+            }
+
+            const response = await axios.post(`/api/checkEmailDuplicate?email=${email}`);
+
+            if (response.status === 200) {
+                setEmailError({ available: true, msg: "사용 가능한 이메일입니다" });
+            } else {
+                setEmailError({ available: false, msg: "사용 가능한 이메일입니다" });                
+            }
+        } catch (error) {
+            console.error("Error check email duplicate", error);
+        }
+    };
+
     const handleCreateAccount = async() => {
         try {
             const userInfo = {
@@ -54,14 +103,15 @@ export default function CreateAccount() {
                 interest: interest
             }
 
-            const response = await axios.post('api/user/signup', userInfo);
+            const response = await axios.post('/api/user/signup', userInfo);
 
             if(response.status === 201) {
                 alert(response.data.message);
                 // redirect to the home page
-                navigate("/");
+                navigate("/login");
             } else {
                 setError(response.data.message);
+                
             }
 
         } catch (error) {
@@ -73,6 +123,16 @@ export default function CreateAccount() {
         e.preventDefault();
 
         if(isLoading || nickname === "" || email === "" || password==="") return;
+
+        if(!nicknameError.available) {
+            alert("닉네임 중복 확인을 해 주세요");
+            return;
+        }
+
+        if(!emailError.available) {
+            alert("이메일 중복 확인을 해 주세요");
+            return;
+        }
 
         try {
             setIsLoading(true);
@@ -90,9 +150,19 @@ export default function CreateAccount() {
         <Title>회원가입</Title>
         <Form onSubmit={onSubmit}>
             <InputWrapper className="createaccount"><Input onChange = {onChange} name="nickname" value={nickname} placeholder="닉네임" type="text" required/>
-            <Button type="button" $width="auto" $fontColor="jarameGrey" $fontSize="10" $height="auto">중복 확인</Button></InputWrapper>
+            <Button onClick={handleNicknameAvailable} type="button" $width="auto" $fontColor="jarameGrey" $fontSize="10" $height="auto">중복 확인</Button></InputWrapper>
+            {nicknameError.available ? (
+                <OkMsg className="middle">{nicknameError.msg}</OkMsg>
+            ) : (
+                <Error className="middle">{nicknameError.msg}</Error>
+            )}
             <InputWrapper className="createaccount"><Input onChange = {onChange} name="email" value={email} placeholder="이메일" type="email" required/>
-            <Button type="button" $width="auto" $fontColor="jarameGrey" $fontSize="10" $height="auto">중복 확인</Button></InputWrapper>
+            <Button onClick={handleEmailAvailable} type="button" $width="auto" $fontColor="jarameGrey" $fontSize="10" $height="auto">중복 확인</Button></InputWrapper>
+            {emailError.available ? (
+                <OkMsg className="middle">{emailError.msg}</OkMsg>
+            ) : (
+                <Error className="middle">{emailError.msg}</Error>
+            )}
             <InputWrapper className="createaccount"><Input onChange = {onChange} name="password" value={password} placeholder="비밀번호" type="password" required/></InputWrapper>
            <InputWrapper className="createaccount"> <Input onChange = {onChange} name="confirmPassword" value={confirmPassword} placeholder="비밀번호 확인" type="password" required/></InputWrapper>
            <div style={{"display":"flex", "justifyContent":"space-evenly"}}>
@@ -103,7 +173,7 @@ export default function CreateAccount() {
             <Input type="submit" value={isLoading ? "Loading..." : "계정 생성"}/>
 
         </Form>
-        {error !== "" ? <Error>{error}</Error> : null}
+        {error !== "" ? <Error className="bottom">{error}</Error> : null}
         <Switcher>
             이미 계정이 있으신가요? {" "}
             <Link to="/login">로그인</Link>

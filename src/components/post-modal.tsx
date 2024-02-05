@@ -5,7 +5,7 @@ import styled from "styled-components";
 import axios from "axios";
 
 export interface PostModalDefaultType {
-    onClickToggleModal: () => void;
+    onClose: () => void;
 }
 
 export const Form = styled.form`
@@ -95,7 +95,7 @@ export const ImagePreviewItem = styled.div`
 
 
 function PostModal(
-   { onClickToggleModal
+   { onClose
    }: PropsWithChildren<PostModalDefaultType>
 ) {
     const [jarausId, setJarausId] = useState<number>(1);
@@ -183,7 +183,7 @@ function PostModal(
     };
 
     return (
-        <Modal dialogClassName="post" onClickToggleModal={onClickToggleModal}>
+        <Modal dialogClassName="post" onClose={onClose}>
         <ModalTitle>글 작성</ModalTitle>
         <Form onSubmit={onSubmit}>
         <Button type="submit" className="postBtn" $buttonColor="jarameBlue">작성</Button>

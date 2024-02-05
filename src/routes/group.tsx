@@ -7,39 +7,132 @@ import PostModal from "../components/post-modal";
 import ViewPostModal from "../components/view-post-modal";
 import puppyProfile from "../assets/images/puppyProfile.jpg";
 import catProfile from "../assets/images/catProfile.jpg";
+import axios from "axios";
 
 
-export default function Group() {
+interface MissionPost {
+    missionPostId: number;
+    jaraUsId: number;
+    postDateTime: string;
+    display: boolean;
+    anonymous: boolean;
+    textTitle: string;
+    textContent: string;
+    imageContent: string;
+    userProfileImage: string;
+  }
 
-    const dummyDatas = Array.from({ length: 5 }, (_, index) => ({
-        nickname: `User${index + 1}`,
-        date: new Date().toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }),
-        title: `Sample Title ${index + 1}`,
-        content: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`,
-        profile: puppyProfile,
-        images: [catProfile]
-      }));
+export default function Group(jarausId:number) {
+
+    const dummyDatas = [
+        {
+        "missionPostId": 1,
+        "jaraUsId": 44,
+        "postDateTime": "2024-02-05T15:30:00",
+        "display": true,
+        "anonymous": false,
+        "textTitle": "제목3",
+        "textContent": "본문3",
+        "imageContent": "이미지파일주소3",
+        "userProfileImage": "사용자프로필이미지주소1"
+        },
+        {
+        "missionPostId": 2,
+        "jaraUsId": 44,
+        "postDateTime": "2024-02-05T15:30:00",
+        "display": true,
+        "anonymous": false,
+        "textTitle": "제목3",
+        "textContent": "본문3",
+        "imageContent": "이미지파일주소3",
+        "userProfileImage": "사용자프로필이미지주소2"
+        },
+        {
+        "missionPostId": 3,
+        "jaraUsId": 44,
+        "postDateTime": "2024-02-05T15:30:00",
+        "display": true,
+        "anonymous": false,
+        "textTitle": "제목4",
+        "textContent": "본문4",
+        "imageContent": "이미지파일주소4",
+        "userProfileImage": "사용자프로필이미지주소3"
+        }
+        ]
+
+    const [missionPosts, setMissionPosts] = useState<MissionPost[]|null>(null);
+    const [filterType, setFilterType] = useState<string>("all");
+
+    const getMissionPosts = async(filterType:string) => {
+        try {
+            if(filterType==="all") {
+                const response = await axios.get(`/api/missionPost/All-post?jaraUsId=${jarausId}`);
+
+                if(response.status === 200) {
+                    setMissionPosts(response.data);
+                } else if (response.status === 404) {
+                    console.error("404 not found");
+                }
+            } else if (filterType==="my") {
+                const response = await axios.get(`/api/missionPost/my-post?jaraUsId=${jarausId}`);
+
+                if(response.status === 200) {
+                    setMissionPosts(response.data);
+                } else if(response.status === 404) {
+                    console.error("404 not found");
+                }
+            }
+
+        } catch (error) {
+            console.error("Error get mission posts", error);
+        }
+    }
+    
+    useEffect(()=> {
+        if(jarausId !== null) {
+            getMissionPosts(filterType);
+        }
+    }, [filterType]);
     
     const [isOpenPostModal, setOpenPostModal] = useState<boolean>(false);
     const [isOpenViewPostModal, setOpenViewPostModal] = useState<boolean>(false);
     
     const onClickToggleModal = useCallback(() => {
-        setOpenPostModal(!isOpenPostModal);
+        setOpenPostModal(true);
     }, [isOpenPostModal]);
 
-    const onClickToggleViewPostModal = useCallback(() => {
-        setOpenViewPostModal(!isOpenViewPostModal);
+    const onClosePostModal = () => {
+        setOpenPostModal(false);
+    };
+
+
+    const [selectedMissionPostId, setSelectedMissionPostId] = useState<number>();
+
+    // const onClickToggleViewPostModal = useCallback(() => {
+    //     setOpenViewPostModal(!isOpenViewPostModal);
+    // }, [isOpenViewPostModal]);
+
+    const onClickToggleViewPostModal = useCallback((missionPostId:number) => {
+        setSelectedMissionPostId(missionPostId);
+        setOpenViewPostModal(true);
+        console.log(selectedMissionPostId);
     }, [isOpenViewPostModal]);
+    
+
+    const onCloseViewPostModal = () => {
+        setOpenViewPostModal(false);
+        setSelectedMissionPostId(undefined);
+    };
 
     return (<Wrapper>
         <PostBtn onClick={onClickToggleModal}></PostBtn>
 
         {isOpenPostModal && (
-            <PostModal onClickToggleModal={onClickToggleModal}></PostModal>
+            <PostModal onClose = {onClosePostModal}></PostModal>
         )}
 
-        {isOpenViewPostModal && (
-            <ViewPostModal onClickToggleModal = {onClickToggleViewPostModal}>
+        {isOpenViewPostModal && selectedMissionPostId && (
+            <ViewPostModal onClose = {onCloseViewPostModal} missionPostId={selectedMissionPostId}>
             </ViewPostModal>
         )}
 
@@ -64,20 +157,24 @@ export default function Group() {
             </ChallengeRuleUL>
             {/* https://nohack.tistory.com/123 해시태그 스크롤 구현 */}
             <Hashtag>해시태그1</Hashtag>
-            <Hashtag>해시태그2</Hashtag>
-            <Hashtag>해시태그3</Hashtag>
         </GroupInfoBox>
     </div>
     </GroupInfoWrapper>
     
     
     <ProveWrapper>
-        <ProveSelectBtn type="button" className="all">전체 인증</ProveSelectBtn>
-        <ProveSelectBtn type="button" className="my">내 인증</ProveSelectBtn>
+        <ProveSelectBtn type="button" className="all" onClick={()=>{setFilterType("all")}}>전체 인증</ProveSelectBtn>
+        <ProveSelectBtn type="button" className="my" onClick={()=>{setFilterType("my")}}>내 인증</ProveSelectBtn>
             <ProvePage>
-                {dummyDatas.map((item, index) => (
-                    <ProveBox key={index} user={item} onClickToggleViewPostModal={onClickToggleViewPostModal}></ProveBox>
+                {/* {missionPosts && missionPosts.map((item:any) => (
+                    <ProveBox key={item.missionPostId} missionPost={item} onClickToggleViewPostModal={()=>onClickToggleViewPostModal(item.missionPostId)}></ProveBox>
+                ))} */}
+
+              {dummyDatas.map((item) => (
+                    <ProveBox key={item.missionPostId} missionPost={item} onClickToggleViewPostModal={()=>onClickToggleViewPostModal(item.missionPostId)}></ProveBox>
                 ))}
+
+
             </ProvePage>
     </ProveWrapper>
 

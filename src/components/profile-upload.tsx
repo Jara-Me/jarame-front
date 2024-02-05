@@ -105,7 +105,7 @@ const ProfileUploader:React.FC<ImgUploaderProps> = ({userProfile}) => {
             <ProfileInput
                 type="file"
                 id="img"
-                accept="image/*"
+                accept="image/.jpg, .png"
                 required
                 ref={imgUploadInput}
                 onChange={onImageChange}

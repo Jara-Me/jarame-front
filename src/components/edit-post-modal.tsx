@@ -5,7 +5,7 @@ import Modal, { ModalTitle } from "./modal";
 import Button from "./button";
 
 function EditPostModal(
-    { onClickToggleModal, missionPostId } : PropsWithChildren<PostModalDefaultType & {missionPostId:number}>
+    { onClose, missionPostId } : PropsWithChildren<PostModalDefaultType & {missionPostId:number}>
 ) {
 
     const [jarausId, setJarausId] = useState<number>(1);
@@ -122,7 +122,10 @@ function EditPostModal(
             if (response.status === 200) {
                 //성공 로직
                 alert(response.statusText);
-            } 
+            }  else {
+                alert("수정에 실패했습니다.");
+                alert(response.statusText);
+            }
             
         } catch (error) {
             console.error("Error post mission", error);
@@ -135,7 +138,7 @@ function EditPostModal(
 
     return (
         
-        <Modal dialogClassName="editPost" onClickToggleModal={onClickToggleModal}>
+        <Modal dialogClassName="editPost" onClose={onClose}>
         <ModalTitle>글 수정</ModalTitle>
         <Form onSubmit={onSubmit}>
         <Button type="submit" className="postBtn" $buttonColor="jarameBlue">수정</Button>
