@@ -4,7 +4,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 
 
 @Entity
@@ -17,7 +20,7 @@ public class User {
     @Column(nullable = false,unique = true)
     private Long userId;
 
-    @Getter
+
     @Column(nullable = true)
     private String profileImage;
 
@@ -31,16 +34,17 @@ public class User {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable=true)
-    private LocalDate birthDate;
+    @Column(nullable = false)
+    private String interest;
 
-    @Column
+    @Column(columnDefinition = "boolean default false") //기본값 false로 설정
     private boolean checkIn;
 
-    private int point=0;
+    @Column(columnDefinition = "int default 0") //기본값 0으로 설정
+    private int point ;
 
-    private int passTicket=0;
-
+    @Column(columnDefinition = "int default 0")//기본값 0으로 설정
+    private int passTicket;
 
     //FK
     @OneToMany(mappedBy="user",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -56,18 +60,28 @@ public class User {
     private List<Reaction> reaction;
 
 
-    //FK
-    @OneToMany(mappedBy="user")
+    @OneToMany(mappedBy="user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<JoinUsers> joinUsers;
+    
+    @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<ToDoList> toDoList;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Notification> notifications;
+
+    // User가 관리하는 JaraUs 목록
+    @OneToMany(mappedBy = "administrator", fetch = FetchType.LAZY)
+    private Set<JaraUs> administeredJaraUses = new HashSet<>();
+
 /*
     @OneToMany(mappedBy="userId")
     @JsonIgnore
     private List<MissionHistory> missionHistory;
 
-    @OneToMany(mappedBy="userId")
-    @JsonIgnore
-    private List<ToDoList> toDoList;
+
 */
 
     //TODO: getter and setter
@@ -79,6 +93,9 @@ public class User {
     }
 
 
+    public String getProfileImage() {
+        return profileImage;
+    }
 
     public void setProfileImage(String profileImage) {
         this.profileImage = profileImage;
@@ -105,12 +122,13 @@ public class User {
         this.email = email;
     }
 
-    public LocalDate getBirthDate() {
-        return birthDate;
+    public String getInterest() {
+        return interest;
     }
 
-    public void setBirthDate(LocalDate birthDate) {
-        this.birthDate = birthDate;
+    public void setInterest(String interest) {
+        this.interest = interest;
+
     }
 
     public boolean isCheckIn() {
@@ -168,15 +186,21 @@ public class User {
     public void setJoinUsers(List<JoinUsers> joinUsers) {
         this.joinUsers = joinUsers;
     }
-
-    // 프로필 이미지 설정 메서드
-    public void setUserProfileImage(String userProfileImage) {
-        this.profileImage = userProfileImage;
+    public List<ToDoList> getToDoList() {
+        return toDoList;
     }
 
-    // 프로필 이미지 가져오는 메서드
-    public String getUserProfileImage() {
-        return profileImage;
+    public void setToDoList(List<ToDoList> toDoList) {
+        this.toDoList = toDoList;
+    }
+    
+    public Set<JaraUs> getAdministeredJaraUses() {
+        return administeredJaraUses;
+    }
+
+    public void setAdministeredJaraUses(Set<JaraUs> administeredJaraUses) {
+        this.administeredJaraUses = administeredJaraUses;
+
     }
 /*
     public List<MissionHistory> getMissionHistory() {
@@ -187,13 +211,6 @@ public class User {
         this.missionHistory = missionHistory;
     }
 
-    public List<ToDoList> getToDoList() {
-        return toDoList;
-    }
-
-    public void setToDoList(List<ToDoList> toDoList) {
-        this.toDoList = toDoList;
-    }
 */
 
 }

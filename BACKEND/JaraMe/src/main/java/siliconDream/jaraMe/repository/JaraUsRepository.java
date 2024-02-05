@@ -10,6 +10,8 @@ import siliconDream.jaraMe.dto.sampleDTO;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+
 
 @Repository
 public interface JaraUsRepository extends JpaRepository<JaraUs, Long> {
@@ -24,5 +26,16 @@ public interface JaraUsRepository extends JpaRepository<JaraUs, Long> {
     List<JaraUs> findEndDateYesterDay(@Param("yesterDay")LocalDate yesterDay);
 
     JaraUs findByJaraUsId(Long jaraUsId);
+
+    @Query("SELECT j FROM JaraUs j WHERE lower(j.jaraUsName) LIKE lower(concat('%', :keyword, '%')) OR lower(j.missionName) LIKE lower(concat('%', :keyword, '%'))")
+    List<JaraUs> searchByKeyword(@Param("keyword") String keyword);
+
+
+    Optional<JaraUs> findByjaraUsId(Long jaraUsId);
+
+    @Query("SELECT j.jaraUsName FROM JaraUs j WHERE j.jaraUsName = :jaraUsName")
+    String findJaraUsNameByJaraUsName(@Param("jaraUsName") String jaraUsName);
+
+    //List<JaraUs> findAllByJoinUsers_UserId(Long userId);
 
 }

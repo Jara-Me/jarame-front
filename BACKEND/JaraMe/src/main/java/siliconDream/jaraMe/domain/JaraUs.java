@@ -3,9 +3,11 @@ package siliconDream.jaraMe.domain;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -14,7 +16,6 @@ import java.util.Set;
 @Entity
 //@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-
 @Table
 public class JaraUs {
 
@@ -27,9 +28,15 @@ public class JaraUs {
     private String explanation;
     private String rule;
     private String jaraUsProfileImage;
-    private int maxMember;
-    private boolean display;
+    private String interest;
+    private Integer maxMember;
+    private String display;
+
+    @NotNull
+    @Column(nullable = false, unique = true)
     private LocalDate startDate;
+    @NotNull
+    @Column(nullable = false, unique = true)
     private LocalDate endDate;
 
 
@@ -37,33 +44,6 @@ public class JaraUs {
     @CollectionTable(name = "JaraUsAndRecurrence", joinColumns = @JoinColumn(name = "jaraUsId"))
     @Enumerated(EnumType.STRING)
     private Set<Recurrence> recurrence;
-
-
-    /*Account가 없는 상태라 에러나서 주석처리함.
-        @ManyToMany
-        private Set<Account> managers = new HashSet<>();
-
-        public void addManager(Account account) {
-            managers.add(account);
-        }
-
-        public static JaraUs createNewJaraUs(String jaraUsName, String missionName, String explanation, String rule,
-                                           String jaraUsProfileImage, int maxMember, boolean display, LocalDate startDate,
-                                           LocalDate endDate, Set<Recurrence> recurrence) {
-            JaraUs jaraUs = new JaraUs();
-            jaraUs.jaraUsName = jaraUsName;
-            jaraUs.missionName = missionName;
-            jaraUs.explanation = explanation;
-            jaraUs.rule = rule;
-            jaraUs.jaraUsProfileImage = jaraUsProfileImage;
-            jaraUs.maxMember = maxMember;
-            jaraUs.display = display;
-            jaraUs.startDate = startDate;
-            jaraUs.endDate = endDate;
-            jaraUs.recurrence = recurrence;
-
-        return jaraUs;
-    } */
 
 
     @OneToMany(mappedBy = "jaraUs", cascade = CascadeType.ALL)
@@ -127,19 +107,19 @@ public class JaraUs {
         this.jaraUsProfileImage = jaraUsProfileImage;
     }
 
-    public int getMaxMember() {
+    public Integer getMaxMember() {
         return maxMember;
     }
 
-    public void setMaxMember(int maxMember) {
+    public void setMaxMember(Integer maxMember) {
         this.maxMember = maxMember;
     }
 
-    public boolean isDisplay() {
+    public String getDisplay() {
         return display;
     }
 
-    public void setDisplay(boolean display) {
+    public void setDisplay(String display) {
         this.display = display;
     }
 
@@ -173,4 +153,22 @@ public class JaraUs {
     public void setJoinUsers(Set<JoinUsers> joinUsers) {
         this.joinUsers = joinUsers;
     }
+
+    public String getInterest() {
+        return interest;
+    }
+
+    public void setInterest(String interest) {
+        this.interest = interest;
+    }
+    
+    public User getAdministrator() {
+        return administrator;
+    }
+
+    public void setAdministrator(User administrator) {
+        this.administrator = administrator;
+    }
 }
+
+

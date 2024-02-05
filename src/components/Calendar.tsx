@@ -17,12 +17,6 @@ interface MissionHistory {
   missionResult: boolean;
 }
 
-interface Mission {
-  dailyMissionResult: boolean;
-  jaraUsName: string;
-  missionName: string;
-}
-
 interface CalendarProps {
   className?: string;
 }
@@ -32,32 +26,140 @@ const Calendar: React.FC<CalendarProps> = ({ className }) => {
   const startDay = 3;
 
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
-  const [pointMissionData, setPointMissionData] = useState<PointMission[]>([]);
-  const [missionHistoryData, setMissionHistoryData] = useState<MissionHistory[]>([]);
-  const [missionData, setMissionData] = useState<Mission[]>([]);
+  const [pointMissionData, setPointMissionData] = useState<PointMission[]>([
+    {
+      "changeAmount": 2,
+      "plusOrMinus": true,
+      "task": "출석체크"
+    },
+    {
+      "changeAmount": 8,
+      "plusOrMinus": true,
+      "task": "오늘의 미션 완료"
+    },
+    {
+      "changeAmount": 50,
+      "plusOrMinus": true,
+      "task": "미션 완주"
+    },
+    {
+      "changeAmount": 60,
+      "plusOrMinus": false,
+      "task": "패스권 구매"
+    },
+  ]);
+  const [missionHistoryData, setMissionHistoryData] = useState<MissionHistory[]>([
+    {
+      "missionDate": "2024-01-29",
+      "jaraUsId": 1,
+      "jaraUsName": "C를 씹어먹자",
+      "missionName": "1일 1백준",
+      "missionPostId": 1,
+      "missionResult": true
+    },
+    {
+      "missionDate": "2024-01-29",
+      "jaraUsId": 2,
+      "jaraUsName": "거북목 탈퇴 클럽",
+      "missionName": "10분 스트레칭",
+      "missionPostId": null,
+      "missionResult": false
+    },
+    {
+      "missionDate": "2024-01-29",
+      "jaraUsId": 3,
+      "jaraUsName": "자라어스3 이름",
+      "missionName": "자라어스3 미션이름",
+      "missionPostId": 3,
+      "missionResult": true
+    },
+    {
+      "missionDate": "2024-01-29",
+      "jaraUsId": 4,
+      "jaraUsName": "자라어스4 이름",
+      "missionName": "자라어스4 미션이름",
+      "missionPostId": null,
+      "missionResult": false
+    }
+  ]);
 
   const handleDateClick = async (day: number) => {
     setSelectedDate(day);
     try {
-      const formattedDate = `2024-01-${day}`;
+      const formattedDate = `2024-01-${String(day).padStart(2, '0')}`;
       const response = await axios.get('/api/notice/calendar', {
         params: {
           selectedDate: formattedDate,
         },
       });
-      setMissionHistoryData(response.data.calendarMissionHistoryDTOs);
-      setPointMissionData(response.data.calendarPointDTOs);
+      console.log(response.data.calendarPointDTOs);
+      if(response.data.calendarPointDTOs!==undefined){
+        setPointMissionData(response.data.calendarPointDTOs);
+        setMissionHistoryData(response.data.calendarMissionHistoryDTOs);
+        
+      }
+      else{
+        setPointMissionData([
+          {
+            "changeAmount": 2,
+            "plusOrMinus": true,
+            "task": "출석체크"
+          },
+          {
+            "changeAmount": 8,
+            "plusOrMinus": true,
+            "task": "오늘의 미션 완료"
+          },
+          {
+            "changeAmount": 50,
+            "plusOrMinus": true,
+            "task": "미션 완주"
+          },
+          {
+            "changeAmount": 60,
+            "plusOrMinus": false,
+            "task": "패스권 구매"
+          },
+        ]);
+        setMissionHistoryData([
+          {
+            "missionDate": "2024-01-29",
+            "jaraUsId": 1,
+            "jaraUsName": "C를 씹어먹자",
+            "missionName": "1일 1백준",
+            "missionPostId": 1,
+            "missionResult": true
+          },
+          {
+            "missionDate": "2024-01-29",
+            "jaraUsId": 2,
+            "jaraUsName": "거북목 탈퇴 클럽",
+            "missionName": "10분 스트레칭",
+            "missionPostId": null,
+            "missionResult": false
+          },
+          {
+            "missionDate": "2024-01-29",
+            "jaraUsId": 3,
+            "jaraUsName": "자라어스3 이름",
+            "missionName": "자라어스3 미션이름",
+            "missionPostId": 3,
+            "missionResult": true
+          },
+          {
+            "missionDate": "2024-01-29",
+            "jaraUsId": 4,
+            "jaraUsName": "자라어스4 이름",
+            "missionName": "자라어스4 미션이름",
+            "missionPostId": null,
+            "missionResult": false
+          }
+        ]);
+      }
+      
     } catch (error) {
       console.error('Error fetching mission data:', error);
     }
-  };
-
-  const toggleMissionStatus = (index: number) => {
-    setMissionData((prevData) => {
-      const newData = [...prevData];
-      newData[index].dailyMissionResult = !newData[index].dailyMissionResult;
-      return newData;
-    });
   };
 
   const days = [];
@@ -77,43 +179,43 @@ const Calendar: React.FC<CalendarProps> = ({ className }) => {
     );
   }
 
-  const selectedMissionData = selectedDate !== null ? missionData : [];
-  const missionList = selectedMissionData.map((mission, index) => (
+  // const selectedMissionData = selectedDate !== null ? missionData : [];
+  // const missionList = selectedMissionData.map((mission, index) => (
+  //   <MissionItem
+  //     key={index}
+  //     completed={mission.dailyMissionResult}
+  //     onClick={() => toggleMissionStatus(index)}
+  //   >
+  //     <input type="checkbox" checked={mission.dailyMissionResult} readOnly />
+  //     {mission.jaraUsName} - {mission.missionName}
+  //   </MissionItem>
+  // ));
+
+  const selectedPmData = selectedDate !== null ? pointMissionData : [];
+  const pmList = selectedPmData?.map((mission, index) => (
     <MissionItem
       key={index}
-      completed={mission.dailyMissionResult}
-      onClick={() => toggleMissionStatus(index)}
     >
-      <input type="checkbox" checked={mission.dailyMissionResult} readOnly />
-      {mission.jaraUsName} - {mission.missionName}
+      <div style={{ textDecoration: mission.plusOrMinus ? 'line-through' : 'none' , 
+      width:'130px', marginLeft: '100px'}}>{mission.task}</div>
+      <input type="checkbox" checked={mission.plusOrMinus} readOnly />
     </MissionItem>
   ));
 
+  const selectedMhData = selectedDate !== null ? missionHistoryData : [];
+  const mhList = selectedMhData?.map((mission, index) => (
+    <MissionItem
+      key={index}
+    >
+      <div style={{width:'200px'}}>
+      <div style={{color: 'grey', marginTop: '10px',marginBottom: '5px'}}>{mission.jaraUsName} </div>
+      <div style={{ textDecoration: mission.missionResult ? 'line-through' : 'none'}}>{mission.missionName}</div>
+      </div>
+      <input style={{marginLeft:'10px'}} type="checkbox" checked={mission.missionResult} readOnly />
+    </MissionItem>
+  ));
   ///////////////////////////////////////////////////
-  useEffect(() => {
-  const fetchMissionData = async () => {
-    try {
-      const formattedDate = selectedDate ? `2024-01-${selectedDate}` : '';
-
-      const response = await axios.get('/api/notice/calendar', {
-        params: {
-          selectedDate: formattedDate,
-        },
-      });
-      setMissionData(response.data.calendarMissionHistoryDTOs);
-    } catch (error) {
-      console.error('Error fetching mission data:', error);
-      // 에러 시 기본
-      setMissionData([
-        { dailyMissionResult: true, jaraUsName: '자라어스1 이름', missionName: '자라어스1 미션이름' },
-        { dailyMissionResult: false, jaraUsName: '자라어스2 이름', missionName: '자라어스2 미션이름' },
-        { dailyMissionResult: true, jaraUsName: '자라어스3 이름', missionName: '자라어스3 미션이름' },
-        { dailyMissionResult: true, jaraUsName: '자라어스4 이름', missionName: '자라어스4 미션이름' },
-      ]);
-    }
-  };
-  fetchMissionData();
-  }, [selectedDate]);
+  
   ///////////////////////////////////////////////////
 
   return (
@@ -130,8 +232,15 @@ const Calendar: React.FC<CalendarProps> = ({ className }) => {
       <Days>{days}</Days>
       {selectedDate !== null && (
         <MissionListWrapper>
-          <div>Mission List for {selectedDate}</div>
-          {missionList}
+          <div className='selected-date'>2024-01-{String(selectedDate).padStart(2, '0')}</div>
+          {/* {missionList} */}
+          <div className='mission-container'>
+            <div className='missions'>
+              <div className='pmlist'> {pmList} </div>
+              <div className='mhlist'> {mhList} </div>
+            </div>
+          </div>
+          
         </MissionListWrapper>
       )}
     </CalendarWrapper>
@@ -140,7 +249,7 @@ const Calendar: React.FC<CalendarProps> = ({ className }) => {
 const CalendarWrapper = styled.div`
   box-shadow: 5px 0 10px rgba(0, 0, 0, 0.1), -5px 0 10px rgba(0, 0, 0, 0.1);
   width: 580px;
-  height: 460px;
+  height: 510px;
   position: absolute;
   top: 60px;
   border-bottom-left-radius: 15px;
@@ -185,22 +294,72 @@ const Day = styled.div<{ isSelected: boolean }>`
 
 const MissionListWrapper = styled.div`
   display: flex;
+  font-size: 14px;
   flex-direction: column;
   align-items: center;
   margin-top: 20px;
-`;
 
-const MissionItem = styled.div<{ completed: boolean }>`
-  display: flex; // 체크박스와 텍스트를 가로로 나란히 배치
-  align-items: center;
-  margin-top: 5px;
-  cursor: pointer; // 클릭 가능하도록 커서 추가
-
-  input[type='checkbox'] {
-    margin-right: 8px; // 체크박스 오른쪽 여백 추가
+  .selected-date{
+    font-size: 20px;
+  }
+  .mission-container{
+    border: 1px solid rgb(0,0,0,0.1);
+    border-radius: 10px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    width: 500px;
+    height: 150px;
+    overflow: auto;
+    overflow-x: hidden;
+    margin-top: 25px;
+    margin-left:40px;
+    margin-right: 40px;
   }
 
-  text-decoration: ${({ completed }) => (completed ? 'line-through' : 'none')};
+  .missions{
+    width: 100%;
+    height: 100%;
+    max-height: 150px;
+    overflow: auto;
+    overflow-x: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    justify-content: center;
+    &::-webkit-scrollbar {
+      width: 5px;
+    }
+  
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+  
+    &::-webkit-scrollbar-thumb {
+      background-color: #888;
+      border-radius: 4px;
+    }
+  }
+  
+  .pmlist{
+    text-align: center;
+  }
+  .mhlist{
+    text-align: center;
+  }
+`;
+
+const MissionItem = styled.div`
+  width: 300px;
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  cursor: pointer;
+
+  input[type='checkbox'] {
+    margin-right: 8px;
+  }
+
 `;
 const EmptyDay = styled.div`
   height: 40px;
