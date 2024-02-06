@@ -1,6 +1,6 @@
 
 import { Challenge, ChallengeRuleLI, ChallengeRuleUL, GroupInfoWrapper, GroupInfoBox, GroupName, Hashtag, ProveSelectBtn, ProveWrapper, Wrapper, ProveBox, ProvePage, GroupImgContainer} from "../components/group-components"
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PostBtn from "../components/post-btn";
 import { useCallback, useState } from "react";
 import PostModal from "../components/post-modal";
@@ -52,8 +52,23 @@ export default function Group(jarausId:number) {
         "postDateTime": "2024년 2월 5일",
         "display": true,
         "anonymous": false,
-        "textTitle": "리액트 3주차",
-        "textContent": "리액트를 공부하면서 상태 관리와 라우팅에 대한 내용을 집중적으로 학습 중입니다. useState와 useEffect의 활용법을 익히는 중이며, 컴포넌트 간의 데이터 전달도 실습 중입니다.",
+        "textTitle": "백준 1966 프린터 큐",
+        "textContent": `
+            #define _CRT_SECURE_NO_WARNINGS<br>
+            #include <iostream><br>
+            #include <queue><br>
+            
+            using namespace std;<br>
+            
+            int main()
+            {
+                int testn;
+                int n, m;
+                int importance;
+                int count;
+            
+                scanf("%d", &testn);
+        `,
         "imageContent": "이미지파일주소3",
         "userProfileImage": puppyProfile
         },
@@ -63,8 +78,14 @@ export default function Group(jarausId:number) {
         "postDateTime": "2024년 2월 5일",
         "display": true,
         "anonymous": false,
-        "textTitle": "스프링부트 개발 시작",
-        "textContent": "스프링부트를 활용한 백엔드 개발을 시작했습니다. RESTful API 설계와 데이터베이스 연동에 대한 기초를 다지고 있습니다. Spring Security를 이용한 보안 처리도 학습 중입니다.",
+        "textTitle": "백준 2164 카드 2 인증!",
+        "textContent": `
+        ... 선언부 생략 ...<br>
+        int main()<br>
+        {<br>
+            int n;<br>
+            long long value = 1; <br>
+        `,
         "imageContent": "",
         "userProfileImage": catProfile
         },
@@ -74,8 +95,20 @@ export default function Group(jarausId:number) {
         "postDateTime": "2024년 2월 5일",
         "display": true,
         "anonymous": false,
-        "textTitle": "선형대수학 챕터 3",
-        "textContent": "대학에서 공부 중인 선형대수학의 세 번째 챕터를 공부했습니다. 행렬과 벡터 연산에 대한 이해를 높이고, 선형변환과 특이값 분해에 대한 이론을 숙지하고 있습니다.",
+        "textTitle": "1158 요세푸스 문제 ㅜㅜ",
+        "textContent": `
+        int main()<br>
+        {<br>
+            int n, k;<br>
+            int count = 0;<br>
+            queue<int> q;
+            vector<int> vec;
+            scanf("%d %d", &n, &k);
+
+            for (int i = 1; i < n + 1; i++) {
+                q.push(i);
+            }
+    `,
         "imageContent": "이미지파일주소4",
         "userProfileImage": defaultProfile
         }
@@ -91,6 +124,7 @@ export default function Group(jarausId:number) {
 
                 if(response.status === 200) {
                     setMissionPosts(response.data);
+                    //console.log("mission posts", missionPosts);
                 } else if (response.status === 404) {
                     console.error("404 not found");
                 }
@@ -129,32 +163,47 @@ export default function Group(jarausId:number) {
 
     const [jarausInfo, setJarausInfo] = useState<JaraUs>();
 
-    const getJarausInfo = async() => {
-
-        try {
-            
-            const response = await axios.get(`/api/jaraus/information?jaraUsId=${jarausId}`);
-
-            if(response.status === 200) {
-                setJarausInfo(response.data);
-            } else {
-                console.log(response.statusText);
-            }
-            
-        } catch (error) {
-            console.error("Error get Jaraus Info", error);
-        }
-    };
-
     useEffect(()=> {
-        if(jarausId !== null) {
-            getJarausInfo();
-        }
-    },[jarausId]);
+        const fetchJarausInfo = async() => {
+            try {
 
-    const [userId, setUserId] = useState<number|undefined>();
+                const response = await axios.get(`/api/jaraus/information?jaraUsId=${jarausId}`);
+
+                if(response.status === 200) {
+                    setJarausInfo(response.data);
+                }                     
+                    setJarausInfo({
+                        adminUserId: 1,
+                        jaraUsId: 101,
+                        jaraUsName: "C를 씹어먹자",
+                        missionName: "1일 1백준",
+                        explanation: "코딩 챌린지에 참여하여 프로그래밍 스킬을 향상시키는 챌린지",
+                        rule: "코딩 윤리 준수, 다른 사람과 솔루션 공유, 인터넷 서치 금지",
+                        jaraUsProfileImage: programmingImg,
+                        maxMember: 15,
+                        display: "public",
+                        startDate: "2024-02-10",
+                        endDate: "2024-03-10",
+                        interest: "study",
+                        recurrence: ["MONDAY", "WEDNESDAY"]
+                    });
+
+                    console.log(jarausInfo)
+                
+                
+            } catch (error) {
+                console.error("Error get Jaraus Info", error);
+            }
+        };
+
+        fetchJarausInfo();
+    },[]);
+
+    // const [userId, setUserId] = useState<number|undefined>();
+    const [userId, setUserId] = useState<number>(1);
     const [isAdminUser, setIsAdminUser] = useState<boolean>(true);
 
+    /*
     const getUserInfo = async() => {
         try {
             const response = await axios.get("/api/profile");
@@ -179,6 +228,7 @@ export default function Group(jarausId:number) {
             getUserInfo();
         }
     }, [jarausId]);
+    */
 
 
     const [selectedMissionPostId, setSelectedMissionPostId] = useState<number>();
@@ -210,10 +260,10 @@ export default function Group(jarausId:number) {
 
         try {
             const request = {
-                jaraUsId : jarausId
+                "jaraUsId" : jarausId
             };
 
-            const response = await axios.post("/api/jaraus/withdraw", request);
+            const response = await axios.post(`/api/jaraus/withdraw?userId=${userId}`, request);
             
             if(response.status === 200) {
                 alert("탈퇴되었습니다");
@@ -234,11 +284,11 @@ export default function Group(jarausId:number) {
         <PostBtn onClick={onClickToggleModal}></PostBtn>
 
         {isOpenPostModal && (
-            <PostModal onClose = {onClosePostModal}></PostModal>
+            <PostModal onClose = {onClosePostModal} jaraUsId={jarausId}></PostModal>
         )}
 
         {isOpenViewPostModal && selectedMissionPostId && (
-            <ViewPostModal onClose = {onCloseViewPostModal} missionPostId={selectedMissionPostId}>
+            <ViewPostModal onClose = {onCloseViewPostModal} missionPostId={selectedMissionPostId} jaraUsId={jarausId}>
             </ViewPostModal>
         )}
 

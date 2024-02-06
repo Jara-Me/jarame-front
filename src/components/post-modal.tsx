@@ -6,6 +6,7 @@ import axios from "axios";
 
 export interface PostModalDefaultType {
     onClose: () => void;
+    jaraUsId: number;
 }
 
 export const Form = styled.form`
@@ -95,10 +96,35 @@ export const ImagePreviewItem = styled.div`
 
 
 function PostModal(
-   { onClose
+   { onClose,
+    jaraUsId
    }: PropsWithChildren<PostModalDefaultType>
 ) {
-    const [jarausId, setJarausId] = useState<number>(1);
+    
+    const [userId, setUserId] = useState(1);
+
+    /*
+    useEffect(()=> {
+        const fetchUserId = async () => {
+            try {
+                const response = await axios.get("/api/profile");
+        
+                if(response.status === 200) {
+                    setUserId(response.data.userId);
+                    
+                } else {
+                    console.error("Error get User Info")
+                }
+            } catch (error) {
+                console.error("Error get User Info", error);
+            }
+    }
+        fetchUserId();
+    }, []);
+    */
+
+
+
 
     const [image, setImage] = useState<string|null>(null);
     const maxImageCount = 1;
@@ -163,10 +189,10 @@ function PostModal(
                 display: display,
                 anonymous: anonymous,
                 postDateTime: new Date().toISOString(),
-                jarausId : jarausId
+                jarausId : jaraUsId
             }
 
-            const response = await axios.post('api/missionPost/post', postData);
+            const response = await axios.post(`api/missionPost/post&userId=${userId}`, postData);
 
             if (response.status === 200) {
                 //성공 로직

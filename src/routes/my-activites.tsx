@@ -97,7 +97,9 @@ export default function MyActivites() {
 
     
     const [userInfo, setUserInfo] = useState<User|null>(null);
+    const [userId, setUserId] = useState<number>(1);
     
+    /*
     const getUserInfo = async() => {
         try {
             const response = await axios.get("/api/profile");
@@ -115,10 +117,11 @@ export default function MyActivites() {
     useEffect(()=> {
         getUserInfo();
     },[])
+    */
 
     const [myJaraus, setMyJaraus] = useState<JaraUs[]>([{
         "adminUserId": 5,
-        "jaraUsId": 29,
+        "jaraUsId": 4,
         "jaraUsName": "44",
         "missionName": "Test Mission",
         "explanation": null,
@@ -132,7 +135,7 @@ export default function MyActivites() {
         "recurrence": ["MONDAY"]},
         {
         "adminUserId": 4,
-        "jaraUsId": 42,
+        "jaraUsId": 5,
         "jaraUsName": "hi",
         "missionName": "Test Mission",
         "explanation": null,
@@ -156,9 +159,10 @@ export default function MyActivites() {
     useEffect(() => {
         const fetchMyJarausData = async() => {
             try {
-                const response = await axios.get('/api/jaraus/my-groups');
+                const response = await axios.get(`/api/jaraus/my-groups?userId=${userId}`);
 
                 if(response.status === 200) {
+                    console.log("response data 0", response.data);
                     setMyJaraus(response.data);
                     setExtractedData(myJaraus.map(({jaraUsId, jaraUsName}) => ({jaraUsId, jaraUsName})));
                     setActiveGroupId(extractedData[0].jaraUsId);
@@ -176,7 +180,7 @@ export default function MyActivites() {
     const [myMissionPosts, setMyMissionPosts] = useState<MissionPost[]>(
             [{
             "missionPostId": 1,
-            "jaraUsId": 44,
+            "jaraUsId": 4,
             "postDateTime": "2024-02-05T15:30:00",
             "display": true,
             "anonymous": false,
@@ -187,7 +191,7 @@ export default function MyActivites() {
             },
             {
             "missionPostId": 2,
-            "jaraUsId": 44,
+            "jaraUsId": 4,
             "postDateTime": "2024-02-05T15:30:00",
             "display": true,
             "anonymous": false,
