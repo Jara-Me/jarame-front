@@ -129,7 +129,7 @@ function Main() {
   return (
     <>
     { isGroupModalOpen && <GroupModal onClickToggleGroupModal={onClickToggleGroupModal} onClose={() => {setGroupModalOpen(false)}} />}
-    { isPostModalOpen && <PostModal onClickToggleModal={onClickTogglePostModal}/> }
+    { isPostModalOpen && <PostModal onClose={()=>setPostModalOpen(false)}/> }
 
     <Mains isOpen={isGroupModalOpen}>
 

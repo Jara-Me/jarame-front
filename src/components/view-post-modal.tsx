@@ -5,6 +5,8 @@ import styled from "styled-components";
 import { palette } from "../assets/styles/palette";
 import puppyProfile from "../assets/images/puppyProfile.jpg";
 import catProfile from "../assets/images/catProfile.jpg";
+import defaultProfile from "../assets/images/defaultProfile.jpg";
+import exampleCMD from "../assets/images/exampleCMD.png";
 import { ImagePreview, ImagePreviewItem } from "./post-modal";
 import axios from "axios";
 import EditPostModal from "./edit-post-modal";
@@ -13,6 +15,7 @@ interface ViewPostModalDefaultType {
     //onClickToggleModal: () => void;
     onClose: () => void;
     missionPostId: number;
+    jaraUsId: number;
 }
 
 interface ProfileProps {
@@ -293,8 +296,8 @@ const postReaction = async(missionPostId: number, reactionType:string) => {
         const stringMissionPostId = missionPostId.toString();
 
         const reaction = {
-            missionPostId : stringMissionPostId,
-            reactionType : reactionType
+            "missionPostId" : stringMissionPostId,
+            "reactionType" : reactionType
         };
 
         const response = await axios.post("/api/reaction/add", reaction);
@@ -398,7 +401,8 @@ const handleReaction = async(missionPostId:number, reactionType:string, reaction
 function ViewPostModal(
    { //onClickToggleModal,
     onClose,
-    missionPostId
+    missionPostId,
+    jaraUsId
    }: PropsWithChildren<ViewPostModalDefaultType>
 ) {
     //  리액션 추가
@@ -449,16 +453,46 @@ function ViewPostModal(
                     break;
             }
 
+            setMissionPostInfo(        {
+                "missionPostId": 3,
+                "jaraUsId": 44,
+                "postDateTime": "2024년 2월 5일",
+                "nickname":"익명",
+                "display": true,
+                "anonymous": false,
+                "textTitle": "1158 요세푸스 문제 ㅜㅜ",
+                "textContent": `
+                int main()<br>
+                {<br>
+                    int n, k;<br>
+                    int count = 0;<br>
+                    queue<int> q;<br>
+                    vector<int> vec;<br>
+                    scanf("%d %d", &n, &k);<br>
+        <br>
+                    for (int i = 1; i < n + 1; i++) {<br>
+                        q.push(i);<br>
+                    }<br>
+                //q.size가 0(false)이 되면 while 탈출. 즉 큐가 빌 때까지 계속 반복한다.<br>
+            	while (q.size()) {<br>
+		                if (k - 1 == count) {<br>
+	                    		vec.push_back(q.front());<br>
+			                    q.pop();<br>
+			                    count = 0;<br>
+                        }<br>
+            `,
+                "imageContent": exampleCMD,
+                "userProfileImage": defaultProfile
+                });
+
         } catch (error) {
             console.error("Error get mission post info: ", error);
         }
     };
 
     useEffect(()=> {
-            if (missionPostId !== null) {
-                getMissionPostInfo();
-            }        
-    }, [missionPostId]);
+        getMissionPostInfo();
+    }, []);
 
 
 
@@ -493,7 +527,7 @@ function ViewPostModal(
     return (
         <>
             {isOpenEditPostModal ? (
-                <EditPostModal onClose={onCloseEditModal} missionPostId={missionPostId}></EditPostModal>
+                <EditPostModal onClose={()=>{setOpenEditPostModal(false)}} missionPostId={missionPostId} jaraUsId={jaraUsId}></EditPostModal>
             ) :
 
             <Modal dialogClassName="viewPost" onClose={onClose}>
@@ -502,14 +536,14 @@ function ViewPostModal(
                     <LeftContainer>
                     <div className="infoEdit">
                         <InfoWrapper>
-                        <ProfileImg profile={missionPostInfo.profileImage} className="writer"></ProfileImg>
+                        <ProfileImg profile={missionPostInfo.userProfileImage} className="writer"></ProfileImg>
                             <WriterInfoWrapper>
                                 <WriterName className="post">{missionPostInfo.nickname}</WriterName>
                                 <WrittenDateTime>{missionPostInfo.postDateTime}</WrittenDateTime>
                         </WriterInfoWrapper>
                         </InfoWrapper>
 
-                        <Button onClick={()=>{onClickToggleEditModal}} type="button" className="edit" $buttonColor="jarameGrey" $fontColor="white" $fontSize="6">수정</Button>
+                        <Button onClick={()=>{setOpenEditPostModal(true)}} type="button" className="edit" $buttonColor="jarameGrey" $fontColor="white" $fontSize="6">수정</Button>
                     </div>
                     <PostWrapper>
                         <Title className="post">{missionPostInfo.textTitle}</Title>

@@ -175,7 +175,7 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
     // <ModalOverlay>
     //   <ModalContainer>
 
-    <Modal onClickToggleModal={onClickToggleGroupModal} dialogClassName="group">
+    <Modal onClose={onClose} dialogClassName="group">
       <ModalTitle>Jara-Us 생성</ModalTitle>
 
       <div style={{"display":"flex", "justifyContent":"center", "alignItems":"center"}}>
