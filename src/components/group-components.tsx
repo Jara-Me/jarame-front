@@ -7,6 +7,7 @@ export const Wrapper = styled.div`
     width: 100%;
     min-height: 140%;
     height: auto;
+
 `;
 
 export const GroupName = styled.div`
@@ -30,6 +31,8 @@ export const GroupInfoWrapper = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: center;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
 `;
 
 export const GroupBackgroundImg = styled.div`
@@ -241,7 +244,7 @@ export function ProvePostBox({onClickToggleViewPostModal, missionPost}: PropsWit
     const {missionPostId, postDateTime, display, anonymous, textTitle, textContent, imageContent, userProfileImage} = missionPost;
 
     return (
-        <StlyedProvePostBox onClick={() => onClickToggleViewPostModal(missionPostId)}>
+        <StlyedProvePostBox onClick={() => onClickToggleViewPostModal()}>
 
             {/* <span className="elipsis" onClick={onClickElipsis}><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />

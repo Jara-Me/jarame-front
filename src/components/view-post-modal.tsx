@@ -247,13 +247,13 @@ function Comment({item, setComments}:PropsWithChildren<CommentProps>) {
       
       if (ok) {
         console.log("댓글 삭제");
-        const responseStatus = await deleteComment(item.commentId);
+        //const responseStatus = await deleteComment(item.commentId);
 
-        if (responseStatus === 200) {
+        //if (responseStatus === 200) {
             setComments((prevComments) => {
                 return prevComments.filter(comment => comment.commentId != item.commentId)
             });
-        }
+        // };
       };
     };
 
@@ -364,28 +364,30 @@ const handleReaction = async(missionPostId:number, reactionType:string, reaction
 
             case "good":
                 if (reactions.clickgood) {
-                    const success = await deleteReaction(missionPostId, reactionType);
-                    if (success) {
+                    // const success = await deleteReaction(missionPostId, reactionType);
+                    // if (success) {
                         setReactions((prevReactions) => ({ ...prevReactions, clickgood: false }));
-                    }
+                        alert("리액션을 취소하셨습니다");
+                    //}
                 } else {
-                    const success = await postReaction(missionPostId, reactionType);
-                    if (success) {
+                    // const success = await postReaction(missionPostId, reactionType);
+                    // if (success) {
                         setReactions((prevReactions) => ({ ...prevReactions, clickgood: true }));
-                    }
+                    // }
                 }
                 break;
         case "smile":
             if (reactions.clickSmile) {
-                const success = await deleteReaction(missionPostId, reactionType);
-                if (success) {
+                // const success = await deleteReaction(missionPostId, reactionType);
+                // if (success) {
                     setReactions((prevReactions) => ({ ...prevReactions, clickSmile: false }));
-                }
+                    alert("리액션을 취소하셨습니다");
+                // }
             } else {
-                const success = await postReaction(missionPostId, reactionType);
-                if (success) {
+                // const success = await postReaction(missionPostId, reactionType);
+                // if (success) {
                     setReactions((prevReactions) => ({ ...prevReactions, clickSmile: true }));
-                }
+                // }
             }
             break;
         default:
@@ -436,8 +438,9 @@ function ViewPostModal(
                 setComments([]);
             }
 
-            const reactionType = response.data.reactionType;
+            //const reactionType = response.data.reactionType;
 
+            /*
             switch(reactionType) {
                 case "like":
                     setReactions((prevReactions) => ({ ...prevReactions, clicklike: true, clickgood: false, clickSmile: false }));
@@ -452,8 +455,9 @@ function ViewPostModal(
                     setReactions((prevReactions) => ({ ...prevReactions, clicklike: false, clickgood: false, clickSmile: false }));
                     break;
             }
+            */
 
-            setMissionPostInfo(        {
+            setMissionPostInfo({
                 "missionPostId": 3,
                 "jaraUsId": 44,
                 "postDateTime": "2024년 2월 5일",
@@ -482,8 +486,28 @@ function ViewPostModal(
                         }<br>
             `,
                 "imageContent": exampleCMD,
-                "userProfileImage": defaultProfile
+                "userProfileImage": defaultProfile,
+                "reactionType":"good",
+                "commentDTO":[
+                    {
+                        "commentId": 1,
+                        "commentContent": "멋진 코드네요!",
+                        "commentDateTime": "2024년 2월 5일",
+                        "nickname": "A",
+                        "profileImage": catProfile,
+                        },
+                        {
+                        "commentId": 2,
+                        "commentContent": "코딩의 신",
+                        "commentDateTime": "2024년 2월 5일",
+                        "nickname": "하트",
+                        "profileImage": puppyProfile
+                        }
+                ]
                 });
+
+
+
 
         } catch (error) {
             console.error("Error get mission post info: ", error);
@@ -495,6 +519,31 @@ function ViewPostModal(
     }, []);
 
 
+    useEffect(()=> {
+        
+        try{
+            const reactionType = missionPostInfo.reactionType;
+
+            switch(reactionType) {
+                case "like":
+                    setReactions((prevReactions) => ({ ...prevReactions, clicklike: true, clickgood: false, clickSmile: false }));
+                    break;
+                case "good":
+                    setReactions((prevReactions) => ({ ...prevReactions, clicklike: false, clickgood: true, clickSmile: false }));
+                    break;
+                case "smile":
+                    setReactions((prevReactions) => ({ ...prevReactions, clicklike: false, clickgood: false, clickSmile: true }));
+                    break;
+                default:
+                    setReactions((prevReactions) => ({ ...prevReactions, clicklike: false, clickgood: false, clickSmile: false }));
+                    break;
+            }
+
+            setComments(missionPostInfo.commentDTO);
+        } catch (error) {
+            console.error(error);
+        }
+    }, [missionPostInfo]);
 
     // 댓글 작성
     const [comment, setComment] = useState("");

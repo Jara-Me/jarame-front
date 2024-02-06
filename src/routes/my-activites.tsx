@@ -156,24 +156,46 @@ export default function MyActivites() {
 
 
 
+    // useEffect(() => {
+    //     const fetchMyJarausData = async() => {
+    //         try {
+    //             const response = await axios.get(`/api/jaraus/my-groups?userId=${userId}`);
+
+    //             if(response.status === 200) {
+    //                 setMyJaraus(response.data);
+    //                 setExtractedData(myJaraus.map(({jaraUsId, jaraUsName}) => ({jaraUsId, jaraUsName})));
+    //                 setActiveGroupId(extractedData[0].jaraUsId);
+    //             } 
+    //         } catch (error) {
+    //             console.error(error);
+    //         }
+    //     };
+        
+    //     fetchMyJarausData();
+    // },[]);
+
     useEffect(() => {
-        const fetchMyJarausData = async() => {
+        const fetchMyJarausData = async () => {
             try {
                 const response = await axios.get(`/api/jaraus/my-groups?userId=${userId}`);
-
-                if(response.status === 200) {
-                    console.log("response data 0", response.data);
+                if (response.status === 200) {
+                    console.log(response);
                     setMyJaraus(response.data);
-                    setExtractedData(myJaraus.map(({jaraUsId, jaraUsName}) => ({jaraUsId, jaraUsName})));
-                    setActiveGroupId(extractedData[0].jaraUsId);
-                } 
+                }
             } catch (error) {
                 console.error(error);
             }
         };
-        
+    
         fetchMyJarausData();
-    },[]);
+    }, []);
+    
+    // useEffect(() => {
+    //     if (myJaraus.length > 0) {
+    //         setExtractedData(myJaraus.map(({ jaraUsId, jaraUsName }) => ({ jaraUsId, jaraUsName })));
+    //         setActiveGroupId(myJaraus[0].jaraUsId);
+    //     }
+    // }, [myJaraus]);
 
     //const items = [ puppyProfile, catProfile, defaultImage, puppyProfile, catProfile, defaultImage, puppyProfile, catProfile, defaultImage, puppyProfile, catProfile, defaultImage];
 

@@ -205,7 +205,8 @@ function PostModal(
     }
 
     const onSubmit = () => {
-        postMissionPost();
+        //postMissionPost();
+        alert("인증글이 작성되었습니다");
     };
 
     return (

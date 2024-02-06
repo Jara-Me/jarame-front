@@ -185,7 +185,9 @@ function EditPostModal(
         }
     }
 
-    const onSubmit = () => {
+    const onSubmit = (e:React.FormEvent) => {
+        e.preventDefault();
+        alert("글이 수정되었습니다");
         postEditedMissionPost();
     };
 

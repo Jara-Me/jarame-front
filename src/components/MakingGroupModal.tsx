@@ -40,7 +40,6 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
   
   const [groupNameErr, setGroupNameErr] = useState<Error>({ available: undefined, msg: "" });
 
-
   const onChangeValue = (e : React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) => {
     const {target : {name, value}} = e;
     if (name === "groupName") {
@@ -92,13 +91,15 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
     }
 
     try {
-      const response = await axios.post(`/api/jaraus/checkJaraUsNameDuplicate?jaraUsName=${groupName}`);
+      // const response = await axios.post(`/api/jaraus/checkJaraUsNameDuplicate?jaraUsName=${groupName}`);
       
-      if (response.status === 200) {
-        setGroupNameErr({ available: true, msg: "사용 가능한 그룹명입니다" });
-      } else {
-        setGroupNameErr({ available: false, msg: "이미 존재하는 그룹명입니다" });
-      }
+      // if (response.status === 200) {
+      //   setGroupNameErr({ available: true, msg: "사용 가능한 그룹명입니다" });
+      // } else {
+      //   setGroupNameErr({ available: false, msg: "이미 존재하는 그룹명입니다" });
+      // }
+
+      setGroupNameErr({ available: true, msg: "사용 가능한 그룹명입니다" });
 
       
     } catch (error) {
@@ -182,7 +183,7 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
       <ModalContainer>
         <CloseButton onClick={onClose}>&times;</CloseButton>
 
-        <Form onSubmit={onSubmitJaraUs} >
+        <Form onSubmit={onClose} >
         <Column>
           <GroupImgUploader groupImg={groupImg} setGroupImg={setGroupImg}></GroupImgUploader>
         </Column>
@@ -297,7 +298,7 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
         </div> */}
 
         <Column className="makeCancle">        
-          <Button type="submit" $buttonColor="jarameBlue">생성</Button>
+          <Button type="submit" $buttonColor="jarameBlue" onClick={()=>(alert("생성되었습니다"))}>생성</Button>
           <Button onClick={onClose} $buttonColor="jarameGrey">취소</Button>
         </Column>
 

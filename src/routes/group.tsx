@@ -11,6 +11,8 @@ import defaultProfile from "../assets/images/defaultProfile.jpg";
 import axios from "axios";
 import Button from "../components/button";
 import programmingImg from "../assets/images/programming.jpg";
+import coding from "../assets/images/coding.jpg";
+
 
 
 interface MissionPost {
@@ -43,7 +45,9 @@ interface MissionPost {
 
 
 
-export default function Group(jarausId:number) {
+export default function Group() {
+
+    const [jarausId, setJaraUsId] = useState<number>(4);
 
     const dummyDatas = [
         {
@@ -114,7 +118,8 @@ export default function Group(jarausId:number) {
         }
         ]
 
-    const [missionPosts, setMissionPosts] = useState<MissionPost[]|null>(null);
+    // const [missionPosts, setMissionPosts] = useState<MissionPost[]|null>(null);
+    const [missionPosts, setMissionPosts] = useState<any[]>([]);
     const [filterType, setFilterType] = useState<string>("all");
 
     const getMissionPosts = async(filterType:string) => {
@@ -124,7 +129,7 @@ export default function Group(jarausId:number) {
 
                 if(response.status === 200) {
                     setMissionPosts(response.data);
-                    //console.log("mission posts", missionPosts);
+                    console.log(missionPosts);
                 } else if (response.status === 404) {
                     console.error("404 not found");
                 }
@@ -137,7 +142,6 @@ export default function Group(jarausId:number) {
                     console.error("404 not found");
                 }
             }
-
         } catch (error) {
             console.error("Error get mission posts", error);
         }
@@ -164,32 +168,33 @@ export default function Group(jarausId:number) {
     const [jarausInfo, setJarausInfo] = useState<JaraUs>();
 
     useEffect(()=> {
+
+        
         const fetchJarausInfo = async() => {
             try {
+                            
+            const response = await axios.get(`/api/jaraus/information?jaraUsId=${jarausId}`);
 
-                const response = await axios.get(`/api/jaraus/information?jaraUsId=${jarausId}`);
+            if(response.status === 200) {
+                setJarausInfo(response.data);
+            }                     
+                setJarausInfo({
+                    adminUserId: 1,
+                    jaraUsId: 101,
+                    jaraUsName: "C를 씹어먹자",
+                    missionName: "1일 1백준",
+                    explanation: "백준 문제 하루 하나를 풀며 함께 성장하는 C 언어 챌린지! 즐겁게 코딩하고 동료들과 소통하며 알고리즘 강화하세요. 함께 달성하는 작은 목표, 큰 성취를 만들어 봐요! 🚀",
+                    rule: "코딩 윤리 준수, 다른 사람과 솔루션 공유, 인터넷 서치 금지",
+                    jaraUsProfileImage: coding,
+                    maxMember: 15,
+                    display: "public",
+                    startDate: "2024-02-10",
+                    endDate: "2024-03-10",
+                    interest: "study",
+                    recurrence: ["MONDAY", "WEDNESDAY"]
+                });
 
-                if(response.status === 200) {
-                    setJarausInfo(response.data);
-                }                     
-                    setJarausInfo({
-                        adminUserId: 1,
-                        jaraUsId: 101,
-                        jaraUsName: "C를 씹어먹자",
-                        missionName: "1일 1백준",
-                        explanation: "코딩 챌린지에 참여하여 프로그래밍 스킬을 향상시키는 챌린지",
-                        rule: "코딩 윤리 준수, 다른 사람과 솔루션 공유, 인터넷 서치 금지",
-                        jaraUsProfileImage: programmingImg,
-                        maxMember: 15,
-                        display: "public",
-                        startDate: "2024-02-10",
-                        endDate: "2024-03-10",
-                        interest: "study",
-                        recurrence: ["MONDAY", "WEDNESDAY"]
-                    });
-
-                    console.log(jarausInfo)
-                
+            
                 
             } catch (error) {
                 console.error("Error get Jaraus Info", error);
@@ -242,6 +247,7 @@ export default function Group(jarausId:number) {
     const onClickToggleViewPostModal = (missionPostId:number) => {
         setSelectedMissionPostId(missionPostId);
         setOpenViewPostModal(true);
+        console.log("selected", selectedMissionPostId);
     };
     
 
