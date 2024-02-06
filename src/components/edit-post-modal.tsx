@@ -10,8 +10,9 @@ function EditPostModal(
     { onClose, jaraUsId, missionPostId } : PropsWithChildren<PostModalDefaultType & {missionPostId:number}>
 ) {
 
-    const [userId, setUserId] = useState<number|undefined>();
+    const [userId, setUserId] = useState<number|undefined>(1);
 
+    /*
     useEffect(()=> {
         const fetchUserId = async () => {
             try {
@@ -29,6 +30,7 @@ function EditPostModal(
     }
         fetchUserId();
     }, []);
+    */
 
     
     const [image, setImage] = useState<string|null>(null);
@@ -94,7 +96,9 @@ function EditPostModal(
 
         const fetchOriginalData = async() => {
             try {
-                const response = await axios.get(`/api/missionPost/get?missionPostId=${missionPostId}&userId=${userId}`);
+                const response = await axios.get(`${process.env.REACT_APP_API_MISSIONPOST}/get?missionPostId=${missionPostId}&userId=${userId}`, {
+                    withCredentials: true,
+                });
 
                 if(response.status === 200) {
                     setOriginalData(response.data);
@@ -170,7 +174,9 @@ function EditPostModal(
                 jarausId : jaraUsId
             }
 
-            const response = await axios.post(`api/missionPost/update?missionPostId=${missionPostId}`, postData);
+            const response = await axios.post(`${process.env.REACT_APP_API_MISSIONPOST}/update?missionPostId=${missionPostId}`, postData, {
+                withCredentials: true,
+            });
 
             if (response.status === 200) {
                 //성공 로직

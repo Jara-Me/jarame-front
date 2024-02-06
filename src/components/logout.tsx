@@ -6,7 +6,9 @@ const handleLogout = async() => {
     // 로그아웃 호출하는 함수 내부 최상단에 선언하고 위 코드 지울 것
 
     try {
-        const response = await axios.post("/api/user/logout");
+        const response = await axios.post(`${process.env.REACT_APP_API_USER}/logout`, {
+            withCredentials: true,
+        });
 
         if(response.data.success) {
             console.log(response.data.message);

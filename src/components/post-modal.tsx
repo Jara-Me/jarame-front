@@ -183,16 +183,18 @@ function PostModal(
     const postMissionPost = async() => {
         try {
             const postData = {
-                textTitle: title,
-                textContent: content,
-                imageContent: image,
-                display: display,
-                anonymous: anonymous,
-                postDateTime: new Date().toISOString(),
-                jarausId : jaraUsId
+                "textTitle": title,
+                "textContent": content,
+                "imageContent": image,
+                "display": display,
+                "anonymous": anonymous,
+                "postDateTime": new Date().toISOString(),
+                "jarausId" : jaraUsId
             }
 
-            const response = await axios.post(`api/missionPost/post&userId=${userId}`, postData);
+            const response = await axios.post(`${process.env.REACT_APP_API_MISSIONPOST}/post&userId=${userId}`, postData, {
+                withCredentials: true,
+            });
 
             if (response.status === 200) {
                 //성공 로직

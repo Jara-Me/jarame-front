@@ -3,11 +3,12 @@ import { Container, Title, Wrapper } from "../components/mypage-components";
 import Button from "../components/button";
 import { useNavigate } from "react-router-dom";
 import SaveButton from "../components/saveButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import puppyProfile from "../assets/images/puppyProfile.jpg";
-import ProfileUploader from "../useEffectcomponents/profile-upload";
+import ProfileUploader from "../components/profile-upload";
 import { User } from "./my-activites";
 import { Error, OkMsg } from "../components/auth-components";
+import axios from "axios";
 
 
 const Form = styled.form`
@@ -59,7 +60,9 @@ export default function MyAccount() {
     
     const getUserInfo = async() => {
         try {
-            const response = await axios.get("/api/profile");
+            const response = await axios.get(`${process.env.REACT_APP_API_PROFILE}`, {
+                withCredentials : true,
+            });
 
             if(response.status === 200) {
                 setUserInfo(response.data);
@@ -101,7 +104,9 @@ export default function MyAccount() {
                 return;
             }
 
-            const response = await axios.post(`/api/checkNicknameDuplicate?nickname=${nickname}`);
+            const response = await axios.post(`${process.env.REACT_APP_API_USER}/checkNicknameDuplicate?nickname=${nickname}`, {
+                withCredentials: true,
+            });
 
             if (response.status === 200) {
                 setNicknameError({ available: true, msg: "사용 가능한 닉네임입니다" });
@@ -118,12 +123,14 @@ export default function MyAccount() {
             if(userInfo === null) return;
 
             const request = {
-                userid : userInfo.userId,
-                nickname : nickname,
-                password: password
+                "userid" : userInfo.userId,
+                "nickname" : nickname,
+                "password": password
             }
 
-            const response = await axios.post('/api/user/changeNickname', request);
+            const response = await axios.post(`${process.env.REACT_APP_API_USER}/changeNickname`, request, {
+                withCredentials: true,
+            });
 
             if(response.status === 200) {
                 alert("닉네임이 성공적으로 변경되었습니다");
@@ -147,7 +154,9 @@ export default function MyAccount() {
         const ok = confirm("정말로 자라미를 떠나시나요?");
         if(ok) {
             try {
-                const response = await axios.delete("/api/user/delete");
+                const response = await axios.delete(`${process.env.REACT_APP_API_USER}/delete`, {
+                    withCredentials:true,
+                });
 
                 if(response.status === 200) {
                     alert("성공적으로 탈퇴되었습니다!");

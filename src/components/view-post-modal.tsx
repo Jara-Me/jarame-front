@@ -196,12 +196,14 @@ const postComment = async(missionPostId:number, comment: string, comments:Commen
         const stringMissionPostId = missionPostId.toString();
 
         const commentData = {
-            missionPostId: stringMissionPostId,
-            commentContent: comment,
-            commentDateTime: new Date().toISOString(),
+            "missionPostId": stringMissionPostId,
+            "commentContent": comment,
+            "commentDateTime": new Date().toISOString(),
         };
 
-        const response = await axios.post("/api/comment/add", commentData);
+        const response = await axios.post(`${process.env.REACT_APP_API_COMMENT}/add`, commentData, {
+            withCredentials: true,
+        });
 
         // 서버 응답 확인
         if (response.status === 200) {
@@ -222,7 +224,9 @@ const deleteComment = async(commentId: number) => {
     try {
         // delete 요청을 보내어 댓글 삭제
         
-        const response = await axios.delete(`/api/comment/delete?commentId=${commentId}`);
+        const response = await axios.delete(`${process.env.REACT_APP_API_COMMENT}/delete?commentId=${commentId}`, {
+            withCredentials: true,
+        });
 
         if (response.status === 200) {
             alert(response.statusText);
@@ -300,7 +304,9 @@ const postReaction = async(missionPostId: number, reactionType:string) => {
             "reactionType" : reactionType
         };
 
-        const response = await axios.post("/api/reaction/add", reaction);
+        const response = await axios.post(`${process.env.REACT_APP_API_REACTION}/add`, reaction, {
+            withCredentials:true,
+        });
 
         if (response.status === 200) {
             // 성공
@@ -322,11 +328,14 @@ const deleteReaction = async (missionPostId:number, reactionType: string) => {
     try {
         const stringMissionPostId = missionPostId.toString();
 
-        const response = await axios.delete("/api/reaction/delete", {
-            data: {
-                missionPostId: stringMissionPostId,
-                reactionType: reactionType
-            },
+        const reaction = {
+            "missionPostId" : stringMissionPostId,
+            "reactionType" : reactionType
+        };
+
+        const response = await axios.delete(`${process.env.REACT_APP_API_REACTION}/delete`, {
+            data: reaction,
+            withCredentials: true,
         });
 
         if (response.status === 200) {
@@ -428,7 +437,9 @@ function ViewPostModal(
     const getMissionPostInfo = async() => {
        
         try {
-            const response = await axios.get(`/api/missionPost/get?missionPostId=${missionPostId}`);
+            const response = await axios.get(`${process.env.REACT_APP_API_MISSIONPOST}/get?missionPostId=${missionPostId}`, {
+                withCredentials: true,
+            });
             setMissionPostInfo(response.data);
             
             // response.data.commentDTO가 배열인지 확인 후 setComments 수행
