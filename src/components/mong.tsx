@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 import MongStore from './MongStore';
 import { palette } from '../assets/styles/palette';
@@ -147,6 +147,7 @@ interface MongProps {
   isOpen: boolean;
 }
 const Mongs = styled.div<MongProps>`
+  z-index: 1;
   position: fixed;
   top: ${({ isOpen }) => (isOpen ? '0' : '-800px')};
   left: 0;

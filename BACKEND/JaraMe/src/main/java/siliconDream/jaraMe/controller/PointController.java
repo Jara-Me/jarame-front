@@ -1,10 +1,13 @@
 package siliconDream.jaraMe.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import siliconDream.jaraMe.domain.User;
 import siliconDream.jaraMe.service.PointService;
 
 import java.time.LocalDateTime;
@@ -21,35 +24,41 @@ public class PointController {
     }
 
 
-    //출석체크
+    //출석체크 => 테스트 완료 / 예외처리 전
     @PostMapping("/checkIn") //@ResponseBody
-    public String checkIn(@RequestParam Long userId, @RequestParam @DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss") LocalDateTime dateTime) {
-        //return pointService.checkIn(userId, dateTime);
-        boolean httpResponse = pointService.checkIn(userId, dateTime);
-        if (httpResponse) {
-            return "출석체크 포인트가 지급되었습니다! (+2p)";
+    public ResponseEntity<String> checkIn(@RequestParam @DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss") LocalDateTime dateTime, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        Long userId;
+        if (session == null){//todo: 로직 추가하기
+        }
+        User user = (User) session.getAttribute("user");
+        // log.info("log:userId:{}", user.getUserId());
+        userId = user.getUserId();
+        String resultMessage = pointService.checkIn(userId, dateTime);
+        if (resultMessage.equals("출석체크되었습니다! (+2포인트)")) {
+            return ResponseEntity.status(HttpStatus.OK).body(resultMessage);
         } else {
-            //throw new CustomException(POINT_NOT_FOUND);
-            return "출석체크에 실패하였습니다!";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultMessage);
         }
     }
 
-    //패스권 구매
+    //패스권 구매 => 테스트완료 / 예외처리 전
     @PostMapping("/passTicket")
-    @ResponseBody
-    public ResponseEntity passTicket(@RequestParam Long userId) throws Exception {
-        //HttpHeaders httpHeaders = new HttpHeaders();
+    public ResponseEntity<String> passTicket(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        Long userId;
+        if (session == null){//todo: 로직 추가하기
+        }
+        User user = (User) session.getAttribute("user");
+        // log.info("log:userId:{}", user.getUserId());
+        userId = user.getUserId();
 
-        boolean httpResponse = pointService.passTicket(userId);
-        if (httpResponse) {
-            return new ResponseEntity<>(HttpStatus.OK);
+        String resultMessage = pointService.passTicket(userId);
+        if (resultMessage.equals("패스권 구입에 성공했습니다!(-60포인트)")) {
+            return ResponseEntity.status(HttpStatus.OK).body(resultMessage);
         } else {
-            //throw new CustomException(POINT_NOT_FOUND);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultMessage);
         }
     }
 
-    //스토어 구매 api => 아이템 정해져야 할 수 있음
-
-    //패스권 사용 api => Point관련된 로직은 아니라서 다른 Controller가 적합할 것같음.
 }

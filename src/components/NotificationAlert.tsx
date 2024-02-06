@@ -2,24 +2,36 @@ import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { palette } from "../assets/styles/palette";
 
-interface Notification {
-  id: number;
-  content: string;
+interface MNotification {
+  earnPoint: number;
+  missionName: string;
+  jaraUsName: string;
+  period: string;
+}
+interface RNotification {
+  missionPostId: number;
+  missionPostTextTitle: string;
+  like: number;
+  good: number;
+  smile: number;
 }
 
 interface NotificationAlertProps {
-  notifications: Notification[];
+  MissionNotifications: MNotification[];
+  ReactionNotifications: RNotification[];
   onClick: () => void;
 }
 
 const NotificationAlert: React.FC<NotificationAlertProps> = ({
-  notifications,
+  MissionNotifications,
+  ReactionNotifications,
   onClick,
 }) => {
   const [isAlertVisible, setIsAlertVisible] = useState(false);
 
   const handleAlertClick = () => {
     setIsAlertVisible(!isAlertVisible);
+    console.log(onClick);
   };
 
   return (
@@ -32,9 +44,14 @@ const NotificationAlert: React.FC<NotificationAlertProps> = ({
       {isAlertVisible && (
         <AlertContainer>
           <AlertContent>
-            {notifications.map((notification) => (
-              <NotificationItem key={notification.id}>
-                {notification.content}
+            {MissionNotifications.map((notification) => (
+              <NotificationItem>
+                {notification.missionName}-{notification.jaraUsName}-{notification.period}
+              </NotificationItem>
+            ))}
+            {ReactionNotifications.map((notification) => (
+              <NotificationItem key={notification.missionPostId}>
+                {notification.missionPostTextTitle}
               </NotificationItem>
             ))}
           </AlertContent>

@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
-import { Routes, Route, BrowserRouter, Link, Router, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import Mong from '../components/mong';
 import SearchContent from '../components/Search';
@@ -8,7 +8,6 @@ import ProfileContent from '../components/Profile';
 import MenuButton from '../components/MenuButton';
 import TodayContent from '../components/Today';
 import JarausContent from '../components/Jaraus';
-import MyJaraus from './MyJaraus';
 import NotificationAlert from '../components/NotificationAlert';
 import GroupModal from '../components/MakingGroupModal';
 import Calendar from '../components/Calendar';
@@ -23,17 +22,11 @@ interface BoxStyle {
   isOpen: boolean;
   content: string;
 }
-interface SearchContentProps {
-  className: string;
-}
 
 function Main() {
   const [mongOpen,setMongOpen] = useState(false);
+  console.log(setMongOpen);
   const elementRef = useRef<HTMLDivElement>(null);
-
-  const MongOpen = () => {
-    setMongOpen((prevOpen) => !prevOpen);
-  };
   
   const isPlus = (id: string): boolean => id === 'searching' || id === 'jaraus';
 
@@ -49,18 +42,18 @@ function Main() {
     { id: 'searching', left: 200, top: 100, width: 580, height: 60, isOpen: true, content: '미션 탐색' },
     { id: 'profile', left: 900, top: 100, width: 580, height: 60, isOpen: true, content: '프로필' },
     { id: 'today', left: 200, top: 530, width: 580, height: 60, isOpen: true, content: '오늘의 미션' },
-    { id: 'callender', left: 900, top: 400, width: 580, height: 60, isOpen: true, content: '캘린더' },
+    { id: 'callender', left: 900, top: 350, width: 580, height: 60, isOpen: true, content: '캘린더' },
     { id: 'jaraus', left: 200, top: 960, width: 1285, height: 60, isOpen: true, content: 'Jara-Us' },
   ]);
 
   const [yellowContents, setYellowContents] = useState<{ [key: string]: (props: { className?: string }) => JSX.Element }>({
     searching: ({ className }) => <SearchContent className={`yellow-box ${className}`} />,
-    profile: ({ className }) => <ProfileContent className={`yellow-box ${className}`} />,
+    profile: ({ className }) => <ProfileContent className={`yellow-box ${className}`} userId={1} />,
     callender: ({ className }) => <Calendar className={`yellow-box ${className}`} />,
-    today: ({ className }) => <TodayContent onClickTogglePostModal={onClickTogglePostModal} className={`yellow-box ${className}`} />,
+    today: ({ className }) => <TodayContent className={`yellow-box ${className}`} />,
     jaraus: ({ className }) => <JarausContent className={`yellow-box ${className}`} />,
   });
-
+  console.log(setYellowContents);
   const toggleYellowBox = (id: string) => {
     setBoxStyles((prevStyles) =>
       prevStyles.map((style) =>
@@ -109,16 +102,86 @@ function Main() {
   }
   
   // 알림창
-  const notifications = [
-    { id: 1, content: "알림 1" },
-    { id: 2, content: "알림 2" },
-    { id: 3, content: "알림 3" },
-    { id: 4, content: "알림 4" },
-    { id: 5, content: "알림 5" },
-    { id: 6, content: "알림 6" },
-    { id: 7, content: "알림 7" },
-    // ... 다른 알림들
-  ];
+  // const notifications = [
+  //   { id: 1, content: "알림 1" },
+  //   { id: 2, content: "알림 2" },
+  //   { id: 3, content: "알림 3" },
+  //   { id: 4, content: "알림 4" },
+  //   { id: 5, content: "알림 5" },
+  //   { id: 6, content: "알림 6" },
+  //   { id: 7, content: "알림 7" },
+  //   // ... 다른 알림들
+  // ];
+  interface MissionNote {
+    earnPoint: number;
+    missionName: string;
+    jaraUsName: string;
+    period: string;
+  }
+  interface ReactionNote {
+    missionPostId: number;
+    missionPostTextTitle: string;
+    like: number;
+    good: number;
+    smile: number;
+  }
+  const [missionNotifications, setMissionNotifications] = useState<MissionNote[]>([]);
+  const [reactionNotifications, setReactionNotifications] = useState<ReactionNote[]>([]);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get('/api/notice/get');
+        if (response.data.calendarMissionHistoryDTOs!==undefined){
+          setMissionNotifications(response.data.missionCompleteNoticeDTO);
+          setReactionNotifications(response.data.reactionNoticeDTO);
+        }else{
+          setMissionNotifications([
+            {
+              "earnPoint": 50,
+              "missionName": "10분 스트레칭",
+              "jaraUsName": "거북목 탈퇴 클럽",
+              "period": "2024년 01월 10일 - 2024년 01월 31일"
+            }
+          ]);
+          setReactionNotifications([
+            {
+              "missionPostId": 1,
+              "missionPostTextTitle": "누군가 당신의 게시물을 좋아합니다! 👍",
+              "like": 0,
+              "good": 0,
+              "smile": 0
+            },
+            {
+              "missionPostId": 2,
+              "missionPostTextTitle": "게시물에 댓글이 달렸습니다! ✍️",
+              "like": 0,
+              "good": 2,
+              "smile": 1
+            },
+            {
+              "missionPostId": 3,
+              "missionPostTextTitle": "게시물에 댓글이 달렸습니다! ✍️",
+              "like": 0,
+              "good": 0,
+              "smile": 0
+            },
+            {
+              "missionPostId": 1,
+              "missionPostTextTitle": "누군가 당신의 게시물에 웃고 있습니다! 😄",
+              "like": 0,
+              "good": 0,
+              "smile": 0
+            }
+          ]);
+        }
+        
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchNotifications();
+  }, []);
 
   // 알림 아이콘 클릭 시 실행될 함수
   const handleAlertClick = () => {
@@ -154,9 +217,10 @@ function Main() {
           >
             <div style={{position:'absolute', left:'50px', fontWeight: 'bold', fontSize: '15pt'}} onClick={() => openDetail(id)}>{content}</div>
             
-            { id === 'today' && isOpen && (
+            {/* { id === 'today' && isOpen && (
               <TodayContent onClickTogglePostModal = {onClickTogglePostModal}/>
-            )}
+            )} */}
+            {/* today가 두 번 렌더링돼서 주석처리 */}
 
             {isOpen && yellowContents[id]({ className: id + '-yellow' })}
 
@@ -172,7 +236,8 @@ function Main() {
       
       <MenuButton/>
       <NotificationAlert
-        notifications={notifications}
+        MissionNotifications={missionNotifications}
+        ReactionNotifications={reactionNotifications}
         onClick={handleAlertClick}
       />
       

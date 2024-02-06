@@ -1,8 +1,12 @@
 package siliconDream.jaraMe.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
+@Getter
+@Setter
 
 @Entity
 @Table
@@ -14,50 +18,20 @@ public class MissionHistory {
     private Long missionHistoryId;
 
     private LocalDate missionDate;
-
+    private boolean missionResult;
     //fk
     @JoinColumn(name="user")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private User user;
 
     @JoinColumn(name="jaraUs")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private JaraUs jaraUs;
 
-    //TODO: getter and setter
+    @JoinColumn(name="missionPost")
+    @OneToOne
+    private MissionPost missionPost;
 
-
-    public Long getMissionHistoryId() {
-        return missionHistoryId;
-    }
-
-    public void setMissionHistoryId(Long missionHistoryId) {
-        this.missionHistoryId = missionHistoryId;
-    }
-
-    public LocalDate getMissionDate() {
-        return missionDate;
-    }
-
-    public void setMissionDate(LocalDate missionDate) {
-        this.missionDate = missionDate;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public JaraUs getJaraUs() {
-        return jaraUs;
-    }
-
-    public void setJaraUs(JaraUs jaraUs) {
-        this.jaraUs = jaraUs;
-    }
 
 
 }

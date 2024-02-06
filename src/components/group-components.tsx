@@ -300,6 +300,8 @@ export function ProveBox({missionPost, onClickToggleViewPostModal}: PropsWithChi
 
     const {missionPostId, postDateTime, userProfileImage} = missionPost;
 
+    console.log(nickname);
+
     return (
         <StyledProveBox>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

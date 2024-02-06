@@ -90,6 +90,7 @@ const ProfileUploader:React.FC<ImgUploaderProps> = ({userProfile, setUserProfile
               const response = await axios.post("/api/upload", formData, {
                 headers: { "content-type": "multipart/form-data" },
               });
+              console.log(response);
             } catch (error: any) {
               console.log("이미지업로드 에러 발생");
               throw new Error(error);
@@ -121,6 +122,8 @@ const ProfileUploader:React.FC<ImgUploaderProps> = ({userProfile, setUserProfile
                 $fontColor="jarameGrey"
                 $fontSize="10"
                 $width="auto"
+                $hasBorder={true}
+                $borderColor="jarameGrey"
                 onClick={ (event) => {
                     event.preventDefault();
                     if(imgUploadInput.current) {

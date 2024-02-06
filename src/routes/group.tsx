@@ -2,7 +2,7 @@
 import { Challenge, ChallengeRuleLI, ChallengeRuleUL, GroupInfoWrapper, GroupInfoBox, GroupName, Hashtag, ProveSelectBtn, ProveWrapper, Wrapper, ProveBox, ProvePage, GroupImgContainer} from "../components/group-components"
 import { Link, useNavigate } from "react-router-dom";
 import PostBtn from "../components/post-btn";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import PostModal from "../components/post-modal";
 import ViewPostModal from "../components/view-post-modal";
 import puppyProfile from "../assets/images/puppyProfile.jpg";
@@ -282,6 +282,10 @@ export default function Group() {
         }
     }
 
+    const onSubmitPost = () => {
+        setOpenPostModal(false);
+    };
+    
     return (<Wrapper>
         <PostBtn onClick={onClickToggleModal}></PostBtn>
 

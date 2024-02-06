@@ -8,23 +8,23 @@ public class UserDto {
     private String password;
     private String confirmPassword;
     private String email;
-    private String birthDate;
     private String profileImage;
-    private List<String> interests;
+    private String interest;
 
     // Constructors, getters, and setters
 
     public UserDto() {
     }
 
-    public UserDto(Long userid, String nickname, String password, String confirmPassword, String email, String dateOfBirth, List<String> interests) {
+    public UserDto(Long userid, String nickname, String password, String confirmPassword, String email, String interest) {
+
         this.userid = userid;
         this.nickname = nickname;
         this.password = password;
         this.confirmPassword = confirmPassword;
         this.email = email;
-        this.birthDate = birthDate;
-        this.interests = interests;
+        this.interest = interest;
+
     }
 
     // Getters and setters
@@ -69,13 +69,6 @@ public class UserDto {
         this.email = email;
     }
 
-    public String getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(String birthDate) {
-        this.birthDate = birthDate;
-    }
 
     public String getProfileImage() {
         return profileImage;
@@ -85,24 +78,23 @@ public class UserDto {
         this.profileImage = profileImage;
     }
 
-    public List<String> getInterests() {
-        return interests;
+    public String getInterest() {
+        return interest;
     }
 
-    public void setInterests(List<String> interests) {
-        this.interests = interests;
+    public void setInterest(String interest) {
+        this.interest = interest;
     }
-
     @Override
     public String toString() {
         return "UserDto{" +
-                "userid=" + userid +
-                ", nickname='" + nickname + '\'' +
-                ", password='" + password + '\'' +
-                ", confirmPassword='" + confirmPassword + '\'' +
-                ", email='" + email + '\'' +
-                ", dateOfBirth='" + birthDate + '\'' +
-                ", interests=" + interests +
-                '}';
-    }
+                    "userid=" + userid +
+                    ", nickname='" + nickname + '\'' +
+                    ", password='" + password + '\'' +
+                    ", confirmPassword='" + confirmPassword + '\'' +
+                    ", email='" + email + '\'' +
+                    ", interest='" + interest + '\'' +
+                    '}';
+        }
+
 }

@@ -164,12 +164,12 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
       handleCreateGroup();
   }
 
-  const [searchQuery, setSearchQuery] = useState('');
+  // const [searchQuery, setSearchQuery] = useState('');
   
-    const handleSearch = () => {
-      // 여기에 실제 검색 로직을 구현하세요.
-      console.log(`Searching for: ${searchQuery}`);
-    };
+    // const handleSearch = () => {
+    //   // 여기에 실제 검색 로직을 구현하세요.
+    //   console.log(`Searching for: ${searchQuery}`);
+    // };
 
   return (
 
@@ -315,18 +315,18 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
   );
 }
 
-const ModalOverlay = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.3);
-  z-index: 999;
-`;
+// const ModalOverlay = styled.div`
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+//   width: 100vw;
+//   height: 100vh;
+//   background-color: rgba(0, 0, 0, 0.3);
+//   z-index: 999;
+// `;
 
 const Form = styled.form`
   width: 100%;
