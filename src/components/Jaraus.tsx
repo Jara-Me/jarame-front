@@ -24,7 +24,9 @@ const JarausContent: React.FC<JarausContentProps> = ({ className }) => {
   useEffect(() => {
     const fetchMissionData = async () => {
       try {
-        const response = await axios.get('/api/dailyMission/get');
+        const response = await axios.get(`${process.env.REACT_APP_API_DAILYMISSION}/get`, {
+          withCredentials: true,
+        });
         if (response.data.calendarMissionHistoryDTOs !== undefined) {
           setMissionData(response.data.calendarMissionHistoryDTOs);
         } else {
@@ -72,6 +74,9 @@ const JarausContent: React.FC<JarausContentProps> = ({ className }) => {
           break;
         case '현대인의 독서 습관 기르기':
           backgroundImage = Book;
+          break;
+        default:
+          backgroundImage = "";
           break;
       }
 

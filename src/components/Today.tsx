@@ -18,7 +18,9 @@ const TodayContent: React.FC<TodayContentProps> = ({ className }) => {
   useEffect(() => {
     const fetchMissionData = async () => {
       try {
-        const response = await axios.get('/api/dailyMission/get');
+        const response = await axios.get(`${process.env.REACT_APP_API_DAILYMISSION}/get`, {
+          withCredentials: true,
+        });
         if (response.data.calendarMissionHistoryDTOs!==undefined){
           setMissionData(response.data.calendarMissionHistoryDTOs);
         }else{
@@ -51,6 +53,9 @@ const TodayContent: React.FC<TodayContentProps> = ({ className }) => {
         // 다른 mission에 대한 이미지도 추가할 수 있음
         case '간단한 요가 챌린지':
           backgroundImage = Yoga;
+          break;
+        default:
+          backgroundImage = "";
           break;
       }
       return(<div key={index} className={`today-mission`}>

@@ -87,11 +87,17 @@ const Calendar: React.FC<CalendarProps> = ({ className }) => {
     setSelectedDate(day);
     try {
       const formattedDate = `2024-01-${String(day).padStart(2, '0')}`;
-      const response = await axios.get('/api/notice/calendar', {
-        params: {
-          selectedDate: formattedDate,
-        },
-      });
+
+      const params = {
+        selectedDate : formattedDate,
+      };
+
+      const response = await axios.get(`${process.env.REACT_APP_API_NOTICE}/calendar`, {
+          params: params,
+          withCredentials: true,
+        }
+      );
+
       console.log(response.data.calendarPointDTOs);
       if(response.data.calendarPointDTOs!==undefined){
         setPointMissionData(response.data.calendarPointDTOs);

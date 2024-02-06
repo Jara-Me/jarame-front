@@ -91,15 +91,17 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
     }
 
     try {
-      // const response = await axios.post(`/api/jaraus/checkJaraUsNameDuplicate?jaraUsName=${groupName}`);
+      const response = await axios.post(`${process.env.REACT_APP_API_JARAUS}/checkJaraUsNameDuplicate?jaraUsName=${groupName}`, {
+        withCredentials: true,
+      });
       
-      // if (response.status === 200) {
-      //   setGroupNameErr({ available: true, msg: "사용 가능한 그룹명입니다" });
-      // } else {
-      //   setGroupNameErr({ available: false, msg: "이미 존재하는 그룹명입니다" });
-      // }
+      if (response.status === 200) {
+        setGroupNameErr({ available: true, msg: "사용 가능한 그룹명입니다" });
+      } else {
+        setGroupNameErr({ available: false, msg: "이미 존재하는 그룹명입니다" });
+      }
 
-      setGroupNameErr({ available: true, msg: "사용 가능한 그룹명입니다" });
+      //setGroupNameErr({ available: true, msg: "사용 가능한 그룹명입니다" });
 
       
     } catch (error) {
@@ -133,7 +135,9 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
         rule: rule
       }
 
-      const response = await axios.post('api/jaraus/create', jarausData);
+      const response = await axios.post(`${process.env.REACT_APP_API_JARAUS}/create`, jarausData, {
+        withCredentials: true,
+      });
 
       if(response.status === 201) {
         alert("Jara-Us가 생성되었습니다!");

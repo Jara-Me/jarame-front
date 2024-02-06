@@ -73,28 +73,28 @@ const GroupImgUploader:React.FC<GroupImgUploaderProps> = ({groupImg, setGroupImg
         setGroupImg(defaultGroupImg);
     };
 
-    const submitHandler = async( event:React.MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault();
+    // const submitHandler = async( event:React.MouseEvent<HTMLButtonElement>) => {
+    //     event.preventDefault();
 
-        // 서버 통신
-        const formData = new FormData();
+    //     // 서버 통신
+    //     const formData = new FormData();
 
-        if (file) {
-            formData.append("file", file[0]);
+    //     if (file) {
+    //         formData.append("file", file[0]);
       
-            try {
-              const response = await axios.post("/api/upload", formData, {
-                headers: { "content-type": "multipart/form-data" },
-              });
-              console.log(response);
-            } catch (error: any) {
-              console.log("이미지업로드 에러 발생");
-              throw new Error(error);
-            }
-          } else {
-            alert("업로드할 이미지가 없습니다");
-          }
-        };
+    //         try {
+    //           const response = await axios.post("/api/upload", formData, {
+    //             headers: { "content-type": "multipart/form-data" },
+    //           });
+    //           console.log(response);
+    //         } catch (error: any) {
+    //           console.log("이미지업로드 에러 발생");
+    //           throw new Error(error);
+    //         }
+    //       } else {
+    //         alert("업로드할 이미지가 없습니다");
+    //       }
+    //     };
 
         return (
         <Wrapper>
@@ -117,7 +117,7 @@ const GroupImgUploader:React.FC<GroupImgUploaderProps> = ({groupImg, setGroupImg
                 $fontColor="jarameGrey"
                 $fontSize="10"
                 $width="auto"
-                onClick={submitHandler}>대표 이미지 변경</Button>
+                /*onClick={submitHandler}*/>대표 이미지 변경</Button>
             <Button
                 type="button"
                 className="GroupImgButton"

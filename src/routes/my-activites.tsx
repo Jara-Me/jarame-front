@@ -177,7 +177,10 @@ export default function MyActivites() {
     useEffect(() => {
         const fetchMyJarausData = async () => {
             try {
-                const response = await axios.get(`/api/jaraus/my-groups?userId=${userId}`);
+                const response = await axios.get(`${process.env.REACT_APP_API_JARAUS}/my-groups?userId=${userId}`, {
+                    withCredentials: true,
+                });
+                
                 if (response.status === 200) {
                     console.log(response);
                     setMyJaraus(response.data);
@@ -228,7 +231,9 @@ export default function MyActivites() {
     useEffect(() => {
         const fetchItems = async() => {
             try {
-                const response = await axios.get(`/api/missionPost/my-post?jaraUsId=${activeGroupId}`);
+                const response = await axios.get(`${process.env.REACT_APP_API_MISSIONPOST}/my-post?jaraUsId=${activeGroupId}`, {
+                    withCredentials:true,
+                });
 
                 if(response.status === 200) {
                     setMyMissionPosts(response.data);
