@@ -10,7 +10,8 @@ function EditPostModal(
     { onClose, jaraUsId, missionPostId } : PropsWithChildren<PostModalDefaultType & {missionPostId:number}>
 ) {
 
-    const [userId, setUserId] = useState<number|undefined>(1);
+    //const [userId, setUserId] = useState<number|undefined>(1);
+    let userId = 1;
 
     /*
     useEffect(()=> {
@@ -109,7 +110,7 @@ function EditPostModal(
             }
         };
 
-        //fetchOriginalData();
+        fetchOriginalData();
 
         setOriginalData({
             "missionPostId": 3,

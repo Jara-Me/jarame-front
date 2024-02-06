@@ -56,7 +56,7 @@ const GroupImgUploader:React.FC<GroupImgUploaderProps> = ({groupImg, setGroupImg
     const [file, setFile] = useState<FileList | null>();
     const imgUploadInput = useRef<HTMLInputElement | null>(null);
     // const [GroupImgSrc, setGroupImg] = useState(groupImg);
-
+    console.log(file);
     const onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if(event.target.files) {
             setFile(event.target.files);

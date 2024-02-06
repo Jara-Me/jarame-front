@@ -14,10 +14,12 @@ interface GroupModalProps {
   onClose: () => void;
 }
 
-function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
+function GroupModal({ 
+  //onClickToggleGroupModal,
+   onClose }: GroupModalProps) {
   const [groupName, setGroupName] = useState("");
-  const [firsttime, setFirsttime] = useState(true);
-  const [groupAvailable, setGroupAvailable] = useState(false);
+  // const [firsttime, setFirsttime] = useState(true);
+  // const [groupAvailable, setGroupAvailable] = useState(false);
 
   const [activeDays, setActiveDays] = useState([false, false, false, false, false, false, false]);
 
@@ -75,6 +77,7 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
     }, [] as string[]);
 
     setRecurrence(updatedRecurrence);
+    console.log(recurrence);
   };
 
   const handleCheckAvailability = async() => {
@@ -113,6 +116,8 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
   useEffect(()=> {
   }, [groupNameErr]);
 
+  
+/*
   const handleCreateGroup = async() => {
     // 여기에서 Jara-Us 생성 로직을 추가하고,
     // 생성이 성공했을 때 onClose 함수와 alert를 실행
@@ -151,7 +156,10 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
     }
 
   };
+  */
 
+  
+  /*
   const onSubmitJaraUs = (e: React.FormEvent) => {
       e.preventDefault();
       
@@ -167,6 +175,7 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
       
       handleCreateGroup();
   }
+  */
 
   // const [searchQuery, setSearchQuery] = useState('');
   

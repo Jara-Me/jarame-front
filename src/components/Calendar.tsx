@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 
@@ -21,7 +21,9 @@ interface CalendarProps {
   className?: string;
 }
 
-const Calendar: React.FC<CalendarProps> = ({ className }) => {
+const Calendar: React.FC<CalendarProps> = ({ 
+ //  className
+ }) => {
   const daysInMonth = 31;
   const startDay = 3;
 

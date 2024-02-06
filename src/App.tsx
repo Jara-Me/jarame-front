@@ -13,11 +13,11 @@ import MyPage from "./routes/my-page";
 import MyActivites from "./routes/my-activites";
 import MyAccount from "./routes/my-account";
 import MyPageLayout from "./components/mypage-layout";
-import ProtectedRoute from "./components/protected-route";
+// import ProtectedRoute from "./components/protected-route";
 import Main from "./routes/main";
 import MyJaraus from "./routes/MyJaraus";
 import SearchDetail from "./routes/SearchDetail";
-import { useCookies } from "react-cookie";
+// import { useCookies } from "react-cookie";
 
 const router = createBrowserRouter([
   // router 설정 부분
