@@ -8,9 +8,11 @@ import java.time.LocalDateTime;
 
 
 public interface PointService {
-   boolean checkIn(Long userId, LocalDateTime dateTime);
-   boolean passTicket(Long userId);
 
-   int pointPlus(Long userId, int changeAmount);
+   String checkIn(Long userId, LocalDateTime dateTime);
+   String passTicket(Long userId);
+
+   int pointPlus(Long userId, int changeAmount,Long jaraUsId);
+
 
 }

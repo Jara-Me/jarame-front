@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 import MongStore from './MongStore';
 import { palette } from '../assets/styles/palette';

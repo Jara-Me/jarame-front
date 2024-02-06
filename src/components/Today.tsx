@@ -1,14 +1,48 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import PostModal from './post-modal';
+import axios from 'axios';
 
 interface TodayContentProps {
   className?: string;
-  onClickTogglePostModal: () => void;
 }
+interface Mission {
+  dailyMissionResult: boolean;
+  jaraUsName: string;
+  missionName: string;
+}
+const TodayContent: React.FC<TodayContentProps> = ({ className }) => {
+  const [missionData, setMissionData] = useState<Mission[]>([]);
+  useEffect(() => {
+    const fetchMissionData = async () => {
+      try {
+        const response = await axios.get('/api/dailyMission/get');
+        if (response.data.calendarMissionHistoryDTOs!==undefined){
+          setMissionData(response.data.calendarMissionHistoryDTOs);
+        }else{
+          setMissionData([
+          { dailyMissionResult: true, jaraUsName: 'C를 씹어먹자', missionName: '1일 1백준' },
+          { dailyMissionResult: false, jaraUsName: '거북목 탈퇴 클럽', missionName: '10분 스트레칭' },
+          { dailyMissionResult: true, jaraUsName: '자라어스3 이름', missionName: '자라어스3 미션이름' },
+          { dailyMissionResult: true, jaraUsName: '자라어스4 이름', missionName: '자라어스4 미션이름' },
+        ]);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchMissionData();
+  }, []);
 
-const TodayContent: React.FC<TodayContentProps> = ({ className, onClickTogglePostModal }) => {
-
+  const renderMissions = () => {
+    return missionData.map((mission, index) => (
+      <div key={index} className={`today-mission`}>
+        <div className='today-mission-photo'></div>
+        <div className='today-mission-explain'>{mission.jaraUsName}</div>
+        <div className='today-mission-submit'>인증 바로가기</div>
+        <div className='today-mission-name'>{mission.missionName}</div>
+      </div>
+    ));
+  };
   return (
     <>
       {/* {isOpenPostModal && (
@@ -16,33 +50,12 @@ const TodayContent: React.FC<TodayContentProps> = ({ className, onClickTogglePos
       )} */}
 
       <Todays>
-        <div className='today-mission'>
-          <div className='today-mission-1'>
-            <div className='today-mission-photo'></div>
-            <div className='today-mission-explain'>C를 씹어먹자</div>
-            <div className='today-mission-submit' onClick={onClickTogglePostModal}>인증 바로가기</div>
-            <div className='today-mission-name'>1일 1백준</div>
-          </div>
-          <div className='today-mission-2'>
-            <div className='today-mission-photo'></div>
-            <div className='today-mission-explain'>거북목 탈퇴 클럽</div>
-            <div className='today-mission-submit' onClick={onClickTogglePostModal}>인증 바로가기</div>
-            <div className='today-mission-name'>10분 스트레칭</div>
-          </div>
+        <div className='today-missions'>{renderMissions()}</div>
+        <div className='todo-list'>
+          <div className='todo-list-1'>⦁ 자료조사 보내기 
+          <input className='todo-list-1-submit' type='checkbox' /></div>
+          <input className='todo-list-add' type='text' placeholder='⦁ 추가하려면 클릭하세요' />
         </div>
-
-        <ul className='todo-list'>
-        <li>
-          <div className='todo-list-1'>
-            <label htmlFor="todo">자료조사 보내기</label>
-            <input className='todo-list-1-submit' type='checkbox' id="todo"></input>
-          </div>
-        </li>
-        <li>
-          <input className='todo-list-add' type='text' placeholder='추가하려면 클릭하세요' />
-        </li>
-        </ul>
-
       </Todays>
     </>
   );
@@ -57,26 +70,31 @@ top:60px;
 border-bottom-left-radius: 15px;
 border-bottom-right-radius: 15px;
 
-.today-mission{
+.today-missions{
     width: 500px;
+    max-height: 200px;
+    overflow: auto; 
+    overflow-x: hidden;
     margin: 0 auto;
     margin-top: 30px;
+    &::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #888;
+      border-radius: 4px;
+    }
 }  
-.today-mission-1 {
+.today-mission {
     display:grid;
     grid-template-columns: 0.5fr 1fr 1fr;
     grid-column-gap: 91px;
     top: 100px;
-    left: 420px;
-    padding-bottom: 15px;
-    margin-bottom: 30px;
-    box-shadow: 0px 5px 3px -5px rgba(0, 0, 0, 0.5);
-}
-.today-mission-2 {
-    display:grid;
-    grid-template-columns: 0.5fr 1fr 1fr;
-    grid-column-gap: 91px;
-    top: 150px;
     left: 420px;
     padding-bottom: 15px;
     margin-bottom: 30px;
@@ -90,10 +108,12 @@ border-bottom-right-radius: 15px;
   background-color: lightgrey;
 }
   .today-mission-explain {
+    width : 120px;
     color: grey;
     font-size: 15px;
   }
   .today-mission-name {
+    width : 120px;
     font-size: 20px;
     white-space: nowrap;
   }

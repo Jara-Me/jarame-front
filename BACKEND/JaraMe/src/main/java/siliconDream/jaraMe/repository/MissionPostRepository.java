@@ -1,12 +1,16 @@
 package siliconDream.jaraMe.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import siliconDream.jaraMe.domain.MissionPost;
 import siliconDream.jaraMe.dto.GetMissionPostDTO;
 import siliconDream.jaraMe.dto.MissionPostDTO;
+
+import java.util.List;
 
 import java.util.Optional;
 
@@ -15,66 +19,41 @@ public interface MissionPostRepository extends JpaRepository<MissionPost, Long> 
 
     MissionPost findByMissionPostId(Long missionPostId);
 
-    //TODO : 미션인증글 작성
-    default Optional<MissionPost> saveMissionPost(MissionPostDTO missionPostDTO) {
-        //객체 형성
-        MissionPost missionPost = new MissionPost();
-
-        //컬럼값 설정
-        missionPost.setUser(missionPost.getUser());
-        missionPost.setJaraUs(missionPost.getJaraUs());
-
-        missionPost.setDisplay(missionPost.isDisplay());
-        missionPost.setAnonymous(missionPost.isAnonymous());
-        missionPost.setPostDateTime(missionPost.getPostDateTime());
-
-        missionPost.setTextTitle(missionPost.getTextTitle());
-        missionPost.setTextContent(missionPost.getTextContent());
-        missionPost.setImageContent(missionPost.getImageContent());
-
-
-        save(missionPost);
-
-        //id(missionPostId,기본키) 반환받기
-        Long savedMissionPostId = missionPost.getMissionPostId();
-
-        MissionPost savedMissionPost = new MissionPost();
-        savedMissionPost = findByMissionPostId(savedMissionPostId);
-        return Optional.ofNullable(savedMissionPost);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
+    MissionPost save(MissionPost missionPost);
 
 
     //미션 인증글 조회
-    @Query("SELECT new siliconDream.jaraMe.dto.GetMissionPostDTO(" +
-            "mp.missionPostId, mp.textTitle, mp.textContent, mp.imageContent, mp.postDateTime," +
-            "u.nickname, u.profileImage, " +
-            "c.commentId, c.commentContent, c.commentDate, " +
-            "cu.nickname as commentUserNickname, cu.profileImage as commentUserProfileImage, " +
-            "r.reactionId, r.reactionType, " +
-            "ru.nickname as reactionUserNickname, ru.profileImage as reactionUserProfileImage, " +
-            "mp.comment as CommentDTO, " +
-            "mp.reaction as ReactionDTO) " +
+
+    Optional<MissionPost> findMissionPostByMissionPostId(@Param("missionPostId") Long missionPostId);
+
+
+
+
+    @Modifying
+    @Query("UPDATE MissionPost mp SET mp.display = :display, mp.anonymous = :anonymous, mp.textTitle = :textTitle, mp.textContent = :textContent, mp.imageContent =:imageContent " +
+            "WHERE mp.missionPostId = :missionPostId")
+    default void updateMissionPostByMissionPostId(Long missionPostId, boolean display, boolean anonymous, String textTitle, String textContent, String imageContent){
+        MissionPost missionPost = findByMissionPostId(missionPostId);
+        missionPost.setDisplay(display);
+        missionPost.setAnonymous(anonymous);
+        missionPost.setTextTitle(textTitle);
+        missionPost.setTextContent(textContent);
+        missionPost.setImageContent(imageContent);
+        save(missionPost);
+    }
+
+
+    @Query("SELECT mp.missionPostId " +
             "FROM MissionPost mp " +
-            "LEFT JOIN mp.comment c " +
-            "LEFT JOIN c.user cu " +
-            "LEFT JOIN mp.reaction r " +
-            "LEFT JOIN r.user ru " +
-            "LEFT JOIN mp.user u " +
-            "WHERE mp.missionPostId = :missionPostId OR c.missionPost.missionPostId = :missionPostId OR r.missionPost.missionPostId = :missionPostId")
-    GetMissionPostDTO findByMissionPostIdWithCommentsAndReactions(@Param("missionPostId") Long missionPostId);
+            "LEFT JOIN mp.user as mpu " +
+            "WHERE mpu.userId = :userId")
+    Optional<List<Long>> findMissionPostIdByUser_UserId(Long userId);
 
+    List<MissionPost> findAllByJaraUs_JaraUsIdAndUser_UserId(Long jaraUsId, Long userId);
 
+    List<MissionPost> findByJaraUs_JaraUsId(Long jaraUsId);
+
+/* 
+    void delete(MissionPost missionPost);*/
 
 }

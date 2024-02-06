@@ -2,23 +2,37 @@ package siliconDream.jaraMe.service;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+/*커밋 전 취소
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+*/
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import siliconDream.jaraMe.domain.User;
+import siliconDream.jaraMe.dto.LoginResponse;
 import siliconDream.jaraMe.dto.UserDto;
+import siliconDream.jaraMe.repository.JoinUsersRepository;
 import siliconDream.jaraMe.repository.UserRepository;
 
-import java.time.LocalDate;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.List;
+
 
 @Service
 public class UserServiceImpl implements UserService {
-
     @Autowired
     private UserRepository userRepository;
+    private JoinUsersRepository joinUsersRepository;
 
+
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
     @Override
     public boolean create(UserDto userDto) {
         if (!isPasswordConfirmed(userDto)) {
@@ -26,12 +40,13 @@ public class UserServiceImpl implements UserService {
         }
 
         // Check for email duplication using JpaRepository
-        if (userRepository.findEmailByEmail(userDto.getEmail()) != null) {
+        if (emailCheck(userDto.getEmail())) {
+
             return false; // Duplicate email
         }
 
         // Check for nickname duplication using JpaRepository
-        if (userRepository.findNicknameByNickname(userDto.getNickname()) != null) {
+        if (nicknameCheck(userDto.getNickname())) {
             return false; // Duplicate nickname
         }
 
@@ -41,12 +56,9 @@ public class UserServiceImpl implements UserService {
         user.setNickname(userDto.getNickname());
         user.setPassword(userDto.getPassword());
         user.setEmail(userDto.getEmail());
-        String birthDateString = userDto.getBirthDate();
-        LocalDate birthDate = LocalDate.parse(birthDateString);
-        user.setBirthDate(birthDate);
+        user.setInterest(userDto.getInterest());
+        user.setCheckIn(false);
 
-        // Set other fields as needed
-        user.setCheckIn(false); // Assuming a new user is not checked in by default
         user.setPoint(0);
         user.setPassTicket(0);
 
@@ -54,10 +66,21 @@ public class UserServiceImpl implements UserService {
         return true; // Successful registration
     }
 
+    public boolean emailCheck(String email) {
+        return userRepository.findEmailByEmail(email) != null;
+    }
+
+    public boolean nicknameCheck(String nickname) {
+        return userRepository.findNicknameByNickname(nickname) != null;
+    }
     @Override
-    public String emailCheck(String email) {
+    public String findUserEmailByEmail(String email) {
         return userRepository.findEmailByEmail(email);
     }
+
+
+
+
 
     @Override
     public boolean isPasswordConfirmed(UserDto userDto) {
@@ -77,20 +100,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUserByUserId(Long userId) {
-        // Implement the logic to find a user by username
+
         //수정한 부분
         return userRepository.findByUserId(userId);
     }
 
     @Override
-    public User login(String email, String password) {
+    public LoginResponse login(String email, String password) {
         User user = userRepository.findByEmail(email);
         if (user == null) {
-            throw new UsernameNotFoundException("회원가입을 해주세요."); // 이메일이 존재하지 않음
+            return new LoginResponse(false, "USER_NOT_FOUND", null);
         } else if (!user.getPassword().equals(password)) {
-            throw new BadCredentialsException("이메일 또는 비밀번호를 다시 확인해주세요."); // 비밀번호 불일치
+            return new LoginResponse(false, "INVALID_PASSWORD", null);
         }
-        return user; // 성공적인 로그인
+        return new LoginResponse(true, null, user);
+
     }
     @Override
     public User findUserByEmail(String email){
@@ -99,11 +123,85 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long userId) {
-        
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        userRepository.delete(user);
     }
 
     @Override
-    public void updateProfileImage(Long userId, String profileImagePath) {
+    public String updateProfileImage(Long userId, MultipartFile image) throws IOException{
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String imageUrl = uploadImage(image); // 이미지 업로드 로직
+        user.setProfileImage(imageUrl);
+        userRepository.save(user);
+
+        return imageUrl;
+    }
+
+    private String uploadImage(MultipartFile image) throws IOException {
+        // 이미지 파일 이름 생성
+        String fileName = generateUniqueFileName(image.getOriginalFilename());
+
+        // 이미지를 저장할 경로 설정
+        Path imagePath = Paths.get("uploads/images", fileName);
+
+        // 이미지 파일을 지정된 경로에 저장
+        Files.copy(image.getInputStream(), imagePath);
+
+        // 저장된 이미지의 경로 반환
+        return imagePath.toString();
+    }
+
+    private String generateUniqueFileName(String originalFilename) {
+        // 타임스탬프를 이용한 고유 식별자 생성
+        String timestamp = String.valueOf(Instant.now().toEpochMilli());
+
+        // 원본 파일의 확장자를 유지하기 위한 처리
+        String extension = "";
+        int extensionIndex = originalFilename.lastIndexOf('.');
+        if (extensionIndex > 0) {
+            extension = originalFilename.substring(extensionIndex); // 파일 확장자 포함
+        }
+
+        // 고유한 파일 이름 생성
+        return timestamp + "_" + originalFilename + extension;
+    }
+
+    @Override
+    public boolean changeNickname(Long userId, String newNickname, String password) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!user.getPassword().equals(password)) {
+            throw new RuntimeException("Invalid password");
+        }
+
+        if (userRepository.findByNickname(newNickname).isPresent()) {
+            return false; // 닉네임 중복
+        }
+
+        user.setNickname(newNickname);
+        userRepository.save(user);
+        return true; // 닉네임 변경 성공
+    }
+
+    public int getPassTicket(Long userId) {
+        return userRepository.findPassTicketByUserId(userId);
+    }
+    @Override
+    public int getPoints(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"))
+                .getPoint();
+    }
+
+    @Override
+    public int getParticipatingJaraUsCount(Long userId) {
+        return joinUsersRepository.findJaraUs_jaraUsIdsByUser_userId(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"))
+                .size();
 
     }
 }

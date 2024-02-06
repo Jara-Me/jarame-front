@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Switcher } from './auth-components';
 interface ProfileContentProps {
     className?: string;
   }
 const ProfileContent: React.FC<ProfileContentProps> = ({ className }) => {
-
+    console.log(className);
 
     return(
         <Profiles>
@@ -39,7 +39,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ className }) => {
 
 const Profiles = styled.div`
     width: 580px;
-    height: 200px;
+    height: 150px;
     box-shadow: 5px 0 10px rgba(0, 0, 0, 0.1), -5px 0 10px rgba(0, 0, 0, 0.1) ;
     position: absolute;
     top:60px;
@@ -50,11 +50,9 @@ const Profiles = styled.div`
         width: 430px;
         height: 100px;
         margin: 0 auto;
-        margin-top: 50px;
+        margin-top: 30px;
         display: grid;
         grid-template-columns: 1fr 1.7fr 1.7fr;
-        justify-content: center;
-        align-items: center;
     }
     .user-photo{
         grid-row: span 2;
