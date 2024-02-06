@@ -199,9 +199,11 @@ export default function Group(jarausId:number) {
         fetchJarausInfo();
     },[]);
 
-    const [userId, setUserId] = useState<number|undefined>();
+    // const [userId, setUserId] = useState<number|undefined>();
+    const [userId, setUserId] = useState<number>(1);
     const [isAdminUser, setIsAdminUser] = useState<boolean>(true);
 
+    /*
     const getUserInfo = async() => {
         try {
             const response = await axios.get("/api/profile");
@@ -226,6 +228,7 @@ export default function Group(jarausId:number) {
             getUserInfo();
         }
     }, [jarausId]);
+    */
 
 
     const [selectedMissionPostId, setSelectedMissionPostId] = useState<number>();

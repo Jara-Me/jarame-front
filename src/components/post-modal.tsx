@@ -101,8 +101,9 @@ function PostModal(
    }: PropsWithChildren<PostModalDefaultType>
 ) {
     
-    const [userId, setUserId] = useState<number|undefined>();
+    const [userId, setUserId] = useState(1);
 
+    /*
     useEffect(()=> {
         const fetchUserId = async () => {
             try {
@@ -120,6 +121,7 @@ function PostModal(
     }
         fetchUserId();
     }, []);
+    */
 
 
 
