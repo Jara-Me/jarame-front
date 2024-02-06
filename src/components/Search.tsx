@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import Yoga from '../assets/images/yoga.jpg';
+import Book from '../assets/images/book.jpeg';
+import Coding from '../assets/images/coding.jpg';
 interface SearchContentProps {
   className?: string;
 }
@@ -27,17 +30,17 @@ const SearchContent: React.FC<SearchContentProps> = ({ className }) => {
         />
         <div className='search-button' onClick={handleSearch}>🔍︎</div>
         <div className='recommend-container'>
-          <div className='recommend'>
-            <div className='recommend-name' onClick={check}></div>
-            <div className='recommend-explain'></div>
+          <div className='recommend' style={{backgroundImage:`url(${Yoga})`, backgroundSize: 'cover'}}>
+            <div className='recommend-name' onClick={check}>하루 요가</div>
+            <div className='recommend-explain'>간단한 요가 챌린지</div>
           </div>
-          <div className='recommend'>
-            <div className='recommend-name'></div>
-            <div className='recommend-explain'></div>
+          <div className='recommend' style={{backgroundImage:`url(${Book})`, backgroundSize: 'cover'}}>
+            <div className='recommend-name'>마음의 양식</div>
+            <div className='recommend-explain'>현대인의 독서 습관 기르기</div>
           </div>
-          <div className='recommend'>
-            <div className='recommend-name'></div>
-            <div className='recommend-explain'></div>
+          <div className='recommend' style={{backgroundImage:`url(${Coding})`, backgroundSize: 'cover'}}>
+            <div className='recommend-name'>C를 씹어먹자</div>
+            <div className='recommend-explain'>1일 1백준</div>
           </div>
         </div>
       </Searches>
@@ -81,18 +84,22 @@ border-bottom-right-radius: 15px;
       background-color: lightgrey;
     }
     .recommend-name{
-      width: 100px;
+      width: 120px;
       height: 20px;
       border-radius: 10px;
-      background-color: grey;
-      margin: 50px 20px 20px 30px;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+      margin: 0 auto;
+      margin-top: 40px;
     }
     .recommend-explain{
-      width: 100px;
+      width: 130px;
       height: 20px;
       border-radius: 10px;
-      background-color: grey;
-      margin: 20px 20px 20px 30px;
+      color: white;
+      margin: 0 auto;
+      margin-top: 40px;
     }
 `;
 

@@ -1,6 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import Coding from '../assets/images/coding.jpg';
+import Turtle from '../assets/images/turtle.png';
+import Yoga from '../assets/images/yoga.jpg';
+import Book from '../assets/images/book.jpeg';
 
 interface JarausContentProps {
   className?: string;
@@ -27,8 +31,8 @@ const JarausContent: React.FC<JarausContentProps> = ({ className }) => {
           setMissionData([
             { dailyMissionResult: true, jaraUsName: 'C를 씹어먹자', missionName: '1일 1백준' },
             { dailyMissionResult: false, jaraUsName: '거북목 탈퇴 클럽', missionName: '10분 스트레칭' },
-            { dailyMissionResult: true, jaraUsName: '자라어스3 이름', missionName: '자라어스3 미션이름' },
-            { dailyMissionResult: true, jaraUsName: '자라어스4 이름', missionName: '자라어스4 미션이름' },
+            { dailyMissionResult: true, jaraUsName: '하루 요가', missionName: '간단한 요가 챌린지' },
+            { dailyMissionResult: true, jaraUsName: '마음의 양식', missionName: '현대인의 독서 습관 기르기' },
           ]);
         }
       } catch (error) {
@@ -51,12 +55,33 @@ const JarausContent: React.FC<JarausContentProps> = ({ className }) => {
   };
 
   const renderMissions = () => {
-    return missionData.map((mission, index) => (
-      <div key={index} className='recommend'>
-        <div className='recommend-name'>{mission.jaraUsName}</div>
-        <div className='recommend-explain'>{mission.missionName}</div>
-      </div>
-    ));
+    return missionData.map((mission, index) => {
+      let backgroundImage: string;
+      
+      // 각 mission에 따라 다른 이미지를 설정
+      switch (mission.missionName) {
+        case '1일 1백준':
+          backgroundImage = Coding;
+          break;
+        case '10분 스트레칭':
+          backgroundImage = Turtle;
+          break;
+        // 다른 mission에 대한 이미지도 추가할 수 있음
+        case '간단한 요가 챌린지':
+          backgroundImage = Yoga;
+          break;
+        case '현대인의 독서 습관 기르기':
+          backgroundImage = Book;
+          break;
+      }
+
+      return (
+        <div key={index} className='recommend' style={{backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover'}}>
+          <div className='recommend-name'>{mission.jaraUsName}</div>
+          <div className='recommend-explain'>{mission.missionName}</div>
+        </div>
+      );
+    });
   };
 
   return (
@@ -124,6 +149,8 @@ const Jaraus = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    color: white;
+    font-size: 20px;
   }
   
   .recommend-container::-webkit-scrollbar {
