@@ -48,7 +48,7 @@ function Main() {
 
   const [yellowContents, setYellowContents] = useState<{ [key: string]: (props: { className?: string }) => JSX.Element }>({
     searching: ({ className }) => <SearchContent className={`yellow-box ${className}`} />,
-    profile: ({ className }) => <ProfileContent className={`yellow-box ${className}`} />,
+    profile: ({ className }) => <ProfileContent className={`yellow-box ${className}`} userId={1} />,
     callender: ({ className }) => <Calendar className={`yellow-box ${className}`} />,
     today: ({ className }) => <TodayContent className={`yellow-box ${className}`} />,
     jaraus: ({ className }) => <JarausContent className={`yellow-box ${className}`} />,
@@ -139,36 +139,36 @@ function Main() {
           setMissionNotifications([
             {
               "earnPoint": 50,
-              "missionName": "자라어스1 미션이름",
-              "jaraUsName": "자라어스1 이름",
-              "period": "2024년 01월 10일 ~ 2024년 01월 31일"
+              "missionName": "10분 스트레칭",
+              "jaraUsName": "거북목 탈퇴 클럽",
+              "period": "2024년 01월 10일 - 2024년 01월 31일"
             }
           ]);
           setReactionNotifications([
             {
               "missionPostId": 1,
-              "missionPostTextTitle": "제목1",
+              "missionPostTextTitle": "누군가 당신의 게시물을 좋아합니다! 👍",
               "like": 0,
               "good": 0,
               "smile": 0
             },
             {
               "missionPostId": 2,
-              "missionPostTextTitle": "제목1",
+              "missionPostTextTitle": "게시물에 댓글이 달렸습니다! ✍️",
               "like": 0,
               "good": 2,
               "smile": 1
             },
             {
               "missionPostId": 3,
-              "missionPostTextTitle": "제목1",
+              "missionPostTextTitle": "게시물에 댓글이 달렸습니다! ✍️",
               "like": 0,
               "good": 0,
               "smile": 0
             },
             {
-              "missionPostId": 4,
-              "missionPostTextTitle": "제목1",
+              "missionPostId": 1,
+              "missionPostTextTitle": "누군가 당신의 게시물에 웃고 있습니다! 😄",
               "like": 0,
               "good": 0,
               "smile": 0

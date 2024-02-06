@@ -1,22 +1,56 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Switcher } from './auth-components';
+import Puppy from '../assets/images/puppyProfile.jpg';
+
 interface ProfileContentProps {
     className?: string;
+    userId: number;
+}
+interface ProfileData {
+    userId: number;
+    nickname: string;
+    profileImage: string;
+    points: number;
+    passTicket: number;
+    participatingJaraUsCount: number;
   }
-const ProfileContent: React.FC<ProfileContentProps> = ({ className }) => {
-    console.log(className);
+const ProfileContent: React.FC<ProfileContentProps> = ({ className, userId }) => {
+    const [profile, setProfile] = useState<ProfileData | null>(null);
+    useEffect(() => {
+        const getProfileInfo = async () => {
+        try {
+            const response = await axios.get<ProfileData>(`/api/profile/${userId}`);
+            if (response.data.userId!== undefined){
+                setProfile(response.data);
+            }else{
+                setProfile({
+                    "userId": 1,
+                    "nickname": "silicondream",
+                    "profileImage": "https://example.com/path/to/user/profile/image.jpg",
+                    "points": 150,
+                    "passTicket": 3,
+                    "participatingJaraUsCount": 5
+                  });
+            }
+        } catch (error) {
+            console.error('Error fetching profile information:', error);
+        }
+        };
+        getProfileInfo();
+    }, []);
 
     return(
         <Profiles>
             <div className='profile-container'>
                 <div className='user-photo'></div>
-                <div className='user-name'>솔룩스 님</div>
+                <div className='user-name'>{profile?.nickname} 님</div>
                 <div className='user-point'>
                 <svg fill="none" strokeWidth={1.5} stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3" />
-</svg>200 포인트</div>
+</svg>{profile?.points} 포인트</div>
                 <Switcher className="mypage">
                     <Link to="/mypage"><div className='user-page'>
                     <svg viewBox="0 0 20 20">
@@ -31,7 +65,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ className }) => {
                                 c0.431,0,0.78,0.35,0.78,0.78v9.546C19.562,12.848,19.214,13.198,18.783,13.198z"></path>
                                 <path fill="black" d="M12.927,17.908H1.217c-0.431,0-0.78-0.351-0.78-0.78V7.581c0-0.43,0.349-0.78,0.78-0.78h11.709
                                 c0.431,0,0.78,0.35,0.78,0.78v9.546C13.706,17.557,13.357,17.908,12.927,17.908z M1.997,16.348h10.15V8.361H1.997V16.348z"></path>
-                    </svg>참여 중인 미션 2개</div>
+                    </svg>참여 중인 미션 {profile?.participatingJaraUsCount}개</div>
             </div>
         </Profiles>
     )
@@ -47,37 +81,46 @@ const Profiles = styled.div`
     border-bottom-right-radius: 15px;
 
     .profile-container{
-        width: 430px;
+        width: 650px;
         height: 100px;
-        margin: 0 auto;
         margin-top: 30px;
         display: grid;
         grid-template-columns: 1fr 1.7fr 1.7fr;
     }
     .user-photo{
+        margin: 0 auto;
         grid-row: span 2;
         width: 100px;
         height: 100px;
         border-radius: 100px;
         background-color: grey;
+        background-image: url(${Puppy});
+        background-size: cover; 
     }
     .user-name{
+        margin-top: 10px;
+        margin-left: -20px;
         font-size: 25px;
         font-weight: 30px;
     }
     .user-point {
-        display: flex;
-        align-items: center;
+        margin-top: 10px;
+        margin-left: -120px;
     }
     .user-mission {
-        display: flex;
-        align-items: center;
+        margin-top: 10px;
+        margin-left: -120px;
         white-space: nowrap;
     }
+    
     .user-page{
+        margin-top: 5px;
+        margin-left: -90px;
         color: grey;
     }
-
+    .user-page:hover{
+        color: black;
+    }
     svg {
         width: 20px;
         margin-right: 10px;

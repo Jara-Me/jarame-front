@@ -28,8 +28,9 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
   const [hashtags, setHashtags] = useState<string[]>();
   const [display, setDisplay] = useState<boolean>(true);
 
-  const onChangeValue = (e : React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement>) => {
-    const {target : {name, value}} = e;
+  const onChangeValue = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { target: { name, value } } = e;
+  
     if (name === "missionName") {
       setMissionName(value);
     } else if (name === "description") {
@@ -40,8 +41,9 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
       setStartDate(value);
     } else if (name === "endDate") {
       setEndDate(value);
-    } 
-};
+    }
+  };
+  
 
   const handleDayClick = (index: number) => {
     setActiveDays((prevActiveDays) => {

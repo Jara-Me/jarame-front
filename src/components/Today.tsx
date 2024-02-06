@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import Coding from '../assets/images/coding.jpg';
+import Turtle from '../assets/images/turtle.png';
+import Yoga from '../assets/images/yoga.jpg';
 
 interface TodayContentProps {
   className?: string;
@@ -22,7 +25,7 @@ const TodayContent: React.FC<TodayContentProps> = ({ className }) => {
           setMissionData([
           { dailyMissionResult: true, jaraUsName: 'C를 씹어먹자', missionName: '1일 1백준' },
           { dailyMissionResult: false, jaraUsName: '거북목 탈퇴 클럽', missionName: '10분 스트레칭' },
-          { dailyMissionResult: true, jaraUsName: '자라어스3 이름', missionName: '자라어스3 미션이름' },
+          { dailyMissionResult: true, jaraUsName: '하루 요가', missionName: '간단한 요가 챌린지' },
           { dailyMissionResult: true, jaraUsName: '자라어스4 이름', missionName: '자라어스4 미션이름' },
         ]);
         }
@@ -34,14 +37,30 @@ const TodayContent: React.FC<TodayContentProps> = ({ className }) => {
   }, []);
 
   const renderMissions = () => {
-    return missionData.map((mission, index) => (
-      <div key={index} className={`today-mission`}>
-        <div className='today-mission-photo'></div>
+    return missionData.map((mission, index) => {
+      let backgroundImage: string;
+      
+      // 각 mission에 따라 다른 이미지를 설정
+      switch (mission.missionName) {
+        case '1일 1백준':
+          backgroundImage = Coding;
+          break;
+        case '10분 스트레칭':
+          backgroundImage = Turtle;
+          break;
+        // 다른 mission에 대한 이미지도 추가할 수 있음
+        case '간단한 요가 챌린지':
+          backgroundImage = Yoga;
+          break;
+      }
+      return(<div key={index} className={`today-mission`}>
+        <div className='today-mission-photo' style={{backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover'}}></div>
         <div className='today-mission-explain'>{mission.jaraUsName}</div>
         <div className='today-mission-submit'>인증 바로가기</div>
         <div className='today-mission-name'>{mission.missionName}</div>
-      </div>
-    ));
+      </div>);
+      
+  });
   };
   return (
     <>

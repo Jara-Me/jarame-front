@@ -147,6 +147,7 @@ interface MongProps {
   isOpen: boolean;
 }
 const Mongs = styled.div<MongProps>`
+  z-index: 1;
   position: fixed;
   top: ${({ isOpen }) => (isOpen ? '0' : '-800px')};
   left: 0;
