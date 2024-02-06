@@ -1,16 +1,21 @@
-import { PropsWithChildren, Suspense, useCallback, useEffect, useState } from "react";
+import { PropsWithChildren, useCallback, useEffect, useState } from "react";
 import Button from "./button";
 import Modal from "./modal";
 import styled from "styled-components";
 import { palette } from "../assets/styles/palette";
 import puppyProfile from "../assets/images/puppyProfile.jpg";
 import catProfile from "../assets/images/catProfile.jpg";
+import defaultProfile from "../assets/images/defaultProfile.jpg";
+import exampleCMD from "../assets/images/exampleCMD.png";
 import { ImagePreview, ImagePreviewItem } from "./post-modal";
 import axios from "axios";
 import EditPostModal from "./edit-post-modal";
 
 interface ViewPostModalDefaultType {
-    onClickToggleModal: () => void;
+    //onClickToggleModal: () => void;
+    onClose: () => void;
+    missionPostId: number;
+    jaraUsId: number;
 }
 
 interface ProfileProps {
@@ -291,8 +296,8 @@ const postReaction = async(missionPostId: number, reactionType:string) => {
         const stringMissionPostId = missionPostId.toString();
 
         const reaction = {
-            missionPostId : stringMissionPostId,
-            reactionType : reactionType
+            "missionPostId" : stringMissionPostId,
+            "reactionType" : reactionType
         };
 
         const response = await axios.post("/api/reaction/add", reaction);
@@ -394,18 +399,12 @@ const handleReaction = async(missionPostId:number, reactionType:string, reaction
 
 
 function ViewPostModal(
-   { onClickToggleModal,
+   { //onClickToggleModal,
+    onClose,
+    missionPostId,
+    jaraUsId
    }: PropsWithChildren<ViewPostModalDefaultType>
 ) {
-    const dummyData = {
-        userName: "익명",
-        title: "Sample Title",
-        content: "In the like of the bustling city, where the neon lights paint the sky with vibrant hues, there exists a certain charm that captivates the soul. The rhythm of life echoes through the crowded streets, a symphony of diverse cultures and aspirations. As the sun sets behind the towering skyscrapers, the cityscape transforms into a canvas of twinkling lights, each one telling a story of dreams and ambitions. Amidst the urban chaos, hidden gems emerge – cozy cafes with the aroma of freshly brewed coffee, quaint bookshops inviting literary exploration, and serene parks offering an escape from the urban hustle. Every corner of the city has a tale to tell, from the historic landmarks standing as witnesses to bygone eras to the modern art installations pushing the boundaries of creativity. The people, a mosaic of backgrounds and experiences, create the tapestry of this metropolis. From the laughter of friends sharing a meal in a local diner to the solitary artist finding inspiration in a quiet studio, the city embraces diversity as its likebeat. It's a place where innovation meets tradition, and where the relentless pursuit of excellence intertwines with the appreciation of simple pleasures.",
-        profile: puppyProfile,
-        dateTime: "1월 13일 오후 8:01",
-        images: [catProfile]
-    }
-
     //  리액션 추가
     const [reactions, setReactions] = useState({
         clicklike: false,
@@ -419,25 +418,72 @@ function ViewPostModal(
 
 
     // const [missionPostId, setMissionPostId] = useState<number|null>(null);
-    const [missionPostId, setMissionPostId] = useState<number>(1);
     const [missionPostInfo, setMissionPostInfo] = useState<any>(null);
 
     const [comments, setComments] = useState<CommentDTO[]>([]);
 
 
-    const getMissionPostInfo = async(missionPostId : number) => {
-        setMissionPostId(missionPostId);
-        
+    const getMissionPostInfo = async() => {
+       
         try {
             const response = await axios.get(`/api/missionPost/get?missionPostId=${missionPostId}`);
             setMissionPostInfo(response.data);
             
-                // response.data.commentDTO가 배열인지 확인 후 setComments 수행
-                if (Array.isArray(response.data.commentDTO)) {
-                    setComments(response.data.commentDTO);
-                } else {
-                    setComments([]);
-                }
+            // response.data.commentDTO가 배열인지 확인 후 setComments 수행
+            if (Array.isArray(response.data.commentDTO)) {
+                setComments(response.data.commentDTO);
+            } else {
+                setComments([]);
+            }
+
+            const reactionType = response.data.reactionType;
+
+            switch(reactionType) {
+                case "like":
+                    setReactions((prevReactions) => ({ ...prevReactions, clicklike: true, clickgood: false, clickSmile: false }));
+                    break;
+                case "good":
+                    setReactions((prevReactions) => ({ ...prevReactions, clicklike: false, clickgood: true, clickSmile: false }));
+                    break;
+                case "smile":
+                    setReactions((prevReactions) => ({ ...prevReactions, clicklike: false, clickgood: false, clickSmile: true }));
+                    break;
+                default:
+                    setReactions((prevReactions) => ({ ...prevReactions, clicklike: false, clickgood: false, clickSmile: false }));
+                    break;
+            }
+
+            setMissionPostInfo(        {
+                "missionPostId": 3,
+                "jaraUsId": 44,
+                "postDateTime": "2024년 2월 5일",
+                "nickname":"익명",
+                "display": true,
+                "anonymous": false,
+                "textTitle": "1158 요세푸스 문제 ㅜㅜ",
+                "textContent": `
+                int main()<br>
+                {<br>
+                    int n, k;<br>
+                    int count = 0;<br>
+                    queue<int> q;<br>
+                    vector<int> vec;<br>
+                    scanf("%d %d", &n, &k);<br>
+        <br>
+                    for (int i = 1; i < n + 1; i++) {<br>
+                        q.push(i);<br>
+                    }<br>
+                //q.size가 0(false)이 되면 while 탈출. 즉 큐가 빌 때까지 계속 반복한다.<br>
+            	while (q.size()) {<br>
+		                if (k - 1 == count) {<br>
+	                    		vec.push_back(q.front());<br>
+			                    q.pop();<br>
+			                    count = 0;<br>
+                        }<br>
+            `,
+                "imageContent": exampleCMD,
+                "userProfileImage": defaultProfile
+                });
 
         } catch (error) {
             console.error("Error get mission post info: ", error);
@@ -445,29 +491,8 @@ function ViewPostModal(
     };
 
     useEffect(()=> {
-        const fetchMissionPostInfo = async(missionPostId: number) => {
-            try {
-                const response = await axios.get(`/api/missionPost/get?missionPostId=${missionPostId}`);
-                
-                setMissionPostInfo(response.data);
-                
-                // response.data.commentDTO가 배열인지 확인 후 setComments 수행
-                if (Array.isArray(response.data.commentDTO)) {
-                    setComments(response.data.commentDTO);
-                } else {
-                    setComments([]);
-                }
-
-                
-            } catch (error) {
-                console.error('Error fetch mission post info:', error);
-            }
-        };
-
-            if (missionPostId !== null) {
-                fetchMissionPostInfo(missionPostId);
-            }        
-        }, [missionPostId]);
+        getMissionPostInfo();
+    }, []);
 
 
 
@@ -492,29 +517,33 @@ function ViewPostModal(
     const [isOpenEditPostModal, setOpenEditPostModal] = useState<boolean>(false);
 
     const onClickToggleEditModal = useCallback(() => {
-        setOpenEditPostModal(!isOpenEditPostModal);
+        setOpenEditPostModal(true);                                                                    
     }, [isOpenEditPostModal]);
+
+    const onCloseEditModal = () => {
+        setOpenEditPostModal(false);
+    }
     
     return (
         <>
             {isOpenEditPostModal ? (
-                <EditPostModal onClickToggleModal={onClickToggleEditModal} missionPostId={missionPostId}></EditPostModal>
+                <EditPostModal onClose={()=>{setOpenEditPostModal(false)}} missionPostId={missionPostId} jaraUsId={jaraUsId}></EditPostModal>
             ) :
 
-            <Modal dialogClassName="viewPost" onClickToggleModal={onClickToggleModal}>
+            <Modal dialogClassName="viewPost" onClose={onClose}>
                 {missionPostInfo && 
                 (
                     <LeftContainer>
                     <div className="infoEdit">
                         <InfoWrapper>
-                        <ProfileImg profile={missionPostInfo.profileImage} className="writer"></ProfileImg>
+                        <ProfileImg profile={missionPostInfo.userProfileImage} className="writer"></ProfileImg>
                             <WriterInfoWrapper>
                                 <WriterName className="post">{missionPostInfo.nickname}</WriterName>
                                 <WrittenDateTime>{missionPostInfo.postDateTime}</WrittenDateTime>
                         </WriterInfoWrapper>
                         </InfoWrapper>
 
-                        <Button onClick={()=>{setOpenEditPostModal(!isOpenEditPostModal)}} type="button" className="edit" $buttonColor="jarameGrey" $fontColor="white" $fontSize="6">수정</Button>
+                        <Button onClick={()=>{setOpenEditPostModal(true)}} type="button" className="edit" $buttonColor="jarameGrey" $fontColor="white" $fontSize="6">수정</Button>
                     </div>
                     <PostWrapper>
                         <Title className="post">{missionPostInfo.textTitle}</Title>

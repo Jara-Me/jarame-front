@@ -11,12 +11,15 @@ public class Reaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false,unique = true)
     private Long reactionId;
-    private String reactionType;
+    private String reactionType; //like, smile, good
 
 
+    @Column(columnDefinition = "boolean default false")
+    private boolean notice;//erd다이어그림에 업데이트하기
 
     //FK
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
+
     @JoinColumn(name="missionPost")
     private MissionPost missionPost;
 
@@ -53,6 +56,13 @@ public class Reaction {
 
     public void setUser(User user) {
         this.user = user;
+    }
+    public boolean isNotice() {
+        return notice;
+    }
+
+    public void setNotice(boolean notice) {
+        this.notice = notice;
     }
 
 

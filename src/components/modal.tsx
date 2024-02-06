@@ -4,12 +4,14 @@ import styled from "styled-components";
 // https://jeewonscript.tistory.com/25
 
 interface ModalDefaultType {
-    onClickToggleModal: () => void;
+    //onClickToggleModal: () => void;
+    onClose: () => void;
     dialogClassName: string;
 }
 
 function Modal( {
-    onClickToggleModal,
+    //onClickToggleModal,
+    onClose,
     dialogClassName,
     children,
 }: PropsWithChildren<ModalDefaultType>) {
@@ -19,8 +21,12 @@ function Modal( {
             <Backdrop onClick={(e:React.MouseEvent) => {
                 e.preventDefault();
 
-                if(onClickToggleModal) {
-                    onClickToggleModal();
+                // if(onClickToggleModal) {
+                //     onClickToggleModal();
+                // }
+
+                if(onClose) {
+                  onClose();
                 }
             }}/>
         </ModalContainer>

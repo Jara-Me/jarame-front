@@ -13,6 +13,7 @@ import {
     Wrapper,
 } from "../components/auth-components";
 import GithubButton from "../components/github-btn";
+import axios from "axios";
 
 
 // 에러에 따라 에러 멘트 출력
@@ -65,12 +66,13 @@ export default function CreateAccount() {
 
     return <Wrapper>
         <Title> 로그인 </Title>
-                 <Form onSubmit={onSubmit}>
-         <InputWrapper className="login"><Input onChange = {onChange} name="email" value={email} placeholder="이메일" type="email" required/></InputWrapper>
-         <InputWrapper className="login"><Input onChange = {onChange} name="password" value={password} placeholder="비밀번호" type="password" required/></InputWrapper>
-             <Input onChange = {onChange} type="submit" value={isLoading ? "Loading..." : "로그인"}/>
-         </Form>
-        {error !== "" ? <Error>{error}</Error> : null}
+
+        <Form onSubmit={onSubmit}>
+        <InputWrapper className="login"><Input onChange = {onChange} name="email" value={email} placeholder="이메일" type="email" required/></InputWrapper>
+        <InputWrapper className="login"><Input onChange = {onChange} name="password" value={password} placeholder="비밀번호" type="password" required/></InputWrapper>
+            <Input onChange = {onChange} type="submit" value={isLoading ? "Loading..." : "로그인"}/>
+        </Form>
+        {error !== "" ? <Error className="bottom">{error}</Error> : null}
 
         <Switcher>
             자라미가 처음이신가요? {" "}

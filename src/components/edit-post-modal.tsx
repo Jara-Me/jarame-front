@@ -3,13 +3,34 @@ import { Form, ImagePreview, ImagePreviewItem, Input, PostModalDefaultType, Remo
 import axios from "axios";
 import Modal, { ModalTitle } from "./modal";
 import Button from "./button";
+import defaultProfile from "../assets/images/defaultProfile.jpg";
+import exampleCMD from "../assets/images/exampleCMD.png";
 
 function EditPostModal(
-    { onClickToggleModal, missionPostId } : PropsWithChildren<PostModalDefaultType & {missionPostId:number}>
+    { onClose, jaraUsId, missionPostId } : PropsWithChildren<PostModalDefaultType & {missionPostId:number}>
 ) {
 
-    const [jarausId, setJarausId] = useState<number>(1);
+    const [userId, setUserId] = useState<number|undefined>();
 
+    useEffect(()=> {
+        const fetchUserId = async () => {
+            try {
+                const response = await axios.get("/api/profile");
+        
+                if(response.status === 200) {
+                    setUserId(response.data.userId);
+                    
+                } else {
+                    console.error("Error get User Info")
+                }
+            } catch (error) {
+                console.error("Error get User Info", error);
+            }
+    }
+        fetchUserId();
+    }, []);
+
+    
     const [image, setImage] = useState<string|null>(null);
     const maxImageCount = 1;
 
@@ -73,7 +94,7 @@ function EditPostModal(
 
         const fetchOriginalData = async() => {
             try {
-                const response = await axios.get(`/api/missionPost/get?missionPostId=${missionPostId}`);
+                const response = await axios.get(`/api/missionPost/get?missionPostId=${missionPostId}&userId=${userId}`);
 
                 if(response.status === 200) {
                     setOriginalData(response.data);
@@ -84,11 +105,46 @@ function EditPostModal(
             }
         };
 
-        fetchOriginalData();
-    }, [missionPostId]);
+        //fetchOriginalData();
+
+        setOriginalData({
+            "missionPostId": 3,
+            "jaraUsId": 44,
+            "postDateTime": "2024년 2월 5일",
+            "nickname":"익명",
+            "display": true,
+            "anonymous": false,
+            "textTitle": "1158 요세푸스 문제 ㅜㅜ",
+            "textContent": `
+            int main()<br>
+            {<br>
+                int n, k;<br>
+                int count = 0;<br>
+                queue<int> q;<br>
+                vector<int> vec;<br>
+                scanf("%d %d", &n, &k);<br>
+    <br>
+                for (int i = 1; i < n + 1; i++) {<br>
+                    q.push(i);<br>
+                }<br>
+            //q.size가 0(false)이 되면 while 탈출. 즉 큐가 빌 때까지 계속 반복한다.<br>
+            while (q.size()) {<br>
+                    if (k - 1 == count) {<br>
+                            vec.push_back(q.front());<br>
+                            q.pop();<br>
+                            count = 0;<br>
+                    }<br>
+        `,
+            "imageContent": exampleCMD,
+            "userProfileImage": defaultProfile
+            });
+
+            console.log(originalData);
+    }, []);
 
     // 불러온 originalData로 수정
     useEffect(() => {
+
 
         if(originalData) {
             setTitle(originalData.textTitle);
@@ -101,10 +157,7 @@ function EditPostModal(
         }
     }, [originalData]);
 
-    useEffect(() => {
-        console.log(isLoading);
-    },[isLoading]);
-    
+
     const postEditedMissionPost = async() => {
         try {
             const postData = {
@@ -114,7 +167,7 @@ function EditPostModal(
                 display: display,
                 anonymous: anonymous,
                 postDateTime: new Date().toISOString(),
-                jarausId : jarausId
+                jarausId : jaraUsId
             }
 
             const response = await axios.post(`api/missionPost/update?missionPostId=${missionPostId}`, postData);
@@ -122,7 +175,10 @@ function EditPostModal(
             if (response.status === 200) {
                 //성공 로직
                 alert(response.statusText);
-            } 
+            }  else {
+                alert("수정에 실패했습니다.");
+                alert(response.statusText);
+            }
             
         } catch (error) {
             console.error("Error post mission", error);
@@ -135,7 +191,7 @@ function EditPostModal(
 
     return (
         
-        <Modal dialogClassName="editPost" onClickToggleModal={onClickToggleModal}>
+        <Modal dialogClassName="editPost" onClose={onClose}>
         <ModalTitle>글 수정</ModalTitle>
         <Form onSubmit={onSubmit}>
         <Button type="submit" className="postBtn" $buttonColor="jarameBlue">수정</Button>

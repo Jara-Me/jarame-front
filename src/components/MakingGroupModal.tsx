@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Modal, { ModalTitle } from "./modal";
-import { Input, InputWrapper, RadioContainer, Textarea } from "./auth-components";
+import { Error, Input, InputWrapper, OkMsg, RadioContainer, Textarea } from "./auth-components";
 import Button from "./button";
 import GroupImgUploader from "./group-img-uploader";
 import { palette } from "../assets/styles/palette";
+import defaultGroupImg from "../assets/images/defaultGroupImg.jpg";
+import axios from "axios";
+
 
 interface GroupModalProps {
   onClickToggleGroupModal: () => void;
@@ -19,58 +22,146 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
   const [activeDays, setActiveDays] = useState([false, false, false, false, false, false, false]);
 
   const [missionName, setMissionName] = useState("");
-  const [description, setDescription] = useState("");
+  const [explanation, setExplanation] = useState<string|null>(null);
   const [rule, setRule] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [maxParticipants, setMaxParticipants] = useState(5);
   const [recurrence, setRecurrence] = useState<string[]>();
-  const [hashtags, setHashtags] = useState<string[]>();
-  const [display, setDisplay] = useState<boolean>(true);
+  const [interest, setInterest] = useState<string>("");
+  const [display, setDisplay] = useState<string>("public");
 
-  const onChangeValue = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { target: { name, value } } = e;
+  const [groupImg, setGroupImg] = useState<string>(defaultGroupImg);
+
+  interface Error {
+    available: boolean|undefined;
+    msg: string;
+  }
   
-    if (name === "missionName") {
+  const [groupNameErr, setGroupNameErr] = useState<Error>({ available: undefined, msg: "" });
+
+
+  const onChangeValue = (e : React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) => {
+    const {target : {name, value}} = e;
+    if (name === "groupName") {
+      setGroupName(value);
+    } else if (name === "missionName") {
       setMissionName(value);
-    } else if (name === "description") {
-      setDescription(value);
+    } else if (name === "explanation") {
+      setExplanation(value);
     } else if (name === "rule") {
       setRule(value);
     } else if (name === "startDate") {
       setStartDate(value);
     } else if (name === "endDate") {
       setEndDate(value);
+    } else if (name === "display") {
+      setDisplay(value);
+    } else if (name === "interest") {
+      setInterest(value);
     }
-  };
-  
+};
 
   const handleDayClick = (index: number) => {
-    setActiveDays((prevActiveDays) => {
-      const newActiveDays = [...prevActiveDays];
-      newActiveDays[index] = !newActiveDays[index];
-      return newActiveDays;
-    });
+
+    const updatedActiveDays = [...activeDays];
+    updatedActiveDays[index] = !updatedActiveDays[index];
+    setActiveDays(updatedActiveDays);
+
+    const updatedRecurrence = updatedActiveDays.reduce((acc, isActive, i) => {
+      if (isActive) {
+        acc.push(["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"][i]);
+      }
+      return acc;
+    }, [] as string[]);
+
+    setRecurrence(updatedRecurrence);
   };
 
-  const handleCheckAvailability = () => {
+  const handleCheckAvailability = async() => {
     // 여기에서 중복 확인 로직을 추가하고 결과에 따라 setGroupAvailable 함수 호출
     // 예를 들어, 서버에서 중복 확인 후 결과를 받아와서 setGroupAvailable을 호출
     // setGroupAvailable(true); // 중복이 아니라면 true, 중복이면 false
-    const isAvailable = groupName !== '솔룩스';
-    setGroupAvailable(isAvailable);
-    if (firsttime) setFirsttime(false);
+    // const isAvailable = groupName !== '솔룩스';
+    // setGroupAvailable(isAvailable);
+    // if (firsttime) setFirsttime(false);
+
+    if(groupName==="") {
+      alert("그룹명을 입력해 주세요");
+      return;
+    }
+
+    try {
+      const response = await axios.post(`/api/jaraus/checkJaraUsNameDuplicate?jaraUsName=${groupName}`);
+      
+      if (response.status === 200) {
+        setGroupNameErr({ available: true, msg: "사용 가능한 그룹명입니다" });
+      } else {
+        setGroupNameErr({ available: false, msg: "이미 존재하는 그룹명입니다" });
+      }
+
+      
+    } catch (error) {
+      console.error("Error check group name available", error);
+    }
 
   };
 
-  const handleCreateGroup = () => {
+  useEffect(()=> {
+  }, [groupNameErr]);
+
+  const handleCreateGroup = async() => {
     // 여기에서 Jara-Us 생성 로직을 추가하고,
     // 생성이 성공했을 때 onClose 함수와 alert를 실행
     // 생성에 실패했을 경우에는 alert 등을 추가로 처리할 수 있음
     // 예시로 생성이 항상 성공했다고 가정하고 alert를 추가함
-    alert("Jara-Us가 생성되었습니다!");
-    onClose();
+
+    try {
+      
+      const jarausData = {
+        jarausName : groupName,
+        missonName: missionName,
+        jarausProfileImage: groupImg,
+        maxMember: maxParticipants,
+        display: display,
+        interest: interest,
+        startDate: startDate,
+        endDate: endDate,
+        recurrence: recurrence,
+        explanation: explanation,
+        rule: rule
+      }
+
+      const response = await axios.post('api/jaraus/create', jarausData);
+
+      if(response.status === 201) {
+        alert("Jara-Us가 생성되었습니다!");
+        onClose();
+      } else {
+        alert("Jara-us 생성에 실패했습니다.");
+      }
+
+    } catch (error) {
+      console.error("Error post jaraus", error);
+    }
+
   };
+
+  const onSubmitJaraUs = (e: React.FormEvent) => {
+      e.preventDefault();
+      
+      if(!recurrence || recurrence.length === 0) {
+        alert("인증 주기를 선택해 주세요");
+        return;
+      }
+
+      if(!groupNameErr.available) {
+        alert("그룹명 중복 확인을 해 주세요");
+        return;
+      }
+      
+      handleCreateGroup();
+  }
 
   // const [searchQuery, setSearchQuery] = useState('');
   
@@ -84,66 +175,78 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
     // <ModalOverlay>
     //   <ModalContainer>
 
-    <Modal onClickToggleModal={onClickToggleGroupModal} dialogClassName="group">
+    <Modal onClose={onClose} dialogClassName="group">
       <ModalTitle>Jara-Us 생성</ModalTitle>
 
       <div style={{"display":"flex", "justifyContent":"center", "alignItems":"center"}}>
       <ModalContainer>
         <CloseButton onClick={onClose}>&times;</CloseButton>
 
-        <Form>
+        <Form onSubmit={onSubmitJaraUs} >
         <Column>
-          <GroupImgUploader groupImg=""></GroupImgUploader>
+          <GroupImgUploader groupImg={groupImg} setGroupImg={setGroupImg}></GroupImgUploader>
         </Column>
         <Column>
           <label style={{"marginRight":"20px"}}>그룹명</label>
           <InputWrapper>
-            <Input type="text" value={groupName} placeholder="생성할 Jara-Us 이름을 입력해 주세요" onChange={onChangeValue}/>
+            <Input type="text" name="groupName" value={groupName} placeholder="생성할 Jara-Us 이름을 입력해 주세요" onChange={onChangeValue} required/>
             <Button type="button" className="check-button" onClick={handleCheckAvailability} 
                     $width="auto" $fontColor="jarameGrey" $fontSize="10" $height="auto">중복 확인</Button>
           </InputWrapper>
         </Column>
-        <div style={{"textAlign":"end", "fontWeight":"bold"}}>
-          {groupAvailable && (
-              <small>사용 가능한 그룹명입니다</small>
+  
+        {groupNameErr.available ? (
+                <OkMsg className="middle">{groupNameErr.msg}</OkMsg>
+            ) : (
+                <Error className="middle">{groupNameErr.msg}</Error>
             )}
-            {!firsttime && !groupAvailable && (
-              <small className="cannotuse">사용 불가능한 그룹명입니다</small>
-            )}
-        </div>
 
         <Column>
           <label style={{"marginRight":"20px"}}>미션</label>
           <InputWrapper>
-            <Input type="text" value={missionName} onChange={onChangeValue} placeholder="미션 이름을 입력해 주세요"/>
+            <Input type="text" name="missionName" value={missionName} onChange={onChangeValue} placeholder="미션 이름을 입력해 주세요" required/>
           </InputWrapper>
         </Column>
 
         <Column>
           <label style={{"marginRight":"20px"}}>설명</label>
           <InputWrapper>
-            <Input type="text" value={description} onChange={onChangeValue} placeholder="미션에 대한 설명을 입력해 주세요"/>
+            <Input type="text" name="explanation" value={explanation || ''} onChange={onChangeValue} placeholder="미션에 대한 설명을 입력해 주세요"/>
           </InputWrapper>
         </Column>
 
         <Column>
           <label style={{"marginRight":"20px"}}>규칙</label>
           <InputWrapper>
-            <Textarea value={rule} onChange={onChangeValue} placeholder="미션 규칙을 입력해 주세요"/>
+            <Textarea value={rule} name="rule" onChange={onChangeValue} placeholder="미션 규칙을 입력해 주세요" required/>
           </InputWrapper>
         </Column>
 
-        <Column>
-          <label style={{"marginRight":"10px"}}>시작일</label>
+        <Column style={{"whiteSpace":"pre-wrap", "justifyContent":"space-between"}}>
           
-          <InputWrapper style={{"marginRight":"10px", "justifyContent":"flex-end"}}>
-            <Input type="date" value={startDate} onChange={onChangeValue}></Input>
+          <label style={{"marginRight":"10px"}}>시작일</label>
+          <InputWrapper style={{flex: 1, "marginRight":"10px", "justifyContent":"flex-end"}}>
+            <Input type="date" name="startDate" value={startDate} onChange={onChangeValue} required></Input>
           </InputWrapper>
           
           <label style={{"marginRight":"10px"}}>종료일</label>
-          <InputWrapper style={{ "justifyContent":"flex-end"}}>
-            <Input type="date" value={endDate} onChange={onChangeValue}></Input>
+          <InputWrapper style={{ flex: 1, "marginRight":"10px","justifyContent":"flex-end"}}>
+            <Input type="date" name="endDate" value={endDate} onChange={onChangeValue} required></Input>
           </InputWrapper>
+
+          <label style={{"marginRight":"10px"}}>인증 주기</label>
+          <InputWrapper style={{flex: 1, "justifyContent":"space-even"}}>
+            {["월", "화", "수", "목", "금", "토", "일"].map((day, index) => (
+              <DayBtn
+                type="button"
+                key={day}
+                onClick={() => handleDayClick(index)}
+                $isActive={activeDays[index]}
+              >
+                {day}
+              </DayBtn>
+            ))}
+        </InputWrapper>
         </Column>
 
         <Column>
@@ -159,38 +262,30 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
             </Select>
           </InputWrapper>
 
-          <label style={{"marginRight":"10px"}}>인증 주기</label>
-          <InputWrapper style={{"justifyContent":"space-even"}}>
-            {["월", "화", "수", "목", "금", "토", "일"].map((day, index) => (
-              <DayBtn
-                type="button"
-                key={day}
-                onClick={() => handleDayClick(index)}
-                $isActive={activeDays[index]}
-                // recurrence 배열에 넣고 빼는 로직 필요
-              >
-                {day}
-              </DayBtn>
-            ))}
-        </InputWrapper>
-          
-        </Column>
-
-        <Column>
           <label style={{"marginRight":"20px"}}>분류</label>
-          <InputWrapper>
-
+          <InputWrapper style={{"justifyContent":"flex-end"}}>
+            <Select
+                  name="interest"
+                  value={interest}
+                  onChange={onChangeValue}
+                  required>
+                <option value={""} hidden>필수 선택</option>
+                <option value={"study"}>공부</option>
+                <option value={"health"}>건강</option>
+                <option value={"hobby"}>취미</option>
+              </Select>
           </InputWrapper>
-        </Column>
 
+
+        </Column>
 
 
         <Column>
         <label style={{"marginRight":"20px"}}>공개</label>
         <div style={{"width":"100%","display":"flex", "justifyContent":"space-evenly"}}>
-        <RadioContainer style={{ flex: 1 }}><Input type="radio" name="display" value="public" checked={true} id="publicBtn"/><label htmlFor="publicBtn">전체 공개</label></RadioContainer>
-        <RadioContainer style={{ flex: 1 }}><Input type="radio" name="display" value="limited" checked={false} id="limitedBtn" /><label htmlFor="limitedBtn">초대된 사용자에게 공개</label></RadioContainer>
-        <RadioContainer style={{ flex: 1 }}><Input type="radio" name="display" value="private" checked={false} id="privateBtn"/><label htmlFor="privateBtn">비공개</label></RadioContainer>
+        <RadioContainer style={{ flex: 1 }}><Input type="radio" name="display" value="public" checked={display==="public"} onChange={onChangeValue}id="publicBtn"/><label htmlFor="publicBtn">전체 공개</label></RadioContainer>
+        <RadioContainer style={{ flex: 1 }}><Input type="radio" name="display" value="limited" checked={display==="limited"} onChange={onChangeValue}id="limitedBtn" /><label htmlFor="limitedBtn">초대된 사용자에게 공개</label></RadioContainer>
+        <RadioContainer style={{ flex: 1 }}><Input type="radio" name="display" value="private" checked={display==="private"} onChange={onChangeValue}id="privateBtn"/><label htmlFor="privateBtn">비공개</label></RadioContainer>
         </div>
         </Column>
 
@@ -200,12 +295,15 @@ function GroupModal({ onClickToggleGroupModal, onClose }: GroupModalProps) {
           <input type="text" placeholder="분류를 입력하세요 ..." />
           <div className='search-button' onClick={handleSearch}>🔍︎</div>
         </div> */}
-        </Form>
 
         <Column className="makeCancle">        
-          <Button onClick={handleCreateGroup} $buttonColor="jarameBlue">생성</Button>
+          <Button type="submit" $buttonColor="jarameBlue">생성</Button>
           <Button onClick={onClose} $buttonColor="jarameGrey">취소</Button>
         </Column>
+
+        </Form>
+
+
 
         </ModalContainer>
         </div>

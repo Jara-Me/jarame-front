@@ -84,11 +84,32 @@ export const RadioContainer = styled.span`
     }
 `;
 
+export const OkMsg = styled.div`
+    font-weight: 600;
+    color: green;
+
+    &.bottom{
+        margin-bottom: 30px;
+    }
+
+    &.middle {
+        margin: 10px 0;
+        text-align: right;
+    }
+`;
+
 export const Error = styled.div`
     font-weight: 600;
     color: red;
-    margin-bottom: 30px;
     
+    &.bottom{
+        margin-bottom: 30px;
+    }
+
+    &.middle {
+        margin: 10px 0;
+        text-align: right;
+    }
 `;
 
 export const Switcher = styled.span`

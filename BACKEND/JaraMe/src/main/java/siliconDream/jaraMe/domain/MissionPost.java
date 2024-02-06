@@ -1,5 +1,6 @@
 package siliconDream.jaraMe.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -9,34 +10,41 @@ import java.util.List;
 @Entity
 public class MissionPost {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, unique = true)
-    Long missionPostId;
+    private Long missionPostId;
 
-    boolean anonymous;
+    private boolean anonymous;
 
-    boolean display;
+    private boolean display;
 
-    String textTitle;
+    private String textTitle;
 
-    String textContent;
+    private String textContent;
 
-    String imageContent;
+    private String imageContent;
 
-    LocalDateTime postDateTime;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime postDateTime;
 
 
     //FK
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user")
-    User user;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "jaraUs")
-    JaraUs jaraUs;
+    private JaraUs jaraUs;
 
+
+    @OneToOne
+    @JoinColumn(name = "missionHistory")
+    @JsonIgnore
+    private MissionHistory missionHistory;
 
     @OneToMany(mappedBy = "missionPost", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
